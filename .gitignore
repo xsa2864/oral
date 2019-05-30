@@ -10,3 +10,4 @@ thinkphp
 /image
 *.bat
 *.sql
+/uploads
