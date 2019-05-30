@@ -1,0 +1,103 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div id="table" class="mt10" id="editdiv">
+            <div class="main_left fl span10">
+                <div class="box pr0">
+                    <div class="box_border">
+                        <div class="box_top">
+                            <div class="box_top_l fl" >
+                                <div style="float: left;">   
+                                    <i class="fa fa-add fa fa-desktop"></i>
+                                </div>
+                                <b>打印模板管理</b>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <form name="form1" class="jqtransform">
+                <div class="mt10" id="ajaxdiv">
+                    <div class="box_border">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size:0.9rem">
+                            <tr>    
+                                <th width="4">ID</th>
+                                <th width="15%">区域</th>
+                                <th width="15%">模板名称</th>
+                                <th width="8%">状态</th>
+                                <th width="200">添加时间</th>
+                                <th width="200">操作</th>
+                            </tr>
+                            {notempty name="list"}
+                            {volist name="list" id="list"}
+                            <tr class="tr td_center">        
+                                <td>{$list.id}</td>    
+                                <td>{$list.HallName|default="默认模板"}</td>
+                                <td>{$list.title}</td>
+                                <td>{$list.status==1?'开启':'关闭'}</td>
+	               				<td>{$list.add_time|date='Y-m-d H:i'}</td>
+                                <td>
+                                    <a href="javascript:Operation('edit',{$list.id});">修改</a> 
+                                    |
+                                    <a href="javascript:Operation('del',{$list.id});">删除</a>
+                                </td>
+                            </tr>
+                            {/volist}
+                			{else /}
+                            <tr class="tr">
+                                <td class="td_center" colspan="11">您还没有数据，请进行添加，谢谢！</td>
+                            </tr>
+                            {/notempty}
+                        </table>
+                    </div>
+                </div>
+            </form>
+
+            <div class="box_top">
+                <input type="button" name="addbut" id='addbut' onclick="Operation('add')" class="btn btn82 btn_add"  value="新增"> 
+            </div>
+
+            <!-- 分页开始 -->
+            {$page|raw}
+            <!-- 分页结束 -->            
+        </div>
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">                     
+
+            </div>
+        </div> 
+
+    </div>
+</div> 
+
+<script type="text/javascript">
+// 增 删 改 相应操作
+function Operation(str,id) {
+    if(str=='add'){
+        location.href = '{:url("admin/template/edittemp")}';
+    }else{      
+        if(id==''||id==null){
+            alert("请选择相应的数据");
+        }else{      
+            if(str=='edit'){
+                location.href = '{:url("admin/template/edittemp")}?id='+id;
+            }else if(str=='del'){
+                if(confirm("确认删除！")){
+                    $.post('{:url("admin/template/delTemp")}',
+                        {'id':id},
+                        function(data){
+                            if(data.success==1){
+                                location.reload();
+                            }
+                            alert(data.msg)
+                    },'json')
+                }
+            }
+        }
+    }
+}
+</script>
+{/block}

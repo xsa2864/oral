@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{block name="title"}中科易达{/block}</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+
+<meta name="description" content="福州中科易达计算机技术有限公司成立于2008年，注册资金801万，是一家集计算机相关软、硬件产品研发、销售与服务为一体的科技创新型企业。几年以来，公司本着“诚信为本、科技创新、以质为本”的企业宗旨，经过全体员工的不懈努力，与广大客户的大力支持下，公司的产品与服务在全国范围得到了广泛的应用于发展，赢得了业界的一致好评与信任！">
+
+<link rel="stylesheet" href="__APP__/lib/weui.min.css">
+<link rel="stylesheet" href="__APP__/css/jquery-weui.css">
+<link rel="stylesheet" href="__APP__/css/demos.css">
+<link rel="stylesheet" href="__APP__/hospital/index.css">
+<script src="__APP__/lib/jquery-2.1.4.js"></script>
+
+<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+<script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+<script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+
+</head>
+
+<body ontouchstart>
+<span id="app">	
+	<div class="weui-flex" style="height: 6%;display: block;">
+		<div v-if="item.ads_img != ''" style="height: 100%">
+			<img v-bind:src="'__IMG__/' + item.ads_img" style="height: 100%;width: 100%;">			
+		</div>		
+		<span class="time" id="time">{{ date }}</span>
+		<span class="show_ip">{{ item.ip }}</span>
+    </div>
+
+    <div class="weui-flex" style="height: 8%;display: block;border: none;">
+      	<div class="weui-flex__item">
+      		<span class="in_block b_orange"></span>
+      		<div class="placeholder" id="room_name"> {{ info.item.room_name }} </div>
+      	</div>
+    </div>
+    <div class="weui-flex weui-flex-ex" style="height: 16%;display: block;padding-top: 2.5vw;">
+	    <div class="weui-flex__item3" v-if="info.item != ''">
+	      	<img v-bind:src="'__IMG__/' + info.item.user_pic" id="head_pic">
+	    </div>
+	    <div class="weui-flex__item3" v-else>
+	      	<img src="__APP__/images/pic_article.png" id="head_pic">
+	    </div>
+
+	    <div class="weui-flex__item doctor_info">
+	    	<div class="b_orange">
+	    	<span class="h_doctor">医 生：</span> 
+	    	<span id="staff_name" class="b_white"> {{ info.item.user_name }} &nbsp;</span></div>
+	    	<div>专 长：<span id="staff_brief"> {{ info.item.user_brief }} </span></div>
+	    </div>
+    </div>
+    <div class="weui-flex wait_info weui-flex-ex"  style="height:26%;display: block;">
+	   	<div class="weui-flex b_orange" style="border-bottom: 0px;">
+	      	<div class="placeholder pl_center" style="width: 30%;border-right: 5px solid #05437c;">呼号</div>
+      		<div class="weui-flex__item">
+      			<div class="placeholder pl_center" id="now_check">{{ info.item.queue_title }} </div>
+      		</div>
+	    </div>
+	    <div class="weui-flex"  style="background-color: #E3E3E3;height: 65%;color:#949293">
+	      	<div class="placeholder pl_center" style="width: 30%;line-height: 90%;height: 72%;padding-top: 10%;border-right: 5px solid #05437c;">
+	      		等待<p id="wait_num">( {{ info.item.queue_wait_list }} )</p>
+	      	</div>
+      		<div class="weui-flex__item">
+      			<div class="placeholder pl_center" id="wait_list">
+      				<div v-for="(list,index) in info.item.queue_list" v-if="index < 3">{{ list }}</div>
+      			</div>
+      		</div>
+	    </div>
+    </div>
+
+    <!-- 广告位轮播 -->
+    <div  class="weui-flex weui-flex-ex" style="height: 28%;display: block;">
+	    <video autoplay controls loop muted playsinline style="height: 100%;width: 100%;display: none;background-color: #000000;">
+		您的浏览器不支持 video 标签。
+		</video>
+		<div class="layui-carousel" id="test1">
+		  <div carousel-item id="swiper-wrapper">
+			    <div v-if="item.img_list==''">
+			    	<img src="__APP__/images/pic_article.png" style="width: 100%;height: 100%;" />
+			    </div>
+			    <div v-for="img in item.img_list">			    	
+			    	<img v-bind:src="'__IMG__' + img.img" style="width: 100%;height: 100%;" />
+			    </div> 
+		  </div>
+		</div>	 
+    </div>
+
+    <div class="weui-flex weui_flex_footer" v-on:click="shows">
+      	<div class="weui-flex__item footer">友情提示：<span id="tips">{{ item.tip }}</span></div>
+    </div>
+
+	<div class="layui-form layui-form-pane" v-if="show">
+		<div class="layui-form-item">
+		    <div class="layui-inline">
+		      <div class="layui-input-inline" style="width: 100px;">
+		        <input type="text" name="devices_ip" v-model="item.ip" v-bind:value="item.ip" placeholder="设备通信编号"  class="layui-input">
+		      </div>	      
+		      <div class="layui-input-inline" style="width: 100px;">
+		        <button class="layui-btn layui-btn-radius" v-on:click="save"> 保 存 </button>
+		      </div>	      
+		    </div>
+		</div>
+	</div>
+</span> <!-- end #app -->
+
+<style type="text/css">
+body{
+	background-color: #005291;
+}
+#room_name{
+	font-size: 9vw;
+}
+.weui_flex_footer{
+    position: fixed;
+    padding-bottom: 2.5vw;
+	bottom: -1px;
+    width: 100%;
+    background-color: #b9066C;
+}
+.h_doctor{
+	float: left;
+}
+.b_white{
+    width: 74%;
+    display: block;
+    margin-left: 23%;
+    padding-left: 2vw;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+.b_orange{
+	color:#FFFFFF;
+	background-color: #f96A02;
+}
+
+.doctor_info{
+	width: 78%;
+	font-size: 4vw;
+	margin-left: 20vw;
+}
+.in_block{
+    float: left;
+    display: block;
+    width: 5vw;
+    height: 10vw;
+    margin: 2vw 1vw 0 1vw;
+}
+.time{
+	color: #FFFFFF;
+	position: absolute;
+    top: 2.5vw;
+    right: 2vw;
+    font-size: 3vw;
+}
+.weui-flex-ex{  
+	margin: 0 1.5vw 1.5vw 1.5vw;
+	padding: 1.5vw;
+	background-color: #05437c;
+	border: 1px solid #5c716a;
+}
+#wait_num{
+	font-size: 2vw;
+    color:#949293;
+}
+.wait_info{
+	text-align: center;
+}
+.pl_center{
+	text-align: center;
+}
+#wait_list{
+	color:#949293;
+	border: none;
+	line-height: 10vw;
+	font-size: 5vw;
+	text-align: left;
+    padding: 1vw 5vw;
+}
+.show_ip{
+	position: absolute;
+    right: 0px;
+    top: 0px;
+    font-size: 0.3rem;
+    opacity: 0.3;
+    color: white;
+}
+</style>
+<script src="__APP__/lib/fastclick.js"></script>
+<script src="__APP__/js/swiper.js"></script>
+<script>
+var ins = "",carousel = "";
+
+layui.use(['carousel','layer'], function(){
+	carousel = layui.carousel;
+	//建造实例
+	ins = carousel.render({
+	    elem: '#test1'
+	    ,width: '100%' //设置容器宽度
+	    ,height: '100%' //设置容器宽度
+	    ,arrow: 'none' //始终显示箭头
+	    ,indicator: 'none'
+	});
+});
+
+var vm = new Vue({
+	el:'#app',
+	data:{
+		item:{
+			ip:'127.0.0.1',
+		},
+		info: {
+			item:{
+			}
+		},
+		date:'',
+		show:false,
+		ws:null,
+		heart:null, //心跳包
+	}
+	,methods:{
+		getBase:function(n){
+			axios
+				.get('{:url("/api/v2/index/showBase")}')
+				.then(
+					res => {
+						this.item = res.data;
+						setTimeout(res => {ins.reload()},200)
+						if(n==1){
+							this.init();
+						}
+					}
+				)
+		}
+		,get:function(){
+			axios.get('{:url("/api/v2/index/showInfo")}')
+				.then(
+					res => {
+						this.info = res.data
+					}
+				)
+		}
+		,save:function(){
+			axios.post('{:url("/api/v2/index/changeCode")}',{'devices_ip':this.item.ip})
+				.then(
+					res => {
+						if(res.status==200){
+							this.show = false;
+							this.get();
+							this.getBase();
+							this.ws.close();
+						}
+						layer.open({
+						  title: '提示'
+						  ,content: res.data
+						});     
+					}
+				)
+		}
+		,shows:function(){
+			this.show = this.show ? false : true;
+		}
+		,init:function(){
+			if(typeof('WebSocket') === "undefined"){
+				layer.open({
+				  title: '提示'
+				  ,content: '当前浏览器 Not support websocket',
+				});     
+			}else{				
+				this.ws = new WebSocket('ws://'+document.domain+':23452');
+				this.ws.onopen = this.opens
+				this.ws.onmessage = this.message
+				this.ws.onclose = this.close
+			}
+		}
+		,opens:function(){
+			var data = '{"type":"login","devices_ip":"'+this.item.ip+'"}';
+			this.ws.send(data)
+			console.log(this.item.ip + " 连接成功");  
+			this.heartbeat()
+		}
+		,message:function(e){
+			var obj = eval('(' + e.data + ')');	
+			if(obj.call){
+				this.get();
+			}else if(obj.reload){
+				this.getBase();
+			}else if(obj.ping){
+				console.log(obj.ping)
+			}else if(obj.stop){
+				this.info.item.queue_title = obj.stop
+			}
+		}
+		,close:function(){
+			this.init()
+			clearInterval(this.heart)
+			console.log(this.item.ip + " 断线重连中...")
+		}
+		,heartbeat:function(){
+
+			this.heart = setInterval(res => {
+				this.ws.send('{"type":"ping"}');
+			},40000)
+		}
+		,op_time:function(){
+			setInterval(
+				res => {
+					var dt = new Date(); // 得到当前时间
+					var y = dt.getFullYear(); // 当前年份
+					var m = dt.getMonth() + 1; // 当前月份，getMonth 返回值是 0-11 对应 1-12月，因此全部加1
+					var d = dt.getDate();			 
+					var h = dt.getHours();
+					if(h<10) h='0' + h;
+					var i = dt.getMinutes();
+					if(i<10) i='0' + i;
+					var s = dt.getSeconds();
+					if(s<10) s='0' + s;			 
+					var str = m + '月' + d + '日 ' + h + '时' + i + '分' + s + '秒';
+					this.date = str;
+			},1000)		
+		}
+	}
+	,created:function(){		
+		this.get();
+		this.getBase(1);
+	}
+	,mounted:function(){
+		this.op_time()	//时间
+	}	
+})
+</script>
+</body>
+</html>

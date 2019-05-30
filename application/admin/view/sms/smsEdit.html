@@ -1,0 +1,110 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div id="forms" class="mt0">
+            <div class="box">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div style="float: left;">   
+                            <i class="fa fa-add fa-flag-checkered"></i>
+                        </div>
+                        <b>配置编辑</b>
+                    </div>
+                    <div class="box_center">
+                        <form  name="form1" class="jqtransform" >
+                            <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td class="td_right">单 位 :</td>
+                                    <td>
+                                    <select name="unitid"  class="select">
+                                        {volist name="unit" id="vo"}
+                                        <option value="{$vo.UnitId}" {if condition="$vo.UnitId==$result.unitid"}selected{/if}>{$vo.unitname}</option>
+                                        {/volist}
+                                    </select>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="td_right">短信条数:</td>
+                                    <td><input type="text" name="number" id="number" class="input-text lh30" size="30" value="{$result.number}" {notempty name="result"}readonly{/notempty}></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">使用条数:</td>
+                                    <td><input type="text" name="used" id="used" class="input-text lh30" size="30" value="{$result.used}" readonly></td>
+                                </tr>
+                                
+                                <tr >
+                                    <td class="td_right">启用/暂停:</td>
+                                    <td class=""> 
+                                        <input type="radio" name="status" {if $result.status==1}checked{/if} value="1"> 启用
+                                        <input type="radio" name="status" {if $result.status==0}checked{/if} value="0"> 暂停
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">预约成功:</td>
+                                    <td>
+                                    <select name="mark_ok"  class="select">
+                                        <option value="0">关闭</option>
+                                        {volist name="list" id="vo"}
+                                        <option value="{$vo.id}" {if condition="$vo.id==$result.mark_ok"}selected{/if}>{$vo.title}</option>
+                                        {/volist}
+                                    </select>
+                                    选择预约成功短信提醒模板
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">提前通知:</td>
+                                    <td>
+                                    <select name="is_mark"  class="select">
+                                        <option value="0">关闭</option>
+                                        {volist name="list" id="vo"}
+                                        <option value="{$vo.id}" {if condition="$vo.id==$result.is_mark"}selected{/if}>{$vo.title}</option>
+                                        {/volist}
+                                    </select>
+                                    选择提前通知短信提醒模板
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">取消预约:</td>
+                                    <td>
+                                    <select name="mark_cancel"  class="select">
+                                        <option value="0">关闭</option>
+                                        {volist name="list" id="vo"}
+                                        <option value="{$vo.id}" {if condition="$vo.id==$result.mark_cancel"}selected{/if}>{$vo.title}</option>
+                                        {/volist}
+                                    </select>
+                                    选择取消预约短信提醒模板
+                                    </td>
+                                </tr>
+                            </table> 
+                                <div class="box_top" style="text-align: center;">
+                                    <input type="hidden" name="id" class="input-text lh30" size="4" value="{$result.id}">
+                                    <input type="button" name="button" class="btn btn82 btn_save2" onclick="save()" value="保存" style="margin-right: 20px;"> 
+                                    <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="history.back(-1);" value="取消"> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>               
+                </form>
+            </div>
+        </div>
+<script type="text/javascript">
+// 更新数据
+function save(){
+    $.post('{:url("admin/sms/smsSave")}',
+        $("form").serialize(), 
+        function(data){
+            if(data.success==1){
+                history.go(-1);
+            }else if(data.success==2){
+                location.reload();
+            }
+            alert(data.msg);
+    },'json')
+
+}
+</script>
+{/block}

@@ -1,0 +1,183 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="search_bar" class="mt10">
+    <div class="box">
+        <div class="box_border">
+            <form>
+            <div class="box_top">
+                <div style="float: left;">   
+                    <i class="fa fa-add fa-language"></i>
+                </div>
+                <b>统计条件</b>
+            </div>
+            <div class="box_center pt10 pb10">
+              <table class="form_table" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>单位名称:</td>
+                    <td>
+                        <select name="unit_id" class="select">
+                          {volist name="unit" id="vo"}
+                          <option value="{$vo.UnitId}">{$vo.unitname}</option>
+                          {/volist}
+                        </select>
+                    </td>        
+                    <td>时间单位:</td>
+                    <td>
+                        <select name="day_unit" class="select">
+                            <option value="1">按天统计</option>
+                            <option value="2">按月统计</option>
+                        </select>
+                    </td>    
+                </tr>
+                <tr>
+                  <td>开始时间:</td>
+                  <td><input type="date" name="stime" class="input-text lh25" size="10" value="{$wh['stime']|default=date('Y-m-01',time())}"></td>
+                  <td>结束时间:</td>
+                  <td><input type="date" name="etime" class="input-text lh25" size="10" value="{$wh['etime']|default=date('Y-m-d',time())}"></td>
+                 </tr>
+              </table>
+            </div>
+            <div class="box_bottom pb5 pt5 pr10" style="border-top:1px solid #dadada;">
+              <div class="search_bar_btn" style="text-align:right;">
+                 <input type="button" value="统计" onclick="search()" class="ext_btn ext_btn_submit">
+                 <input type="button" class="ext_btn ext_btn_success" onclick="getData()" value="导出">
+              </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<div id="container" style="width: 750px; height: 400px; margin: 0 auto"></div>
+
+<div id="table" class="mt10" id="editdiv">
+    <div class="box span10 oh">                
+            <table width="80%" border="0" cellpadding="0" cellspacing="0"
+                   class="list_table" id="table1" style="font-size: 1rem;margin-bottom: 40px;">
+            </table>
+        </div>
+    </div>
+</div>
+
+<script language="JavaScript">
+$(document).ready(function(){
+    search()
+})
+
+function search(){
+    $.post('{:url("admin/highcharts/getDataPlat")}',
+        $("form").serialize(),
+        function(data){
+            if(data.success==-1){
+                alert(data.msg)
+            }else if(data.success==1){
+              var das = data.data.show_date
+                var str = '<tr><th>'+data.title+'</th>';
+                for(n in das){
+                   str += '<th>'+das[n]+'</th>';
+                }
+                str += '</tr>';
+                var da = data.data.list;
+                for(x in da){
+                    var type_name = '其它';
+                    if(x=='phone'){
+                      type_name = '电话';
+                    }else if(x=='android'){
+                      type_name = 'APP';
+                    }else if(x=='windows'){
+                      type_name = '官网';
+                    }
+                    str += '<tr class="tr td_center"><td>'+type_name+'</td>'
+                    for(xx in da[x]){
+                      str += '<td>'+da[x][xx]+'</td>'
+                    }
+                    str += '</tr>'
+                }
+                $("#table1").html(str)
+            }
+            showInfo(data.data,data.title)
+        },'json')
+}
+function showInfo(list,title) {      
+    var title = {
+      text: title   
+    };      
+
+    var subtitle = {
+      text: '预约数据来源统计'
+    };
+  
+    var xAxis = {
+      categories: list.show_date
+    };
+
+    var yAxis = {
+      title: {
+         text: '预约数量'
+      },
+      plotLines: [{
+         value: 0,
+         width: 1,
+         color: '#808080'
+      }]
+    };   
+
+    var tooltip = {
+      valueSuffix: ''
+    }
+
+    var legend = {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle',
+        borderWidth: 0
+    };
+    var lts = list.list;
+    var com_list = new Array();
+    for(n in lts){
+        var cont = {};
+        var list_data = new Array();
+        cont.name = n=='phone'?'电话':(n=='windows'?'官网':(n=='android'?'APP':'其它'));
+        
+        for(x in lts[n]){
+            list_data.push(parseInt(lts[n][x]));
+        }
+        cont.data = list_data;
+
+        com_list.push(cont)
+    }
+
+    var series= com_list;
+
+    var credits = {
+        enabled:false
+    }
+      
+    var json = {};   
+    json.credits = credits; 
+    json.title = title;   
+    json.subtitle = subtitle;
+    json.xAxis = xAxis;
+    json.yAxis = yAxis;
+    json.tooltip = tooltip;
+    json.legend = legend;
+    json.series = series;
+    $('#container').highcharts(json);  
+}
+function getData(){
+  if(confirm("确认导出数据？")){   
+      $.post('{:url("admin/highcharts/getExcelPlat")}',
+          $("form").serialize(),
+          function(data){
+              if(data.success==1){
+               location.href = data.msg;
+              }else{
+                alert(data.msg);
+              }
+          },'json')
+  }
+}
+</script>
+{/block}

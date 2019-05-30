@@ -1,0 +1,290 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="forms" class="mt10">
+    <div class="box">
+
+        <!-- 右边显示区域 -->
+        <div class="main_left fl span5">          
+            <div class="box pl5">
+                <div class="box_border">
+                  <div class="box_top">
+                        <div style="float: left;">   
+                                <i class="fa fa-add fa-envelope-open"></i>
+                        </div>
+                        <b class="pl15">发送短信</b>
+                    </div>
+                  <div class="box_center">
+                    <!-- 内容 -->
+<form id="search_form">
+<div class="box_border">
+    <div class="box_center pt10 pb10">
+        <table class="form_table" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>接 收 人:</td>
+                <td>
+                    <input type="radio" name="sign" id="sign1" checked="" value="1">
+                    <label for="sign1">预约人员</label>
+                </td>
+                <td>
+                    <input type="radio" name="sign" id="sign2" value="2">
+                    <label for="sign2">内部人员</label>
+                    
+                </td>
+            </tr>
+            <tr>
+                <td>单 位 :</td>
+                <td>
+                    <select name="unit_id" class="select" onchange="getHalls($(this).val())"> 
+                        <option value="">请选择单位</option> 
+                        {volist name="unit" id="vo"}
+                        <option value="{$vo.UnitId}">{$vo.unitname}</option> 
+                        {/volist}
+                    </select> 
+                </td>     
+                <td>科 室 :</td>
+                <td>
+                    <select name="hall_id" id="hall_id" class="select" onchange="option(1)"> 
+                        <option value="">请选择科室</option> 
+                    </select> 
+                </td>                 
+            </tr>
+            <tr class="group" style="display: none;">   
+                <td>分组名称:</td>
+                <td>
+                    <select name="group_id" id="group_id" class="select" onchange="option(2)"> 
+                        <option value="">请选择分组</option> 
+                    </select> 
+                </td>                 
+            </tr>
+            <tr class="time">
+                  <td>开始时间:</td>
+                  <td><input type="date" name="stime" class="input-text lh25" size="10" value="{:date('Y-m',time()).'-01'}"></td>
+                  <td>结束时间:</td>
+                  <td><input type="date" name="etime" class="input-text lh25" size="10" value="{:date('Y-m-d',time())}"></td>
+            </tr>
+        </table>
+        <div class="box_bottom pb5 pt5 pr10" style="border-top:1px solid #dadada;">
+            <div class="search_bar_btn" style="text-align:right;">
+                <input type="button" onclick="search()" value="查询" class="ext_btn ext_btn_submit">
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+    <div id="table" class="mt10">
+        <div class="box span10 oh" style="height: 350px;overflow-y: auto;">
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table">
+                <tr>
+                   <th width="30">选择</th>
+                   <th width="20%">科室</th>
+                   <th width="35%">手机号</th>
+                   <th width="35%">姓名</th>
+                </tr>
+                <tbody id="mobile_list">  
+                </tbody>
+              </table>
+        </div>
+        <div class="box_top" style="text-align: center;">
+                <input type="button" name="button" onclick="getmobile()" value="获取手机号" style="width: 111px;height: 30px;margin-top: 4px;cursor:pointer;border-radius: 5px;background-color: #1f78ba;color:#FFF;">
+        </div>
+     </div>
+                    <!-- end 内容 -->
+                  </div>
+                </div>
+            </div>        
+        </div>
+        <!-- end 右边显示区域 -->
+
+                <!-- 左边显示区域 -->
+        <div class="main_right fr span5">
+            <div class="box pr5">
+                <div class="box_border">
+                  <div class="box_top">
+                  </div>
+                  <div class="box_center">
+                    <!-- 内容 -->
+<div class="box_border">
+            <div class="box_center">
+              <form action="" class="jqtransform">
+               <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
+                
+                <tr>
+                    <td class="td_right">手机号码:</td>
+                    <td class="">
+                        <textarea name="mobile" id="mobile" cols="30" rows="15" class="textarea" readonly="true"></textarea>                        
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>格式：15377776666,15377776666(英文字符逗号,上限为100)</td>
+                </tr>         
+                <tr>
+                    <td class="td_right">选择模板:</td>
+                    <td>
+                    <select name="mark_content"  class="select" onchange="getcontent($(this).val())">
+                        <option value="">请选择模板</option>
+                        {volist name="temp" id="vo"}
+                        <option value="{$vo.content}">{$vo.title}</option>
+                        {/volist}
+                    </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td_right">发送的内容:</td>
+                    <td class="">
+                    <textarea name="content" id="content" cols="10" rows="15" class="textarea"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td_right">&nbsp;</td>
+                    <td class="">
+                        <input type="button" name="button" onclick="sendSms()" class="btn btn82 btn_save2" value="发送"> 
+                    </td>
+                </tr>
+               </table>
+               </form>
+            </div>
+        </div>
+                    <!-- end 内容 -->
+                  </div>
+                </div>
+            </div>
+        </div>
+        <!-- end 左边显示区域 -->
+    </div>
+</div>
+<script type="text/javascript">
+function sendSms() {
+    var type = $("input[name='sign']:checked").val();
+    var mobile = $("#mobile").val();
+    var content = $("#content").val();
+    var group_id = $("#group_id").val();
+    if(mobile==''||mobile==null){
+        alert("手机号不能为空");
+        return false;
+    }
+    if(content==''||content==null){
+        alert("内容不能为空");
+        return false;
+    }
+    if(confirm("确定发送!")){
+        $.post("{:url('admin/sms/sendSms')}",
+            {'mobile':mobile,'content':content,'type':type,'group_id':group_id},
+            function(data){
+                if(data.success==1){
+                    $("#mobile").val('');
+                }   
+                alert(data.msg)
+            },'json')
+    }
+}
+// 获取手机号列表
+function getmobile(){
+    var id = '';
+    $("input[type='checkbox']:checked").each(function(n,e){
+        if(id!=''){
+            id += ',';
+        }
+        id += $(e).val();
+    })
+    if(id==''){
+        alert("未获取到数据")
+    }else{
+        $("#mobile").val(id)
+    }
+}
+// 获取科室列表
+function getHalls(id){
+    $.post('{:url("admin/sms/getHall")}',{'id':id},
+        function(data){
+            if(data.success==1){
+                var html = '<option value="">请选择科室</option> ';
+                var htmls = '<option value="">请选择分组</option> ';
+                var da = data.data;
+                var das = data.datas;
+                for(x in da){
+                    html += '<option value="'+da[x].HallNo+'">'+da[x].HallName+'</option> ';
+                }
+                for(xx in das){
+                    htmls += '<option value="'+das[xx].id+'">'+das[xx].DispName+'</option> ';
+                }
+                $("#hall_id").html(html)
+                $("#group_id").html(htmls)
+            }
+        },'json')
+}
+// 查询手机号
+function search(){
+    var type = $("input[name='sign']:checked").val();
+    var unit_id = $("select[name='unit_id']").val();
+    if(unit_id == ''||unit_id == null){
+        alert("请选择单位");
+        return false;
+    }
+    if(type==1){
+        $.post('{:url("admin/sms/getListMobile")}',
+            $("#search_form").serialize(),
+            function(data){
+                if(data.success==1){
+                    var html = '';
+                    var da = data.data;
+                    for(x in da){
+                        html += '<tr class="tr">';
+                        html += '   <td class="td_center"><input type="checkbox" value="'+da[x].mobile+'" checked></td>';
+                        html += '   <td>'+da[x].HallName+'</td>';
+                        html += '   <td>'+da[x].mobile+'</td>';
+                        html += '   <td>'+da[x].name+'</td>';
+                        html += '</tr>        ';
+                    }
+                    $("#mobile_list").html(html);
+                }else{
+                    $("#mobile_list").html("<tr><td colspan='4' class='td_center'>没有查询到数据</td></tr>");
+                }
+            },'json')
+    }else{
+        $.post('{:url("admin/sms/getListMobile")}',
+            $("#search_form").serialize(),
+            function(data){
+                if(data.success==1){
+                    var html = '';
+                    var da = data.data;
+                    for(x in da){
+                        html += '<tr class="tr">';
+                        html += '   <td class="td_center"><input type="checkbox" value="'+da[x].mobile+'" checked></td>';
+                        html += '   <td>'+da[x].HallName+'</td>';
+                        html += '   <td>'+da[x].mobile+'</td>';
+                        html += '   <td>'+da[x].FullName+'</td>';
+                        html += '</tr>        ';
+                    }
+                    $("#mobile_list").html(html);
+                }else{
+                    $("#mobile_list").html("<tr><td colspan='4' class='td_center'>没有查询到数据</td></tr>");
+                }
+            },'json')
+    }
+}
+$("input[type='radio']").on('click',function(){
+    var sign = $(this).val()
+    if(sign==1){
+        $(".time").show();
+        $(".group").hide();        
+        $("#mobile_list").html('');
+    }else{
+        $(".time").hide();
+        $(".group").show();  
+        $("#mobile_list").html('');
+    }
+})
+function getcontent(html){
+    $("#content").val(html)
+}
+function option(id){
+    if(id==2){
+        $("#hall_id option:first").prop("selected",true)
+    }else{
+        $("#group_id option:first").prop("selected",true)
+    }    
+}
+</script>
+{/block}

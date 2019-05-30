@@ -1,0 +1,118 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="addsdiv" class="mt0">
+    <div class="main_left fl span10">
+        <div class="box pr0">
+            <div class="box_border">
+                <div class="box_top">
+                    <div class="box_top_l fl" >
+                        <div style="float: left;">   
+                            <i class="fa fa-add fa-plus-square"></i>
+                        </div>
+                        <b>编辑医生排班</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <form name="form2" id="form2" class="jqtransform">
+        <div class="main_left fl span10" id="ajaxdiv3">
+            <div class="box_center" id="ajaxdiv2">
+            <table class="form_table pt15 pb15"  style="width: 100%">
+    <tr>       
+        <td class="td_right">队 列 ：</td>
+        <td>{$item.qname}</td>          
+    </tr>  
+    <tr>       
+        <td class="td_right">工 号 ：</td>
+        <td>{$item.staff_code}</td>          
+    </tr>     
+    <tr>
+        <td class="td_right">医生名字：</td>
+        <td>{$item.QueName}</td>
+    </tr>
+    <tr>
+        <td class="td_right">排    班：</td>
+        <td  colspan="3">
+            <div>                
+                <input type="checkbox" name="ClassesTime[]" value="0" {if condition="$class[0]==1"}checked="checked"{/if} title="周一上午" lay-skin="primary"> 周一上午
+                <br>
+                <input type="checkbox" name="ClassesTime[]" value="1" {if condition="$class[1]==1"}checked="checked"{/if} title="周一下午" lay-skin="primary"> 周一下午
+            </div>
+
+            <div>                
+                <input type="checkbox" name="ClassesTime[]" value="2" {if condition="$class[2]==1"}checked="checked"{/if} title="周二上午" lay-skin="primary"> 周二上午
+                <br>
+                <input type="checkbox" name="ClassesTime[]" value="3" {if condition="$class[3]==1"}checked="checked"{/if} title="周二下午" lay-skin="primary"> 周二下午
+            </div>
+
+            <div>
+                <input type="checkbox" name="ClassesTime[]" value="4" {if condition="$class[4]==1"}checked="checked"{/if} title="周三上午" lay-skin="primary"> 周三上午
+                <br>
+                <input type="checkbox" name="ClassesTime[]" value="5" {if condition="$class[5]==1"}checked="checked"{/if} title="周三下午" lay-skin="primary"> 周三下午                
+            </div>
+            <div>
+                <input type="checkbox" name="ClassesTime[]" value="6" {if condition="$class[6]==1"}checked="checked"{/if} title="周四上午" lay-skin="primary"> 周四上午
+                <br>
+                <input type="checkbox" name="ClassesTime[]" value="7" {if condition="$class[7]==1"}checked="checked"{/if} title="周四下午" lay-skin="primary"> 周四下午
+            </div>
+            <div>
+                <input type="checkbox" name="ClassesTime[]" value="8" {if condition="$class[8]==1"}checked="checked"{/if} title="周五上午" lay-skin="primary"> 周五上午
+                <br>
+                <input type="checkbox" name="ClassesTime[]" value="9" {if condition="$class[9]==1"}checked="checked"{/if} title="周五下午" lay-skin="primary"> 周五下午
+            </div>
+            <div>
+                <input type="checkbox" name="ClassesTime[]" value="10" {if condition="$class[10]==1"}checked="checked"{/if} title="周六上午" lay-skin="primary"> 周六上午
+                <br>
+                <input type="checkbox" name="ClassesTime[]" value="11" {if condition="$class[11]==1"}checked="checked"{/if} title="周六下午" lay-skin="primary"> 周六下午
+            </div>
+            <div>
+                <input type="checkbox" name="ClassesTime[]" value="12" {if condition="$class[12]==1"}checked="checked"{/if} title="周日上午" lay-skin="primary"> 周日上午
+                <br>
+                <input type="checkbox" name="ClassesTime[]" value="13" {if condition="$class[13]==1"}checked="checked"{/if} title="周日下午" lay-skin="primary"> 周日下午
+            </div>
+        </td>
+    </tr>
+</table>
+            </div>
+            <div class="box_top" style="text-align: center;">
+            	<input type="hidden" name="id" value="{$item.id}">
+                <input type="button" name="savebut" lay-submit lay-filter="formDemo" class="btn btn82 btn_add" value="保存">
+                <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="history.back(-1);" value="取消">
+            </div>
+        </div>
+    </form>
+</div>
+<style type="text/css">
+#pic{
+    max-width: 200px;
+    max-height: 220px;
+}
+table tr td div{
+    float: left;
+    margin-right: 10px;
+}
+</style>
+<script type="text/javascript">
+layui.use('form', function(){
+  var form = layui.form;
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    $.post('{:url("admin/doctor/updateClass")}',
+        $("#form2").serialize(),
+        function(data){
+            if(data.success==1){
+                history.go(-1)
+            }
+            alert(data.msg)
+        },'json')
+  });
+
+});
+
+
+</script>
+{/block}

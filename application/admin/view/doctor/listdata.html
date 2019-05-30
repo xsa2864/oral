@@ -1,0 +1,106 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div id="table" class="mt10" id="editdiv">
+            <div class="main_left fl span10">
+                <div class="box pr0">
+                    <div class="box_border">
+                        <div class="box_top">
+                            <div class="box_top_l fl" >
+                                <div style="float: left;">   
+                                    <i class="fa fa-add fa-plus-square"></i>
+                                </div>
+                                <b>队列配置</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form name="form1" class="jqtransform">
+                <div class="mt10" id="ajaxdiv">
+                    <div class="box_border">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size:0.9rem">
+                            <tr>    
+                                <th width="5%">队列编号</th>
+                                <th width="10%">归属区域</th>
+                                <th width="10%">队列名称</th>
+                                <th width="8%">绿色通道前置字符</th>
+                                <th width="8%">普通通道前置字符</th>
+                                <th width="8%">起始号码</th>
+                                <th width="5%">启用</th>
+                                <th width="8%">操作</th>
+                            </tr>
+                            {notempty name="lists"}
+                            {volist name="lists" id="list"}
+                            <tr class="tr td_center">        
+                                <td>{$list.code}</td>            
+	               				<td>{$list.HallName}</td>
+                                <td>{$list.QueName}</td>
+                                <td>{$list.quick_char}</td>
+                                <td>{$list.NoChar}</td>
+                                <td>{$list.StarNo}</td>
+                                <td>{$list.EnableFlag==1?'是':'否'}</td>
+                                <td>
+                                    <a href="javascript:Operation('edit',{$list.QueId});">修改</a> 
+                                    |
+                                    <a href="javascript:Operation('del',{$list.QueId});">删除</a>
+                                </td>
+                            </tr>
+                            {/volist}
+                			{else /}
+                            <tr class="tr">
+                                <td class="td_center" colspan="11">您还没有配置医生，请进行配置，谢谢！</td>
+                            </tr>
+                            {/notempty}
+                        </table>
+                    </div>
+                </div>
+            </form>
+
+            <div class="box_top">
+                <input type="button" name="addbut" id='addbut' onclick="Operation('add')" class="btn btn82 btn_add"  value="新增"> 
+            </div>
+
+            <!-- 分页开始 -->
+            {$page|raw}
+            <!-- 分页结束 -->            
+        </div>
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">                     
+
+            </div>
+        </div> 
+
+    </div>
+</div> 
+
+<script type="text/javascript">
+// 增 删 改 相应操作
+function Operation(str,id) {
+    if(str=='add'){
+        location.href = '{:url("admin/doctor/editDoctor")}';
+    }else{      
+        if(id==''||id==null){
+            alert("请选择相应的数据");
+        }else{      
+            if(str=='edit'){
+                location.href = '{:url("admin/doctor/editDoctor")}?id='+id;
+            }else if(str=='del'){
+                if(confirm("确认删除！")){
+                    $.post('{:url("admin/doctor/doctorDel")}',
+                        {'id':id},
+                        function(data){
+                            if(data.success==1){
+                                location.reload();
+                            }
+                            alert(data.msg)
+                    },'json')
+                }
+            }
+        }
+    }
+}
+</script>
+{/block}

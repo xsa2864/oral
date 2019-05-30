@@ -1,0 +1,308 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<style type="text/css">
+.ext_btn{
+    width: 75px;
+    padding: 2px 4px;
+}   
+.btn_1{
+    display: none;
+}
+input{
+    height: 26px !important;
+}
+</style>
+<div class="container" style="font-size:14px;font-family:'Microsoft YaHei','微软雅黑','sans-serif';">		
+    <div class="" style="position: fixed;width: 84%;margin-top: -1px;">
+        <div class="box_border">
+            <div class="box_top">
+                <b class="pl15">当前管理端：{$hall.HallName}  护士站</b>
+                <div style="float: right;margin-right: 35px;">                    
+                    <input type="submit" value="选择医生" class="ext_btn ext_btn_submit" onclick="operation('doctor')">
+                    <input type="button" class="ext_btn ext_btn_error" onclick="operation('order')" value="优先/延后">
+                    <input type="button" class="ext_btn ext_btn_success" onclick="restore()" value="复 诊">
+                    <input type="button" class="ext_btn" onclick="delTicket()" value="删 除" style="background:none;background-color: #ea5858 !important;color: #FFF;">
+                    <input type="button" class="ext_btn" onclick="selectTicket()" value="搜 索">
+                </div>
+            </div>
+        </div>
+        <div  class="layui-row" style="/*margin-top: 12px;*/padding: 8px;border: 1px solid #eee;background-color: #d4e7f0;font-size: 1rem;display: none;">
+            <div class="layui-col-md1" style="text-align: right;padding-top: 2px;" id="s_title"></div>
+            <div class="layui-col-md6" id="content">&nbsp;</div>
+            <div class="layui-col-md3" id="s_sel"></div>
+            <div class="layui-col-md2" style="text-align: center;" id="s_cop">
+            </div>
+        </div>
+    </div>
+    <div style="height: 30px;display: block;"></div>
+    <div style="height: 230px;overflow-y: auto;margin-top: 52px;display: none;" id="sele">
+        <table border="0" cellpadding="0" cellspacing="0" class="list_table" align="center">
+            <tr class="td_center">
+                <th width="10%">序号</th>
+                <th width="10%">队列</th>
+                <th width="10%">姓名</th>
+                <th width="20%">排队号</th>
+                <th width="15%">来源</th>
+                <th width="15%">身份</th>
+                <th width="15%">状态</th>
+                <th width="10%">选择</th>
+            </tr> 
+            <tfoot id="searchResult">
+            </tfoot>
+        </table>
+    </div>
+    <div class="main_top pt5">  
+        <div class="box_border">
+            {volist name="result" id="vo"}
+            <div class="box_border fl"  style="margin:3px;width:49%;" >
+                <div class="box_top" style="background:#C4E1FF;">
+                    <b class="pl15">{$vo.title}：当前等候 {$vo.num+1} / {$vo.all_num+1}</b>
+                    <span style="float:right;margin-right: 10px;">
+                        <input type="button" class="ext_btn ext_btn_error btn_1" onclick="getQueOver('{$key}',this,1)" value="等待人员">
+                        <input type="button" class="ext_btn ext_btn_success btn_2" onclick="getQueOver('{$key}',this,5)" value="已呼人员">
+                        <input type="button" class="ext_btn btn_3" onclick="getQueOver('{$key}',this,0)" value="过号人员">
+                    </span>
+                </div>
+                <div class="pagination" style="text-align:center;overflow:scroll; height:330px;">
+                    <table border="0" cellpadding="0" cellspacing="0" class="list_table" align="center">
+                        <tr class="td_center">
+                            <th width="10%">序号</th>
+                            <th width="10%">姓名</th>
+                            <th width="20%">排队号</th>
+                            <th width="15%">来源</th>
+                            <th width="15%">身份</th>
+                            <th width="15%">状态</th>
+                            <th width="10%">选择</th>
+                        </tr> 
+                        <tfoot>
+                        {volist name="vo.data" id="ch"}
+                        {if($ch.status==1||$ch.status==2)}
+                        <tr class="tr td_center">
+                            <td>{$key+1}</td>
+                            <td>{$ch.name}</td>
+                            <td>{$ch.prefix}{$ch.code}</td>
+                            <td>{$ch.tips2}</td>
+                            <td>{$ch.tips1}</td>
+                            <td>
+                                {if $ch.status==2}
+                                叫号
+                                {else/}
+                                等候
+                                {/if}
+                            </td>
+                            <td>
+                                <input type="radio" name="select" value="{$ch.id}">
+                            </td>
+                        </tr>
+                        {/if}
+                        {/volist}
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            {/volist}
+        </div>  <!-- box_border -->
+    </div>
+</div>
+<script type="text/javascript">
+function operation(str) {
+    var id = $("input[name='select']:checked").val()
+    if(id==''||id==null){
+        alert("请选择患者");
+        return false;
+    }
+    var s_title = '';
+    var s_sel   = '';
+    var content = '';
+    var s_cop   = '';
+    if(str == 'order'){
+        s_title = "调整顺序：";
+        s_sel   = '正数往前/负数往后：<input type="number" name="number" value="0" class="input-text" style="width: 50px;">位';
+        s_cop   = '<input type="button" class="ext_btn ext_btn_error" onclick="changeNum()" value="确定">';
+    }else if(str == 'doctor'){
+        s_title = "选择医生：";
+        s_sel   = '';
+        s_cop   = '<input type="button" class="ext_btn ext_btn_error" onclick="changeDoctor()" value="确定"> ';
+    }
+    s_cop += ' <input type="button" value="关闭" onclick="s_close()" class="ext_btn">';
+    $.post('{:url("admin/nurse/getInfo")}',
+        {'id':id,'type':str},
+        function(data){
+            if(data.success==1){
+                $("#s_title").html(s_title);
+                if(str=='doctor'){
+                    s_sel = data.data;
+                }
+                $("#s_sel").html(s_sel);
+                $("#s_cop").html(s_cop);
+                $("#content").html(data.msg);
+                $(".layui-row").show();
+            }else{
+                alert(data.msg)
+            }
+        },'json')
+}
+//搜索
+function selectTicket(){
+    var s_sel   = '';
+    var s_title = "搜索条件：";
+    s_sel   = '<input type="text" name="condition"  class="input-text" style="width: 220px;"> &nbsp;';
+    s_sel += '<input type="button" class="ext_btn ext_btn_error" onclick="selectInfo()" value="确定"> ';
+    s_sel += ' <input type="button" value="关闭" onclick="s_close()" class="ext_btn">';
+    $("#s_title").html(s_title);
+    $("#content").html(s_sel);
+    $("#s_sel").html('');
+    // $("#s_cop").html(s_cop);
+    $(".layui-row").show();    
+}
+function delTicket(){
+    var id = $("input[name='select']:checked").val()
+    if(id==''||id==null){
+        alert("请选择患者");
+        return false;
+    }
+    if(confirm("确定删除？")){
+        $.post('{:url("admin/nurse/delTicket")}',
+            {'id':id},
+            function(data){
+                if(data.success==1){
+                    location.reload();
+                }
+                alert(data.msg)
+            },'json') 
+    }
+}
+// 变更顺序
+function changeNum(){
+    var number = $("input[type='number']").val();
+    if(number==0){
+        alert("变更位置不能为0");
+        return false;
+    }
+    if(confirm("确定变更顺序？"))
+    {
+        var id = $("input[name='select']:checked").val()
+        $.post('{:url("admin/nurse/changeNum")}',
+            {'id':id,'number':number},
+            function(data){
+                if(data.success==1){
+                    location.reload();
+                }
+                alert(data.msg)
+            },'json')  
+    }
+}
+//变更医生
+function changeDoctor(){
+    var doctor_id = $("select[name='doctor_id']").val();
+    if(doctor_id==null||doctor_id==''){
+        alert("请选择医生");
+        return false;
+    }
+    if(confirm("确定变更医生？"))
+    {
+        var id = $("input[name='select']:checked").val()
+        $.post('{:url("admin/nurse/changeDoctor")}',
+            {'id':id,'doctor_id':doctor_id},
+            function(data){
+                if(data.success==1){
+                    location.reload();
+                }
+                alert(data.msg)
+            },'json')  
+    }
+}
+// 关闭
+function s_close() {
+    $("#sele").hide();
+    $(".layui-row").hide();
+}
+function getQueOver(id,str,status){
+    $.post('{:url("admin/nurse/getQueOver")}',
+        {'id':id,'status':status},
+        function(data){
+            var html = '';
+            if(data.success==1){
+                $(str).parent().find(".btn_1").show();
+                $(str).parent().find(".btn_2").show();
+                $(str).parent().find(".btn_3").show();
+                $(str).hide();
+
+                var da = data.data;
+                for(x in da){
+                    var status = '过号';
+                    if(da[x].status==1){
+                        status = '等侯';
+                    }else if(da[x].status==2){
+                        status = '叫号';
+                    }else if(da[x].status==5){
+                        status = '完成';
+                    }
+                    html += '<tr class="tr td_center">';
+                    html += '    <td>'+(x+1)+'</td>';
+                    html += '    <td>'+da[x].name+'</td>';
+                    html += '    <td>'+da[x].prefix+''+da[x].code+'</td>';
+                    html += '    <td>'+da[x].tips2+'</td>';
+                    html += '    <td>'+da[x].tips1+'</td>';
+                    html += '    <td>'+status+'</td>';
+                    html += '    <td>';
+                    html += '<input type="radio" name="select" value="'+da[x].id+'">';
+                    html += '    </td>';
+                    html += '</tr>';
+                }
+                $(str).parent().parent().parent().find("table>tfoot").html(html);
+            }else{
+                alert(data.msg)
+            }
+        },'json')
+    
+}
+function restore(){
+    var id = $("input[name='select']:checked").val()
+    if(id==''||id==null){
+        alert("请选择患者");
+        return false;
+    }
+    if(confirm("确定复诊？")){
+        $.post('{:url("admin/nurse/restore")}',
+            {'id':id},
+            function(data){
+                if(data.success==1){
+                    location.reload();
+                }
+                alert(data.msg)
+            },'json') 
+    }
+}
+function selectInfo(){
+    var condition = $("input[name='condition']").val();
+    $.post('{:url("admin/nurse/selectInfo")}',
+        {'condition':condition},
+        function(data){
+            if(data.success==1){
+                var da = data.data;
+                var html = '';
+                for(x in da){
+                    var sel = da[x].status==1?'等候':(da[x].status==5?'完成':da[x].status==0?'过号':'叫号');
+
+                    html += '<tr class="tr td_center">';
+                    html += '        <td>'+(parseInt(x)+1)+'</td>';
+                    html += '        <td>'+da[x].title+'</td>';
+                    html += '        <td>'+da[x].name+'</td>';
+                    html += '        <td>'+da[x].prefix+''+da[x].code+'</td>';
+                    html += '        <td>'+da[x].tips2+'</td>';
+                    html += '        <td>'+da[x].tips1+'</td>';
+                    html += '        <td>'+sel+'</td>';
+                    html += '        <td>';
+                    html += ' <input type="radio" name="select" value="'+da[x].id+'">';
+                    html += '        </td>';
+                    html += '    </tr>';
+                }
+                $("#sele").show();
+                $("#searchResult").html(html)
+            }
+        },'json') 
+}
+</script>
+{/block}

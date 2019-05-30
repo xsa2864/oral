@@ -1,0 +1,386 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="addsdiv" class="mt0">
+    <div class="main_left fl span10">
+        <div class="box pr0">
+            <div class="box_border">
+                <div class="box_top">
+                    <div class="box_top_l fl" >
+                        <div style="float: left;">   
+                            <i class="fa fa-add fa-plus-square"></i>
+                        </div>
+                        <b>编辑医生资料</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <form name="form2" id="form2" class="jqtransform">
+        <div class="main_left fl span10" id="ajaxdiv3">
+            <div class="box_center" id="ajaxdiv2">
+            <table class="form_table pt15 pb15"  style="width: 100%">
+    <tr>       
+        <td class="td_right">上传照片：
+        </td>
+        <td>
+            <img src="__IMG__/{$list.pic}" id="pic" style="display: block;width:95px;height: 144px;"> 分辨率：190*288  格式：jpg,png 3M以内
+            <input type="file" name="image" /> 
+            <input type="button" onclick="imgupload()" value="上传" style="padding: 3px 11px;border-radius: 5px;"/> 
+
+        </td>       
+    </tr>
+    {if($user_id==1)}
+    <tr>
+        <td class="td_right">选择单位:</td>
+        <td>
+        <select name="unit_id" class="select" style="width: 260px;">
+            <option value="">请选择单位</option>
+            {volist name="unit" id="vos"}
+            <option value="{$vos.UnitId}" {if condition="$vos.UnitId==$list.unit_id"}selected{/if}>{$vos.unitname}</option>
+            {/volist}
+        </select>
+        </td>
+    </tr>
+    {/if}
+    <tr>       
+        <td class="td_right">工 号 ：
+        </td>
+        <td>
+            <input type="text" name="staff_code" id="staff_code" class="input-text lh30" size="30" value="{$list.staff_code}" >[必填]
+
+        </td>       
+        <td class="td_right">医生名字：
+        </td>
+        <td>
+            <input type="text" name="quename" id="quename" class="input-text lh30" size="30" value="{$list.QueName}" >[必填]
+
+        </td>
+    </tr>
+    <tr>       
+        <td class="td_right">密 码 ：
+        </td>
+        <td>
+            <input type="password" name="password" id="password" class="input-text lh30" size="30" value="" placeholder="默认密码：123456 不填不修改">
+        </td>   
+    </tr>
+    <tr>     
+        <td class="td_right">手机号：
+        </td>
+        <td>
+            <input type="text" name="mobile" id="mobile" class="input-text lh30" size="30" value="{$list.mobile}" >
+
+        </td>  
+        <td class="td_right">医师职务：</td>
+        <td class="">   
+            <div class="select_containers"> 
+                <select name="type" class="select"  style="width: 200px;"> 
+                    {volist name="type_list" id="li"}
+                    <option value="{$li}" {if condition="$li==$list.type"}selected="selected"{/if}>{$li}</option> 
+                    {/volist}
+                </select> 
+            </div> 
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">启用/暂停：</td>
+        <td class=""> 
+            <input type="radio" name="status" title="启用" value="1" checked> 启用   &nbsp;
+            <input type="radio" name="status" title="暂停" value="0" {if $list.status==0}checked{/if}>  暂停
+        </td>
+        <td class="td_right">预约方式：</td>
+        <td class=""> 
+            <div class="select_containers"> 
+                <select name="QueForm" class="select"  style="width: 200px;"> 
+                    <option value="1" {if condition="$list.QueForm==1"}selected="selected"{/if}>1-按号码预约</option> 
+                    <option value="2" {notempty name="list"}{if condition="$list.QueForm==2"}selected="selected"{/if}{else /}selected="selected"{/notempty}>2-按时间预约</option> 
+                    <option value="3" {if condition="$list.QueForm==3"}selected="selected"{/if}>3-混合模式</option>
+                </select> 
+            </div> 
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">号码前置字符：</td>
+        <td class="">
+            <input type="text" name="NoChar" class="input-text lh30" size="15" style="width: 62px;" value="{$list.NoChar}">[必填]
+        </td>                   
+        <td class="td_right">起始号码：</td>
+        <td>
+            <input type="number" name="StarNo" class="input-text lh30" size="15" value="{$list.StarNo>0?$list.StarNo:'1000'}">[必填]
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">每小时预约人数：</td>
+        <td class="">
+            <input type="text" name="HourSum" class="input-text lh30" size="15" style="width: 62px;" value="{$list.HourSum}">
+        </td>    
+    </tr>
+    <tr>
+        <td class="td_right">上午起始：</td>
+        <td>                                               
+            <input type="time" name="stime1" class="select" value="{notempty name='list'}{$list.WorkTime1}{else /}09:00{/notempty}">[时-分，必填]
+        </td>
+        <td class="td_right">上午结束：</td>
+        <td>
+            <input type="time" name="etime1" class="select" value="{notempty name='list'}{$list.WorkTime2}{else /}12:00{/notempty}">[时-分，必填]
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">下午起始：</td>
+        <td>
+            <input type="time" name="stime2" class="select" value="{notempty name='list'}{$list.WorkTime3}{else /}14:00{/notempty}">[时-分，必填]
+        </td>
+        <td class="td_right">下午结束：</td>
+        <td>
+            <input type="time" name="etime2" class="select" value="{notempty name='list'}{$list.WorkTime4}{else /}18:00{/notempty}">[时-分，必填]
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">预约链接：</td>
+        <td colspan="3"> <input type="text" name="url" id="url" class="input-text lh30" size="100%" value="{$list.url}"></td>  
+       
+    </tr>
+    <tr>
+        <td class="td_right">排班情况：</td>
+        <td  colspan="3" class="class_time">（医生排班请在排班管理中进行管理）
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">介绍说明：</td>
+        <td colspan="3"> <input type="text" name="AlternateField1" id="AlternateField1" class="input-text lh30" size="100%" value="{$list.AlternateField1}"></td>  
+       
+    </tr>
+    <tr>
+        <td class="td_right">选择队列：</td>
+        <td>可选队列<br>
+            <select class="select select_containers" id="left_c" style="height:200px;width:200px" size="12" ondblclick="moveOption('left')">    
+            {volist name="serque" id="vo"}
+            {if !in_array($vo.QueId,$que_id)}
+            <option value="{$vo.QueId}" selected="true">{$vo.QueName}</option>
+            {/if}
+            {/volist}            
+            </select>
+        </td>
+        <td>
+            <input type="button" class="ext_btn ext_btn_submit" value="全部添加" onclick="moveOption('left', 'all')">
+            <br><br>
+            <input type="button" class="ext_btn ext_btn_submit" value="添加" onclick="moveOption('left')">
+            <br><br>
+            <input type="button" class="ext_btn ext_btn_error" value="移除" onclick="moveOption('right')">
+            <br><br>
+            <input type="button" class="ext_btn ext_btn_error" value="全部移除" onclick="moveOption('right','all')">
+        </td>
+        <td>已选队列<br>
+            <select class="select select_containers" style="height:200px;width:200px" id="right_c" size="12" ondblclick="moveOption('right')">
+            {volist name="serque" id="vo"}
+            {if in_array($vo.QueId,$que_id)}
+            <option value="{$vo.QueId}" selected="true">{$vo.QueName}</option>
+            {/if}
+            {/volist}    
+            </select>
+        </td>
+        <input type="hidden" name="que_id" id="que_id" value="{$list.que_id}">
+    </tr>
+    <tr>
+        <td class="td_right">默认队列：</td>
+        <td id="mk_que_id"></td>
+    </tr>
+    <tr>
+        <td class="td_right">接口标识：</td>
+        <td> <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list.InterfaceID}"> <b style="color: red;font-size: 0.2em;">对应服务器 业务设置》业务编号</b> </td>  
+        <td class="td_right"</td>
+        <td> </td>  
+    </tr>
+</table>
+            </div>
+            <div class="box_top" style="text-align: center;">
+            	<input type="hidden" name="id" value="{$list.id}">
+                <input type="hidden" name="pic" value="{$list.pic}">
+                <input type="button" name="savebut" lay-submit lay-filter="formDemo" class="btn btn82 btn_add" value="保存">
+                <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="history.back(-1);" value="取消">
+            </div>
+        </div>
+    </form>
+</div>
+<style type="text/css">
+#pic{
+    max-width: 200px;
+    max-height: 220px;
+}
+</style>
+<script type="text/javascript">
+layui.use('form', function(){
+  var form = layui.form;
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+
+    $.post('{:url("admin/doctor/saveDoctors")}',
+        $("#form2").serialize(),
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }else if(data.success==2){
+                history.go(-1);
+            }
+            alert(data.msg)
+        },'json')
+  });
+
+});
+
+// 获取部门数据
+function deptajx(id) {
+    $.post('{:url("admin/appointment/gethall")}',
+        {'id':id},
+            function(data){
+                var str = '<option value="">请选择部门</option>';
+                if(data.success==1){
+                    var arr = data.msg;
+                    for(n in arr){
+                        var select = '';
+                        if(arr[n].HallNo=='{$list.hall_id}'){
+                            select = 'selected';
+                        }
+                        str += '<option value="'+arr[n].HallNo+'" '+select+'>'+arr[n].HallName+'</option>';
+                    }
+                }
+                $("#dept").html(str);
+        },'json')
+}
+
+// 上传头像
+function imgupload(){
+    var imgdata = new FormData();
+    var file = $("input[name='image']")[0].files[0];
+    if(file==''||file==null){
+        alert("请选择图片");
+        return false;
+    }
+    imgdata.append("image",file);
+    $.ajax({
+        'url':'{:url("admin/doctor/upload")}',
+        'type':'post',
+        'cache': false,
+        'data': imgdata,
+        'dataType':'json',
+        'processData': false,
+        'contentType': false,
+        success:function(data){
+            if(data.success==1){
+                $("input[name='pic']").val(data.msg);
+                $("#pic").attr("src",'__IMG__/'+data.msg)
+            }else{
+                alert(data.msg);
+            }
+        }
+    })
+}
+function moveOption(str,type) {
+    if(str=='left'){
+        if(type=='all'){
+            $("#right_c").append($("#left_c>option"));
+            $("#left_c>option").remove()
+        }else{
+            $("#right_c").append($("#left_c>option:selected"));
+            $("#left_c>option:selected").remove()
+        }        
+    }else{
+        if(type=='all'){
+            $("#left_c").append($("#right_c>option"));
+            $("#right_c>option").remove()
+        }else{
+            $("#left_c").append($("#right_c>option:selected"));
+            $("#right_c>option:selected").remove()
+        }
+    }
+    getQui()
+    classReload()
+}
+function getQui() {
+    var str = '|';
+    var html = '';
+    var mk_que_id = '{$list.mk_que_id}';
+    var que_arr = '';
+    if(mk_que_id != ''){
+        que_arr = mk_que_id.split(",");
+    }
+    $("#right_c>option").each(function(n,e) {
+        if($(e).val()){            
+            str += $(e).val();
+            if(str!='|'){
+                str += '|';
+            }
+            var select = '';
+            if(jin_array($(e).val(),que_arr)){
+                select = 'checked';
+            }
+            html += ' &nbsp; <input type="checkbox" name="mk_que_id[]" value="'+$(e).val()+'" '+select+'>'+$(e).html();
+        }
+    })
+    $("#que_id").val(str)
+    $("#mk_que_id").html(html)
+}
+function jin_array(search,array){
+    for(var i in array){
+        if(array[i]==search){
+            return true;
+        }
+    }
+    return false;
+}
+$(function(){
+    getQui()
+    classReload()
+})
+function classReload() {
+    $("#right_c>option").on("click",function () {
+        var que_id = $(this).val();
+        var id = $("input[name='id']").val();
+        console.log(que_id+'==='+id)
+        $.post('{:url("admin/doctor/getClassTime")}',
+            {'doctor_id':id,'que_id':que_id},
+            function (data) {
+                var html = '';
+                if(data.success==1){
+                    html = showClass(data.data);
+                }else{
+                    html = showClass([]);
+                }
+                $(".class_time").html(html);
+        },'json')
+    })
+}
+function showClass(arr) {
+    var info = new Array(14);
+    info[0] = '周一上午';
+    info[1] = '周一上午';
+    info[2] = '周二上午';
+    info[3] = '周二下午';
+    info[4] = '周三上午';
+    info[5] = '周三下午';
+    info[6] = '周四上午';
+    info[7] = '周四下午';
+    info[8] = '周五上午';
+    info[9] = '周五下午';
+    info[10] = '周六上午';
+    info[11] = '周六下午';
+    info[12] = '周日上午';
+    info[13] = '周日下午';
+    var str = '';
+    for(x in info){
+        var br = '&nbsp;&nbsp;&nbsp;';
+        var sel = '';
+        if(x==6){
+            br = "<br>";
+        }
+        if(arr[x]==1){
+            sel = 'checked';
+        }
+        str += '<input type="checkbox" disabled name="ClassesTime[]" value="'+x+'" title="'+info[x]+'" lay-skin="primary" '+sel+'> '+info[x] + br;
+    }
+    return str;
+}
+</script>
+{/block}

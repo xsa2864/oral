@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+    <style type="text/css">
+        body{
+            margin: 0px;
+        }
+        .layui-fluid{
+            padding:0;
+            overflow: hidden;
+        }        
+        .header{
+            position: fixed;
+            line-height: 40px;
+            font-size: 15px;
+            text-align: center;
+            background-color: #5a87cc;
+            z-index: 99;
+        }
+        .header .layui-icon-prev{
+            position: absolute;
+            font-size: 18px;
+            left: 0;
+            padding: 0 15px;
+            color: #FFFFFF;
+        }
+        .header .layui-icon-home{
+            position: absolute;
+            right: 0;
+            padding: 0 15px;
+            color: #FFFFFF;
+        }
+        #demo{
+            margin-top: 40px;
+        }
+        ul li {
+            line-height: 25px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        ul li img{
+            float: left;
+            width: 50px;
+            height: 50px;
+            padding-right: 5px;
+        }
+        ul li h3{
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header">
+                <a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-prev"></i></a>
+                <label style="color:#fff;">{{ title }}</label>
+                <a href="{:url('app/index/indexs')}"><i class="layui-icon layui-icon-home"></i></a>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" id="demo">
+                <ul>
+                    <li v-for="item in list">
+                        <a v-bind:href="item.url">
+                            <template v-if="item.head_img">                            
+                                <img v-bind:src="'__APP__'+item.head_img">
+                            </template>
+                            <template v-else>
+                                <img src="__APP__/images/pic_160.png">
+                            </template>
+                            <h3>{{ item.title }} {{ item.id }}</h3>
+                            <p>{{ item.addtime }}</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>        
+        </div>
+    </div>  
+</body>
+<script>
+layui.use('flow', function(){
+    var $ = layui.jquery; //不用额外加载jQuery，flow模块本身是有依赖jQuery的，直接用即可。
+    var flow = layui.flow;
+    flow.load({
+        elem: '#demo' //指定列表容器
+        ,done: function(page, next){ //到达临界点（默认滚动触发），触发下一页
+            var lis = [],res = [];
+            vm.getList(page,next)
+        }
+    });
+});
+
+var vm = new Vue({
+    el: '.layui-fluid',
+    data:{
+    	list:[],
+        title:'新闻资讯列表',        
+    }
+    ,methods:{
+        getList:function(page,next){
+            var vm = this
+            axios
+                .get('{:url("/api/a1/article/getList")}',{params:{'cate_id':1,'page':page}})
+                .then(function(res){
+                    for(item in res.data.list){
+                        vm.list.push(res.data.list[item])
+                    }               
+                    next('', page < res.data.pages); 
+                })
+        },
+        gohead:function(url){
+            location.href = url
+        }
+    }
+    ,created:function(){ 
+    }
+})
+
+//  Vue.component('head-counter',{
+//     data:function(){
+//         return{
+//             title:vm.title
+//         }
+//     },
+//     template:'<div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header"><a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-prev"></i></a><label>{{ title }}</label><a href="{:url("app/index/indexs")}"><i class="layui-icon layui-icon-home"></i></a></div>'
+// })
+</script>
+</html>

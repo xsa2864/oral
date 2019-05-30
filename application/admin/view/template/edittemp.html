@@ -1,0 +1,160 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<!-- 注意， 只需要引用 JS，无需引用任何 CSS ！！！-->
+<script type="text/javascript" src="__STATIC__/editor/release/wangEditor.min.js"></script>
+<div id="addsdiv" class="mt0">
+    <div class="main_left fl span10">
+        <div class="box pr0">
+            <div class="box_border">
+                <div class="box_top">
+                    <div class="box_top_l fl" >
+                        <div style="float: left;">   
+                            <i class="fa fa-add fa fa-desktop"></i>
+                        </div>
+                        <b>编辑模板</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <form name="form2" id="form2" class="jqtransform">
+        <div class="main_left fl span10" id="ajaxdiv3">
+            <div class="box_center" id="ajaxdiv2">
+            <table class="form_table pt15 pb15" style="width: 100%">
+                <tr>
+                    <td class="td_right">标题：</td>
+                    <td class=""> 
+                        <input type="text" name="title" class="input-text lh30" size="35" value="{$item.title}">
+                    </td>
+                </tr>
+                <tr >
+                    <td class="td_right">选择区域：</td>
+                    <td class="">
+                        <select name="hall_id" class="select"> 
+                            <option value="0">默认打印模板</option> 
+                            {volist name="hall" id="ad"}
+                            <option value="{$ad.HallNo}" {if condition="$ad.HallNo==$item.hall_id"}selected{/if}>{$ad.HallName}</option> 
+                            {/volist}
+                        </select> 
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td_right">状态：</td>
+                    <td class="">
+                        <input type="radio" name="status" {if condition="$item.status==1"}checked{/if} value="1"> 开启
+                        <input type="radio" name="status" {if condition="$item.status==0"}checked{/if} value="0"> 关闭
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td_right">号票内容：</td>
+                    <td>
+                        相关变量 》 
+                        姓名：<a href="javascript:insertAtCursor('[name]');">[name]</a>
+                        医生：<a href="javascript:insertAtCursor('[doctor]');">[doctor]</a>
+                        诊室：<a href="javascript:insertAtCursor('[room]');">[room]</a>
+                        排队来源：<a href="javascript:insertAtCursor('[order]');">[order]</a>
+                        队列名称：<a href="javascript:insertAtCursor('[queue]');">[queue]</a>
+                        <br><span style="display: inline-block;width: 70px;"></span>
+                        票号：<a href="javascript:insertAtCursor('[code]');">[code]</a>
+                        身份证/卡号：<a href="javascript:insertAtCursor('[idcard]');">[idcard]</a>
+                        等待人数：<a href="javascript:insertAtCursor('[number]');">[number]</a>
+                        时间：<a href="javascript:insertAtCursor('[time]');">[time]</a>   
+                        点击替换变量即可黏贴：<input type="text" name="sel" id="sel" value="" readonly="true">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td_right"></td>
+                    <td class="">
+                        <div id="editor"  name="temp" style="width:800px;">{$item.temp|raw}</div>
+                        <textarea id="temp" name="temp" style="display: none;"></textarea>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <div class="box_top" style="text-align: center;">
+            	<input type="hidden" name="id" value="{$item.id}">
+                <input type="button" name="savebut" onclick="saveCard()" class="btn btn82 btn_add" value="保存">
+                <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="history.back(-1);" value="取消">
+            </div>
+        </div>
+    </form>
+</div>
+<style type="text/css">
+#pic{
+    max-width: 200px;
+    max-height: 220px;
+}
+</style>
+<script type="text/javascript">
+var E = window.wangEditor
+var editor = new E('#editor')
+// 或者 var editor = new E( document.getElementById('editor') )
+editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024;
+editor.customConfig.uploadImgServer = '{:url("admin/ads/upload_e")}';
+editor.customConfig.onchange = function (html) {
+    // 监控变化，同步更新到 textarea
+    $("#temp").val(html)
+}
+editor.create()
+$("#temp").val(editor.txt.html())
+
+// 保存信息
+function saveCard() {
+    $.post('{:url("admin/template/saveTemp")}',
+        $("#form2").serialize(),
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }else if(data.success==2){
+                history.go(-1);
+            }
+            alert(data.msg)
+        },'json')
+}
+// 数字键盘
+function insertAtCursor(myValue) { 
+    var input = document.getElementById("sel");
+    input.value = myValue; // 修改文本框的内容
+    input.select(); // 选中文本
+    document.execCommand("copy");
+    return false;
+    var id = $(".w-e-text").attr("id")
+    var myField = document.getElementById(id);
+     //IE 浏览器
+     if (document.selection) {
+         myField.focus();
+         sel = document.selection.createRange();
+         sel.text = myValue;
+         sel.select();
+     } 
+     //FireFox、Chrome等
+     else if (myField.selectionStart || myField.selectionStart == '0') {
+         var startPos = myField.selectionStart;
+         var endPos = myField.selectionEnd; 
+         // 保存滚动条
+         var restoreTop = myField.scrollTop;
+         if(myValue==""){
+            myField.innerHTML = myField.innerHTML.substring(0, startPos-1) + myField.innerHTML.substring(endPos, myField.innerHTML.length);     
+         }else{             
+            myField.innerHTML = myField.innerHTML.substring(0, startPos) + myValue + myField.innerHTML.substring(endPos, myField.innerHTML.length);         
+         }
+         if (restoreTop > 0) {
+            myField.scrollTop = restoreTop;
+         }         
+        myField.focus();
+        if(myValue==""){
+            myField.selectionStart = startPos -1;
+            myField.selectionEnd = startPos -1;
+        }else{     
+            myField.selectionStart = startPos + myValue.length;
+            myField.selectionEnd = startPos + myValue.length;
+        }
+     } else {
+         myField.innerHTML += myValue;
+         myField.focus();
+     }
+}
+</script>
+{/block}

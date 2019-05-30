@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>填写预约信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+    <style type="text/css">
+        html,body{
+            height: 100%;
+            margin: 0px;
+        }
+        .layui-fluid{
+            height: 100%;
+            padding:0;
+            overflow: hidden;
+        }        
+        .header{
+            position: fixed;
+            line-height: 40px;
+            font-size: 15px;
+            text-align: center;
+            background-color: #dadada;
+            z-index: 99;
+        }
+        .header .layui-icon-prev{
+            position: absolute;
+            left: 0;
+            padding: 0 15px;
+        }
+        .header .layui-icon-home{
+            position: absolute;
+            right: 0;
+            padding: 0 15px;
+        }
+        #demo{
+            margin-top: 40px;
+            padding: 5px 2px;
+        }   
+        .content{
+            line-height: 40px;
+            font-size: 18px;
+            padding: 0 10px;
+        }  
+        .content .content-a{
+            border-bottom: 1px solid #efefef;
+        }
+        .content h2{
+            text-align: center;
+        }
+        .content  .content-l{
+            text-align: center;
+            font-weight: bold;
+        }
+        .content span{
+            color:#4e4d4d;
+        }
+        .contet-time div{
+            color:#4e4d4d;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header">
+                <a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-prev"></i></a>
+                <label>{{ title }}&nbsp;</label>
+                <a href="{:url('app/index/indexs')}"><i class="layui-icon layui-icon-home"></i></a>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" id="demo">                
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 content">
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                    <h2>{{ item.hallName }} / {{ item.queName }}</h2>
+                </div>                 
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 content-a">
+                    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4 content-l">
+                    <label>预约医生</label>
+                    </div> 
+                    <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
+                    <span>{{ item.d_name }}</span>&nbsp;
+                    </div> 
+                </div> 
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 content-a" v-if="item.name!='*'">
+                    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4 content-l">
+                    <label>姓 名</label>
+                    </div> 
+                    <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
+                    <span>{{ item.name }}</span>&nbsp;
+                    </div> 
+                </div>
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 content-a">
+                    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4 content-l">
+                    <label>身份证号</label>
+                    </div> 
+                    <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
+                    <span>{{ item.idcard }}</span>&nbsp;
+                    </div> 
+                </div> 
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 content-a">
+                    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4 content-l">
+                    <label>手 机 号</label>
+                    </div> 
+                    <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
+                    <span>{{ item.mobile }}</span>&nbsp;
+                    </div> 
+                </div> 
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 content-a">
+                    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4 content-l">
+                    <label>预约时间</label>
+                    </div> 
+                    <div class="layui-col-xs8 layui-col-sm8 layui-col-md8 contet-time">
+                        <div style="height: 24px;">{{ item.despeakDate }} </div>
+                        <div>{{ item.time_Part_S }}-{{ item.time_Part_O }}</div> 
+                    </div> 
+                </div> 
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align: center;padding:10px;">
+                    <a href="{:url('app/index/indexs')}" class="layui-btn">返回首页</a>
+                </div> 
+            </div>        
+        </div>
+    </div>  
+</body>
+<script>
+layui.use(['form'], function(){
+  var form = layui.form;  
+ 
+});
+var vm = new Vue({
+    el: '.layui-fluid',
+    data:{
+    	item:{},
+        title:'预约结果',  
+    }
+    ,methods:{
+        orderDetail:function(){
+            var vm = this
+            let id = this.getUrlKey("id")
+            axios
+                .get('{:url("/api/a1/Order/orderDetail")}',{params:{'id':id}})
+                .then(function(res){
+                    vm.item = res.data
+                })
+        }        
+        ,getUrlKey: function (name) {
+            var reg = new RegExp("[?/&]"+name+"[/=]([a-zA-Z0-9]*)"); 
+            var str = document.location.href.match(reg);
+            if(str){
+                return str[1]
+            }
+            return ''
+        }       
+    }
+    ,created:function(){
+        this.orderDetail()
+    }
+})
+</script>
+</html>

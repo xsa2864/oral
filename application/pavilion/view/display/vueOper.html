@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>手术显示屏</title>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+	<script src="__APP__/lib/jquery-2.1.4.js"></script>
+	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script>
+	<script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+	<script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+</head>
+<body>
+<style type="text/css">
+html,body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}/*这里是关键*/
+
+.grid-demo {
+    line-height: 230%;
+    text-align: center;
+    background-color: #79C48C;
+    color: #fff;
+}
+
+.grid-center{
+	background-color: #235695;
+	border-top: 1px solid #FFF;
+	padding: 5px 10px;
+}
+.grid-time{
+	background-color: #fe7f18;
+}
+.grid-th{
+	background-color: #fc6f05;
+}
+.grid-blue{
+	background-color: #235695;
+}
+
+.layui-table th {
+	text-align: center;
+	color: #FFFFFF;
+}
+
+/*===第一行===*/
+.grid-ltop{
+	height: 100%;
+	font-size: 3vw;
+	line-height: 200%;
+	background-color: #015486;
+	color: #fff;
+}
+.grid-rtop{
+	height: 100%;
+	font-size: 1.5vw;
+	line-height: 1.5vw;
+	padding-top: 1.5vw;
+	background-color: #fe7f18;
+	color: #fff;
+	text-align: center;
+}
+/*===第二行====*/
+.grid-ltop2{
+	height:100%;
+	text-align: center;
+	background-color: #015486;
+	line-height: 190%;
+	color: #fff;	
+	font-size: 2.3vw;
+}
+.grid-rtop2{
+	text-align: left;
+	padding-left: 5px;
+	background-color: #fe7f18;
+}
+/*===第二行====*/
+.grid-ltop3{
+	height:100%;
+	font-size: 2.2vw;
+	color: #ffffff;
+	background-color: #015486;
+	line-height: 190%;
+	text-align: right;
+}
+.grid-rtop3{
+	text-align: left;
+}
+table{
+	height: 90% !important;	
+	border-bottom: 2px solid #FFF;
+	border-top: 2px solid #FFF;
+	margin: 0px !important;
+}
+table thead tr th,td{
+	font-size: 1.8vw !important;
+	height: 2.1vw !important;
+}
+table tr:nth-child(even){
+	background: #fef4ea;
+}
+
+#data_list tr td{
+	font-weight: bold;
+	color: #fc6f05;
+	/*white-space: nowrap;*/
+}
+/*====文字滚动 css======*/
+.marquee{
+	white-space: nowrap;
+    overflow: hidden;
+}
+/*====文字滚动 css======*/
+.grid-ltop .top_text{
+	position: absolute;
+	z-index: 999;
+	top: 0px;
+}
+.grid-ltop .top_logo{
+	height: 100%;
+    width: 100%;
+}
+.show_ip{
+	position: absolute;
+    right: 0px;
+    top: 0px;
+    font-size: 0.3rem;
+    opacity: 0.3;
+    color: white;
+}
+</style>
+<span id="app">
+<div class="layui-fluid" style="padding: 0px;margin: 0px;height: 100%;">  
+	<div class="layui-row" style="height: 100%;">
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 11%;">
+	  		<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%;">
+	  			<div class="grid-ltop" id="grid-ltop">
+	  				<img v-if="item.top_logo" v-bind:src="'__IMG__' + item.top_logo" class="top_logo">
+	  				<span v-if="item.top_text==''" class="top_text">&nbsp;&nbsp;中科易达排队综合显示系统</span>
+	  				<span v-else class="top_text">&nbsp;{{ item.top_text }}</span>
+	  		</div>
+	  		</div>
+	  		<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%">
+	  			<div class="grid-rtop">
+	  				<span class="show_ip">{{ item.ip }}</span>
+	  				<div id="date">{{ date }}</div>
+	  				<div id="time">{{ time }}</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12 grid-center" style="height: 81%;">
+	  	  	<div class="layui-col-xs8 layui-col-sm8 layui-col-md8" style="background-color: #dfe8ef;padding: 10px;height: 100%;">
+	  	  		<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 10%;">
+	  	  			<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%">
+	  	  				<div class="grid-ltop2">当前术完</div>
+	  	  			</div>
+	  	  			<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%">
+	  	  				<div class="marquee grid-ltop2 grid-rtop2" id="now">{{ info.title }}&nbsp;</div>
+	  	  			</div>
+	  	  		</div>
+	  	  		<table class="layui-table" lay-skin="nob">
+					<colgroup>
+						<col>
+						<col>
+						<col>
+						<col>
+					</colgroup>
+					<thead>
+					    <tr>
+					    	<th class="grid-time">患者姓名</th>
+					      	<th class="grid-time">操作间</th>
+					      	<th class="grid-th">当前状态</th>
+					      	<th class="grid-blue">医&nbsp;生</th>
+					    </tr> 
+					</thead>
+					<tbody id="data_list">		
+						<tr v-for="(ls,index) in info.item" 
+							v-if="index <8"
+							>
+							<td>{{ ls.name }}</td><td v-else></td>
+							<td>{{ ls.room_name }}</td><td v-else></td>
+							<td>{{ ls.status_name }}</td><td v-else></td>
+							<td>{{ ls.doctor_name }}</td><td v-else></td>
+						</tr>    
+						<tr v-for="x in num" >
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>  			    
+					</tbody>
+				</table>				
+	  		</div>
+	  		<div class="layui-col-xs4 layui-col-sm4 layui-col-md4" style="padding-left: 10px;height: 100%;">	  			
+	  			<div class="layui-carousel" id="test1">
+				  <div carousel-item>
+				  	<div v-for="images in item.img">
+				    	<img v-bind:src="'__IMG__/'+ images.img" style="width: 100%;height: 100%;" />
+				    </div>
+				  </div>
+				</div>
+	  		</div>
+	  	</div>
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 8%;"  v-on:click="shows">
+			<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%">
+				<div class="grid-ltop3">友情提示：</div>
+		  	</div>
+		  	<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%">
+				<div class="grid-ltop3 grid-rtop3">{{ item.tip }}</div>
+		  	</div>
+	  	</div>
+	</div>
+</div>
+
+<div class="layui-form layui-form-pane" v-if="show">
+	<div class="layui-form-item">
+	    <div class="layui-inline">
+	      <div class="layui-input-inline" style="width: 100px;">
+	        <input type="text" name="devices_ip" v-model="item.ip" v-bind:value="item.ip" placeholder="设备通信编号" autocomplete="off" class="layui-input">
+	      </div>	      
+	      <div class="layui-input-inline" style="width: 100px;">
+	        <button class="layui-btn layui-btn-radius" v-on:click="save"> 保 存 </button>
+	      </div>	      
+	    </div>
+	</div>
+</div>
+</span> <!-- end #app -->
+
+<script type="text/javascript">
+var ins = "",carousel = "";
+
+layui.use(['carousel','layer'], function(){
+	carousel = layui.carousel;
+	//建造实例
+	ins = carousel.render({
+	    elem: '#test1'
+	    ,width: '100%' //设置容器宽度
+	    ,height: '100%' //设置容器宽度
+	    ,arrow: 'none' //始终显示箭头
+	    ,indicator: 'none'
+	});
+});
+
+var vm = new Vue({
+	el:'#app',
+	data:{
+		item:{
+			ip:'127.0.0.1',
+		},
+		info: {
+			item:{
+			},
+			items:{
+			},
+			pass:'',
+		},
+		time:'',
+		date:'',
+		show:false,
+		ws:null,
+		heart:null, //心跳包
+		num:7,
+		s_num:0,  //开始位置
+		all_num:0,  //记录总数
+		roll_flag:true,
+	}
+	,methods:{
+		getBase:function(n){
+			axios
+				.get('{:url("/api/v2/index/showBases")}')
+				.then(
+					res => {
+						this.item = res.data;
+						if(n==1){
+							this.init();
+						}
+						setTimeout(res => {ins.reload()},200)
+					}
+				)
+		}
+		,get:function(){
+			axios.get('{:url("/api/v2/index/showHallInfo")}',{'params':{'type':'2'}})
+				.then(
+					res => {
+						this.all_num = res.data.num
+						this.info.items = res.data.item	
+						this.info.pass = res.data.item.pass	
+						var n = sessionStorage.length;
+						if(res.data.item != "undefined" &&  res.data.item != ''){
+							sessionStorage.setItem(n,res.data.item.title);
+						}
+						if(n==0){
+							this.showTitle(0)
+						}
+						if(this.roll_flag){
+							this.roll()
+						}else{
+							this.roll_obj()							
+						}
+					}
+				)
+		}
+		,showTitle:function(num){
+			var n = sessionStorage.length;
+			if(n>num){
+				var str = sessionStorage.getItem(num);
+				this.info.title = str
+				
+				var c = setInterval(function(){
+					var cl = layui.$("#now").css("color");
+					var color="#0f0|#00f";
+					var n=0;
+					if(cl == 'rgb(0, 255, 0)'){
+						n=1;
+					}
+					color=color.split("|");
+					layui.$("#now").css("color",color[n]);
+				},500);
+
+				setTimeout(function () {
+					layui.$("#now").css("color","#FFFFFF");
+					clearInterval(c);
+				},3000)
+
+				setTimeout(res => {
+					num ++;
+					this.showTitle(num);
+				},5000)
+			}else{
+				sessionStorage.clear();
+			}
+		}
+		,roll:function(){
+			this.s_num = this.roll_obj()
+			setTimeout(this.roll,20000)
+			this.roll_flag = false
+		}
+		,roll_obj:function(){
+			this.num = (8-this.all_num)>0 ? (8-this.all_num) : 0;  //显示空白行
+			var i = 0,n = 0
+			if(this.all_num>8){				
+				n = this.s_num
+				for (i ; i < 8; i++) {
+					this.info.item[i] = this.info.items.list[n]				
+					n ++;
+					//数据到尾、重头获取
+					if(n >= this.all_num && this.all_num>8){
+						n = 0;
+					}
+				}
+			}else{
+				if(typeof this.info.items.list === "object"){					
+					for(ls in this.info.items.list){
+						this.info.item[ls] = this.info.items.list[ls]
+					}
+				}else{
+					this.info.item = {};
+				}
+			}
+			return n;
+		}
+		,save:function(){
+			axios.post('{:url("/api/v2/index/changeCode")}',{'devices_ip':this.item.ip})
+				.then(
+					res => {
+						if(res.status==200){
+							this.show = false;
+							this.get();
+							this.getBase();
+							this.ws.close();
+						}
+						layer.open({
+						  title: '提示'
+						  ,content: res.data
+						});     
+					}
+				)
+		}
+		,shows:function(){
+			this.show = this.show ? false : true;
+		}
+		,init:function(){
+			if(typeof('WebSocket') === "undefined"){
+				layer.open({
+				  title: '提示'
+				  ,content: '当前浏览器 Not support websocket',
+				});     
+			}else{				
+				this.ws = new WebSocket('ws://'+document.domain+':23452');
+				this.ws.onopen = this.opens
+				this.ws.onmessage = this.message
+				this.ws.onclose = this.close
+			}
+		}
+		,opens:function(){
+			var data = '{"type":"login","devices_ip":"'+this.item.ip+'"}';
+			this.ws.send(data)
+			console.log(this.item.ip + " 连接成功");  
+			this.heartbeat()
+		}
+		,message:function(e){
+			var obj = eval('(' + e.data + ')');	
+			if(obj.call){
+				this.get();
+			}else if(obj.reload){
+				this.getBase();
+			}else if(obj.ping){
+				console.log(obj.ping)
+			}else if(obj.warning){
+				this.info.title = obj.warning
+			}
+		}
+		,close:function(){
+			this.init()
+			clearInterval(this.heart)
+			console.log(this.item.ip + " 断线重连中...")
+		}
+		,heartbeat:function(){
+			this.heart = setInterval(res => {
+				this.ws.send('{"type":"ping"}');
+			},40000)
+		}
+		,op_date:function(){
+			var dt = new Date(); // 得到当前时间
+			var y = dt.getFullYear(); // 当前年份
+			var m = dt.getMonth() + 1; // 当前月份，getMonth 返回值是 0-11 对应 1-12月，因此全部加1
+			var d = dt.getDate();
+			if(m<10) m='0' + m;
+			if(d<10) d='0' + d;	 
+			var str =  y + '年' + m + '月' + d + '日';
+			this.date = str
+		}
+		,op_time:function(){
+			setInterval(
+			res => {
+				var dt = new Date(); // 得到当前时间
+				var week = dt.getDay();  
+				if (week == 0) {  
+				        str = "星期日";  
+				} else if (week == 1) {  
+				        str = "星期一";  
+				} else if (week == 2) {  
+				        str = "星期二";  
+				} else if (week == 3) {  
+				        str = "星期三";  
+				} else if (week == 4) {  
+				        str = "星期四";  
+				} else if (week == 5) {  
+				        str = "星期五";  
+				} else if (week == 6) {  
+				        str = "星期六";  
+				}  
+
+				var h = dt.getHours();
+				if(h<10) h='0' + h;
+				var i = dt.getMinutes();
+				if(i<10) i='0' + i;
+				var s = dt.getSeconds();
+				if(s<10) s='0' + s;
+				str +=  ' '+ h + ':' + i + ':' + s;				
+				this.time = str;
+			},1000)	
+		}
+	}
+	,created:function(){	
+		this.getBase(1);
+		this.get();			
+		this.showTitle(0)		
+	}
+	,mounted:function(){
+		this.op_date()	//日期
+		this.op_time()	//时间
+	}	
+})
+
+// 	/*========文字滚动 js========*/	
+// 	var run = '';
+// 	var scrollLeft = function(){
+// 		layui.$(".marquee").scrollLeft(0)
+// 	}
+// 	var Marquee = function(){	
+// 		var  num = 0
+// 			,speed = 50;
+// 		clearInterval(run);
+// 		var rolling = function(){		
+// 			num += 1;
+// 				ch = layui.$(".marquee").scrollLeft()
+// 				layui.$(".marquee").scrollLeft(num)
+// 				if(ch == layui.$(".marquee").scrollLeft()){
+// 					num = 0;
+// 					clearInterval(run)
+// 					setTimeout(scrollLeft,2000)
+// 					setTimeout(Marquee,4000)
+// 				}		
+// 		}
+// 		run = setInterval(rolling, speed)
+// 	} 
+// 	/*=========文字滚动 js========*/
+
+
+
+</script>
+</body>
+</html>

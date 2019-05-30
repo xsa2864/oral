@@ -1,0 +1,169 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<!-- 专用用于取号按钮STAR -->
+<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/demo.css" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/style2.css" />
+<!-- 专用用于取号按钮OVER -->
+<div class="container" style="font-size:14px;font-family:'Microsoft YaHei','微软雅黑','sans-serif';">
+    <div class="main_top">
+        <div class="main_left span10">
+			<div class="box pr5">
+                <div class="box_border">
+                    <form id="form1" class="jqtransform" method="post">
+                        <div class="box_top"><b class="pl15">排队刷卡取号</b></div>
+                        <div class="box_center pt1 pb1" id="txtHint">
+                        	<table class="form_table" border="0" cellpadding="0" cellspacing="0">
+							    <tr>
+							    	<td>
+							    		<input type="checkbox" name="is_info" id="is_info" value="1">
+							    		<label for="is_info">是否无卡取号</label>	
+							    	</td>
+							        <td>请输入卡号：
+							        	<input type="text"  id="onlyid" name="onlyid" value="" class="input-text lh25" style="size:10px;" onkeydown="if (event.keyCode == 13)
+							            document.all.t2.focus();">
+							        </td>
+							        <td>  
+							        	<input type="button" name="button1" class="btn btn82 btn_save2" value="确定" onclick="showUser();"> 
+							        </td>
+							    </tr>
+							    <tr>	
+							    	<td>绿色通道：
+							    		<input type="radio" name="quick" id="quick" value="0" checked="true">
+							    		<label for="quick">否</label>
+							    		&nbsp;&nbsp;&nbsp;
+							    		<input type="radio" name="quick" id="quick1" value="1">
+							    		<label for="quick1">是</label>
+							    	</td>						    	
+							        <td>姓 名：
+							        	<input type="text" name="name" class="input-text lh25" size="10">
+							        </td>
+							        <td>性 别：
+							        	<input type="text" name="sex" class="input-text lh25" size="2">
+							        </td>
+							        <td>出生年月：
+							        	<input type="text" name="brot" class="input-text lh25" size="10" value="">
+							        </td>
+							        <td>提 示：
+							        	<input type="text" name="role" class="input-text lh25" size="7" value="自费"><input type="text" name="origin" class="input-text lh25" size="7" value="门诊">
+							        </td>
+							    </tr>
+							    <input type="hidden" name="QueId" id="QueId">
+							</table>
+							<div class="tip" style="color: red;text-align: center;"></div>
+                        </div>	
+            		</form>	
+                </div>
+
+            	<div class="box_border"  style="margin:12px 0px 0px 0px;" >
+	                <div class="box_top">
+	                	<b class="pl15">本区排队队列：</b>
+	                </div>
+	                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form_table">
+	                    <tr>
+	                        <th width="25%"></th>
+	                        <th width="25%"></th>
+	                        <th width="25%"></th>
+	                        <th width="25%"></th>
+	                    </tr>
+	                    {volist name="list" id="vo"}	              
+	                    {if $key%4==0}
+	                    <tr>
+	                    {/if}
+	                    	<td class="td_center">   
+	                            <div class="button-wrapper"  style="width:100%;margin:0px;">
+	                            	<a href="javascript:mkTicket({$vo.QueId})"  class="a-btn">
+	                                <span class="a-btn-slide-text">取号</span>
+	                                <img src="__STATIC__/admin/images/icons/17.png" alt="Maps" />
+	                                <span class="a-btn-text">{$vo.QueName}</span> 	
+	                                <span class="a-btn-icon-right"><span></span></span>
+	                                </a>
+	                            </div>
+	                        </td>
+	                    {/volist}
+	                    </tr>
+	                </table>
+                </div>
+            </div>
+        </div>
+    </div>   
+</div> 
+<div class="printInfo" style="display: none;">
+	<div>排队号票</div>
+	<div>队列名称：<label id="title"></label></div>
+	<div>姓 名 ：<label id="name"></label></div>
+	<div>排队号码：<label id="code"></label></div>
+	<div>当前等候：<label id="num">0</label>人</div>
+	<div>取号时间：<label id="time"></label></div>
+</div>
+<style type="text/css">
+.a-btn{
+	width: 80px;
+}
+</style>
+<script src='http://{$ip}:8000/CLodopfuncs.js'></script>
+<script type="text/javascript">
+function showUser() {
+	var onlyid = $("#onlyid").val();
+	if(onlyid==''||onlyid==null){
+		alert("卡号不能为空");
+		return false;
+	}
+	$.post('{:url("admin/nurse/showUser")}',
+		{'onlyid':onlyid},
+		function(data){
+			if(data.success==1){
+				var da = data.data;
+				$("input[name='name']").val(da.Name);
+				$("input[name='sex']").val(da.Sex);
+				$("input[name='brot']").val(da.Brot);
+				$("input[name='role']").val(da.Role);
+				$("input[name='origin']").val(da.Origin);
+				$(".tip").html("");
+				return 1;
+			}else{
+				$(".tip").html(data.msg)
+				return false;
+			}
+		},'json')
+}
+// 获取票号
+function mkTicket(id){
+	$("#QueId").val(id);
+	$.post('{:url("admin/nurse/mkTicket")}',
+		$("#form1").serialize(),
+		function(data){console.log(data)
+			if(data.success==1){
+				var da = data.data;
+				if(da==null || da==''){
+					alert("打印布局还没配置")
+				}else{
+					$(".printInfo").html(da);
+					demoPrint();
+					$("#onlyid").val('');
+					$("input[name='name']").val('');
+					$("input[name='sex']").val('');
+					$("input[name='brot']").val('');
+					$("input[name='role']").val('');
+					$("input[name='origin']").val('');
+				}
+			}else{
+				alert(data.msg)
+			}
+		},'json')
+}
+
+function demoPrint(toPreview){
+	if(typeof(getCLodop) == "function"){
+        var strHTML = $(".printInfo").html();
+        LODOP.PRINT_INITA(10,20,810,610,"测试打印");
+        LODOP.SET_PRINT_PAGESIZE(0,0,0,"测试打印");
+        LODOP.ADD_PRINT_HTM(20,10,"90%","95%",strHTML);
+        if (toPreview)
+            LODOP.PREVIEW();
+        else
+            LODOP.PRINT();		
+	}
+}
+</script>
+{/block}

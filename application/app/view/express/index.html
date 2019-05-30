@@ -1,0 +1,13 @@
+{extend name="common/public" /}
+{block name="title"}快递查询{/block}
+{block name="css"}<link rel="stylesheet" href="__APP__/css/KDNWidget.css">{/block}
+{block name="js"}<script src="__APP__/js/KDNWidget.js"></script>{/block}
+{block name="content"}
+<script type="text/javascript">
+window.onload = function () {
+    KDNWidget.run({
+        "serviceType": "C",
+    })
+}
+</script>
+{/block}

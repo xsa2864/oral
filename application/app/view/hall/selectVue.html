@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>查询预约信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+    <style type="text/css">
+        html,body{
+            height: 100%;
+            margin: 0px;
+        }
+        .layui-fluid{
+            height: 100%;
+            padding:0;
+        }        
+        .header{
+            position: fixed;
+            line-height: 40px;
+            font-size: 15px;
+            text-align: center;
+            background-color: #5a87cc;
+            z-index: 99;
+        }
+        .header .layui-icon-prev{
+            position: absolute;
+            left: 0;
+            padding: 0 15px;
+            color: #FFFFFF;
+        }
+        .header .layui-icon-home{
+            position: absolute;
+            font-size: 18px;
+            right: 0;
+            padding: 0 15px;
+            color: #FFFFFF;
+        }
+        #demo{
+            margin-top: 40px;
+            padding: 10px 2px;
+        }   
+        #demo .layui-breadcrumb{
+            visibility: visible;            
+        }  
+        #demo .layui-form-label{
+            background-color: #5a87cc !important;    
+            color: #FFFFFF;       
+        }
+        .layui-card-header label{
+            font-weight: bold;
+            font-size: 16px;
+        } 
+        .layui-card-header span{
+            padding-left: 20px;
+            color: #4e4d4d;
+        }
+        .layui-card-body .footer-l{
+            font-weight: bold;
+        }  
+        .layui-card-body .footer-r{
+            color: #4e4d4d;
+            padding-left: 10px;
+        }
+        .layui-card-body .footer-ls{
+            text-align: center;
+            padding-top: 10px;
+        }
+        .footer-b{
+            text-align: center;
+        }
+        .footer-b .layui-btn{
+            background-color: #5a87cc;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header">
+            <a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-prev"></i></a>
+            <label style="color:#fff;">{{ title }}&nbsp;</label>
+            <a href="{:url('app/index/indexs')}"><i class="layui-icon layui-icon-home"></i></a>
+        </div>
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" id="demo">
+            <form class="layui-form  layui-form-pane" action="" lay-filter="example">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">身份证号</label>
+                    <div class="layui-input-block">
+                      <input type="text" placeholder="身份证号" class="layui-input" v-model="params.idcard">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">手机号码</label>
+                    <div class="layui-input-block">
+                      <input type="text" placeholder="手机号码" class="layui-input"  v-model="params.mobile">
+                    </div>
+                </div>
+                <div class="layui-form-item footer-b">
+                    <a href="javascript:;" class="layui-btn" @click="getOrderList">立即提交</a>
+                </div>
+            </form>
+        </div> 
+    </div>  <!-- end layui-row -->
+    <div class="layui-row" style="background-color: #F2F2F2;padding: 5px;" v-if="list!=''"> 
+        <template v-for="item in list">                
+            <div class="layui-col-md6" style="padding: 5px;">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <label>{{ item.hallName }} / {{ item.queName }} </label>
+                        <span>{{ item.status_name }}</span>
+                    </div>
+                    <div class="layui-card-body">
+                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <div class="layui-col-xs4 layui-col-sm3 layui-col-md3 footer-l">预约医生</div>
+                        <div class="layui-col-xs8 layui-col-sm9 layui-col-md9 footer-r">{{ item.d_name }}</div>
+                    </div> 
+                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" v-if="item.name">
+                        <div class="layui-col-xs4 layui-col-sm3 layui-col-md3 footer-l">姓 名</div>
+                        <div class="layui-col-xs8 layui-col-sm9 layui-col-md9 footer-r">{{ item.name }}</div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <div class="layui-col-xs4 layui-col-sm3 layui-col-md3 footer-l">身份证号</div>
+                        <div class="layui-col-xs8 layui-col-sm9 layui-col-md9 footer-r">{{ item.idcard }}</div>
+                    </div> 
+                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <div class="layui-col-xs4 layui-col-sm3 layui-col-md3 footer-l">手 机 号</div>
+                        <div class="layui-col-xs8 layui-col-sm9 layui-col-md9 footer-r">{{ item.mobile }}</div>
+                    </div> 
+                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                        <div class="layui-col-xs4 layui-col-sm3 layui-col-md3 footer-l">预约时间</div>
+                        <div class="layui-col-xs8 layui-col-sm9 layui-col-md9 footer-r">{{ item.despeakDate }}  {{ item.time_Part_S }}-{{ item.time_Part_O }}</div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 footer-ls" v-if="params.status==1">
+                           <a href="javascript:;" @click="cancel(item.despeak_id)">取消预约</a>
+                    </div>
+                    &nbsp;
+                    </div>
+                </div>    
+            </div>    
+        </template>     
+    </div>  
+</div>  
+
+</body>
+<script>
+layui.use(['form', 'layedit', 'laydate','element'], function(){
+  var form = layui.form;
+  
+});
+var vm = new Vue({
+    el: '.layui-fluid',
+    data:{
+    	list:'',
+        title:'查询预约信息',     
+        params:{
+            idcard:'',
+            mobile:'',
+        }
+    }
+    ,methods:{
+        getOrderList:function(){
+            var vm = this
+            let status = this.getUrlKey("status")            
+            vm.params.status = status
+            this.setCookie(this.params.idcard,this.params.mobile)
+            axios
+                .post('{:url("/api/a1/Order/getOrderList")}',vm.params)
+                .then(function(res){
+                    if(res.data.length>0){
+                        vm.list = res.data
+                    }else{
+                        layer.msg('没有查询到数据',{
+                            time:1000
+                        });
+                        vm.list = ''
+                    }                 
+                })
+        }    
+        ,cancel:function(id){
+            var vm = this
+            vm.params.id = id
+            layer.confirm('确定取消预约?', function(index){
+              axios
+                .post('{:url("/api/a1/Order/cancelOrder")}',vm.params)
+                .then(function(res){
+                    if(res.data>0){
+                        layer.open({
+                            content: '取消成功'
+                            ,end:function(){
+                                vm.getOrderList()
+                            }
+                        });
+                    }else{
+                        layer.msg('取消失败',{
+                            time:1000
+                        });
+                    }     
+                })
+                layer.close(index);
+            });    
+        }
+        ,getUrlKey: function (name) {
+            var reg = new RegExp("[?/&]"+name+"[/=]([a-zA-Z0-9]*)"); 
+            var str = document.location.href.match(reg);
+            if(str){
+                return str[1]
+            }
+            return ''
+        }    
+        ,changeTitle:function(){
+            let status = this.getUrlKey("status")           
+            if(status==1){
+                this.title = '取消预约'
+            }
+        }
+        ,setCookie:function(idcard,mobile){
+            var exdate = new Date(); //获取时间
+            let exdays = 365
+            exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
+                //字符串拼接cookie
+            window.document.cookie = "idcard" + "=" + idcard + ";path=/;expires=" + exdate.toGMTString();
+            window.document.cookie = "mobile" + "=" + mobile + ";path=/;expires=" + exdate.toGMTString();
+        }
+        ,getCookie:function(){
+            if (document.cookie.length > 0) {
+                var arr = document.cookie.split('; '); //这里显示的格式需要切割一下自己可输出看下
+                for (var i = 0; i < arr.length; i++) {
+                    var arr2 = arr[i].split('='); //再次切割
+                    //判断查找相对应的值
+                    if (arr2[0] == 'idcard') {
+                        this.params.idcard = arr2[1]; //保存到保存数据的地方
+                    } else if (arr2[0] == 'mobile') {
+                        this.params.mobile = arr2[1];
+                    }
+                }
+            }
+        }
+    }
+    ,created:function(){
+         this.changeTitle()
+         this.getCookie()
+    }
+})
+</script>
+</html>

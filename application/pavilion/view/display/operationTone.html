@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>综合显示屏</title>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+	<script src="__APP__/lib/jquery-2.1.4.js"></script>
+	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+	<script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+	<script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+</head>
+<body>
+<style type="text/css">
+html,body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    color:#ffffff;
+}/*这里是关键*/
+
+#app .header{
+	height: 11%;
+}
+#app .header .header-l{
+	font-size: 2vw;
+    line-height: 7vw;
+    padding-left: 7vw;
+}
+#app .header .header-r{
+	font-size: 1.5vw;
+	padding-top: 1vw;
+	text-align: center;
+	padding-left: 2vw;
+}
+#app .header .header-r .show_ip{
+	position: absolute;
+	right: 1vw;
+	top: 0px;
+	font-size: 0.3rem;
+	opacity: 0.3;
+	color: white;
+}
+
+/*====文字滚动 css======*/
+.marquee{
+	white-space: nowrap;
+    overflow: hidden;
+    /*line-height: 3vw;*/
+    padding-left: 1vw;
+}
+/*====文字滚动 css======*/
+.layui-layer-content{
+	color:#000;
+}
+</style>
+<div class="layui-fluid" id="app" style="padding: 0px;margin: 0px;height: 100%;">  
+	<div class="layui-row" style="height: 100%;" v-bind:style="baseStyle">
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header">
+	  		<div class="layui-col-xs10 layui-col-sm10 layui-col-md10 header-l">
+	  			&nbsp; {{ item.top_text }}
+	  		</div>
+	  		<div class="layui-col-xs2 layui-col-sm2 layui-col-md2 header-r">
+	  			<div id="date">{{ date }}</div>
+	  			<div id="time">{{ time }}</div>
+				<span class="show_ip">{{ item.ip }}</span>
+	  		</div>
+	  	</div>
+
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12 grid-center" style="height: 81%;">
+	  	  	<div class="layui-col-xs8 layui-col-sm8 layui-col-md8" style="padding: 1vw 0px 1vw 2vw;height: 100%;">
+	  	  		<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 10%;font-size: 2.4vw;line-height: 4vw;">
+	  	  			<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%;text-align: center;">
+	  	  				<div class="grid-ltop2">当前叫号</div>
+	  	  			</div>
+	  	  			<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%">
+	  	  				<div class="grid-ltop2 grid-rtop2" id="now">{{ info.title }}&nbsp;</div>
+	  	  			</div>
+	  	  		</div>
+	  	  		<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align: center;font-size: 2vw;padding: 0.6vw 0; ">
+	  	  			<div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+		  	  			患者姓名
+		  	  		</div>
+		  	  		<div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+		  	  			操作间
+		  	  		</div>
+		  	  		<div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
+		  	  			当前状态
+		  	  		</div> 
+		  	  		<div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+		  	  			医 生
+		  	  		</div>
+	  	  		</div>
+	  	  		<template v-for="(ls,index) in info.item" 
+							v-if="index < 8">							
+				<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 8.9%;display: block;color:#fe7f18;line-height: 4vw;font-size: 2vw;">	
+					<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">				
+						<div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+							&nbsp;{{ ls.name }}
+						</div>
+						<div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+							&nbsp;{{ ls.room_name }}
+						</div>
+						<div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
+							&nbsp;{{ ls.status_name }}
+						</div>
+						<div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+							&nbsp;{{ ls.doctor_name }}
+						</div>
+					</div>
+				</div>	
+				</template>
+				<template v-for="x in num">
+					<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 8.9%;display: block;">
+					</div>
+				</template>
+	  		</div>
+
+	  		<div class="layui-col-xs4 layui-col-sm4 layui-col-md4" style="padding: 2px 1.5vw 1vw 5vw;height: 100%;">	  			
+	  			<!-- <div class="layui-carousel" id="test1">
+				  <div carousel-item>
+				    <div v-for="images in item.img">
+				    	<img v-bind:src="'__IMG__/'+ images.img" style="width: 100%;height: 100%;" />
+				    </div>
+				  </div>
+				</div> -->
+	  		</div>
+	  	</div>
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 8%;font-size: 2vw;    line-height: 4vw;padding-left: 2vw;" v-on:click="shows">
+	  		<span v-if="tip!=''">友情提示：{{ tip }}	</span>
+		  	</div>
+	  	</div>
+		<div class="layui-form layui-form-pane" v-if="show">
+			<div class="layui-form-item">
+			    <div class="layui-inline">
+			      <div class="layui-input-inline">
+			        <input type="text" name="devices_ip" v-model="item.ip" v-bind:value="item.ip" placeholder="设备通信编号" autocomplete="off" class="layui-input">
+			      </div>	      
+			      <div class="layui-input-inline">
+			        <button class="layui-btn layui-btn-radius" v-on:click="save"> 保 存 </button>
+			      </div>	      
+			    </div>
+			</div>
+		</div>
+	</div>
+</div> <!-- end #app -->
+
+<script>
+var ins = "",carousel = "";
+
+layui.use(['carousel','layer'], function(){
+	carousel = layui.carousel;
+	//建造实例
+	ins = carousel.render({
+	    elem: '#test1'
+	    ,width: '100%' //设置容器宽度
+	    ,height: '100%' //设置容器宽度
+	    ,arrow: 'none' //始终显示箭头
+	    ,interval:10000
+	    ,indicator: 'none'
+	});
+});
+
+var vm = new Vue({
+	el:'#app',
+	data:{
+		baseStyle:{
+		},
+		item:{
+			field:{
+			},
+			ip:'127.0.0.1',
+		},
+		info: {
+			item:{
+			},
+			items:{
+			},
+			pass:'',
+		},
+		tip:'请保持现场秩序与安静，耐心等候叫号！',
+		time:'',
+		date:'',
+		show:false,
+		ws:null,
+		num:7,
+		s_num:0,  		//开始位置
+		all_num:0,  	//记录总数
+		heart:null, 	//心跳包
+		roll_flag:true,
+		roll_run:'',
+		move_run:'',	//走马灯
+		marquee:false,
+	}
+	,methods:{
+		getBase:function(n){
+			var vm = this
+			var horizontal = 0
+			axios
+				.get('{:url("/api/v2/index/showBases")}',{'params':{'horizontal':horizontal}})
+				.then(
+					function(res){
+						vm.item = res.data;
+						vm.field = res.data.field	
+						vm.tip = res.data.tip
+						if(n==1){
+							vm.init();
+						}
+						setTimeout(function(){
+							ins.reload()
+						},200)
+						if(res.data.top_logo){
+						    vm.baseStyle.backgroundSize = '100% 100%';
+						    vm.baseStyle.backgroundRepeat = 'no-repeat';
+							vm.baseStyle.backgroundImage = "url(__IMG__"+res.data.top_logo+")";
+						}
+					}					
+				)
+		}
+		,get:function(){
+			var vm = this
+			axios.get('{:url("/api/v2/index/showHallInfo")}',{'params':{'type':'2'}})
+				.then(
+					function (res) {
+						vm.all_num = res.data.num
+						vm.info.items = res.data.item	
+						vm.info.pass = res.data.item.pass	
+						var n = sessionStorage.length;
+						if(res.data.item != "undefined" &&  res.data.item != ''){
+							sessionStorage.setItem(n,res.data.item.title);
+						}
+						if(n==0){
+							vm.showTitle(0)
+						}
+						if(vm.roll_flag){
+							vm.roll()
+						}else{
+							vm.roll_obj()
+						}
+					}
+				)
+		}
+		,renderResize:function() {
+	        // 判断横竖屏
+	        var n = 0;
+	        let width = document.documentElement.clientWidth
+	        let height = document.documentElement.clientHeight
+	        if(width < height) {
+	           n = 1;
+	        }
+	        return n;
+	    }		
+		,showTitle:function(num){
+			var n = sessionStorage.length;
+			if(n>num){
+				var str = sessionStorage.getItem(num);
+				this.info.title = str;
+				
+				var c = setInterval(function(){
+					var cl = layui.$("#now").css("color");
+					var color="#0f0|#00f";
+					var n=0;
+					if(cl == 'rgb(0, 255, 0)'){
+						n=1;
+					}
+					color=color.split("|");
+					layui.$("#now").css("color",color[n]);
+				},500);
+
+				setTimeout(function () {
+					layui.$("#now").css("color","#FFFFFF");
+					clearInterval(c);
+				},3000)
+
+				setTimeout(res => {
+					num ++;
+					this.showTitle(num);
+				},5000)
+			}else{
+				sessionStorage.clear();
+			}
+		}
+		,roll:function(){
+			this.s_num = this.roll_obj()
+			setTimeout(this.roll,20000)
+			this.roll_flag = false;
+		}
+		,roll_obj:function(){
+			this.num = (8-this.all_num)>0 ? (8-this.all_num) : 0;  //显示空白行
+			var i = 0,n = 0 
+			if(this.all_num>8){
+				n = this.s_num
+				for (i ; i < 8; i++) {
+					this.info.item[i] = this.info.items.list[n]				
+					n ++;
+					//数据到尾、重头获取
+					if(n >= this.all_num && this.all_num>8){
+						n = 0;
+					}
+				}
+			}else{
+				if(typeof this.info.items.list === "object"){					
+					for(ls in this.info.items.list){
+						this.info.item[ls] = this.info.items.list[ls]
+					}
+				}else{
+					this.info.item = {};
+				}				
+			}
+			return n;
+		}
+		,save:function(){
+			axios.post('{:url("/api/v2/index/changeCode")}',{'devices_ip':this.item.ip,'devices_type':1})
+				.then(
+					res => {
+						if(res.status==200){
+							this.show = false;
+							this.get();
+							this.getBase();
+							this.ws.close()
+						}
+						layer.open({
+						  title: '提示'
+						  ,content: res.data
+						});     
+					}
+				)
+		}
+		,shows:function(){
+			this.show = this.show ? false : true;
+		}
+		,init:function(){
+			if(typeof('WebSocket') === "undefined"){
+				layer.open({
+				  title: '提示'
+				  ,content: '当前浏览器 Not support websocket',
+				});     
+			}else{				
+				this.ws = new WebSocket('ws://'+document.domain+':23452');
+				this.ws.onopen = this.opens
+				this.ws.onmessage = this.message
+				this.ws.onclose = this.close
+			}
+		}
+		,opens:function(){
+			var data = '{"type":"login","devices_ip":"'+this.item.ip+'"}';
+			this.ws.send(data)
+			console.log(this.item.ip + " 连接成功");  
+			this.heartbeat()
+		}
+		,message:function(e){
+			var obj = eval('(' + e.data + ')');	
+			if(obj.call){
+				this.get();
+			}else if(obj.reload){
+				this.getBase();
+			}else if(obj.ping){
+				console.log(obj.ping)
+			}else if(obj.warning){
+				this.info.title = obj.warning
+			}
+		}
+		,close:function(){
+			this.init()
+			clearInterval(this.heart)
+			console.log(this.item.ip + " 断线重连中...")
+		}
+		,heartbeat:function(){
+			this.heart = setInterval(res => {
+				this.ws.send('{"type":"ping"}');
+			},30000)
+		}
+		,op_date:function(){			
+			var dt = new Date(); // 得到当前时间
+			var y = dt.getFullYear(); // 当前年份
+			var m = dt.getMonth() + 1; // 当前月份，getMonth 返回值是 0-11 对应 1-12月，因此全部加1
+			var d = dt.getDate();
+			if(m<10) m='0' + m;
+			if(d<10) d='0' + d;	 
+			var str =  y + '年' + m + '月' + d + '日';
+			this.date = str
+		}
+		,op_time:function(){
+			setInterval(
+			res => {
+				var dt = new Date(); // 得到当前时间
+				var week = dt.getDay();  
+				if (week == 0) {  
+				        str = "星期日";  
+				} else if (week == 1) {  
+				        str = "星期一";  
+				} else if (week == 2) {  
+				        str = "星期二";  
+				} else if (week == 3) {  
+				        str = "星期三";  
+				} else if (week == 4) {  
+				        str = "星期四";  
+				} else if (week == 5) {  
+				        str = "星期五";  
+				} else if (week == 6) {  
+				        str = "星期六";  
+				}  
+
+				var h = dt.getHours();
+				if(h<10) h='0' + h;
+				var i = dt.getMinutes();
+				if(i<10) i='0' + i;
+				var s = dt.getSeconds();
+				if(s<10) s='0' + s;
+				str +=  ' '+ h + ':' + i + ':' + s;				
+				this.time = str;
+			},1000)	
+		}
+	}
+	,created:function(){	
+		this.getBase(1);
+		this.get();			
+		this.showTitle(0)		
+		
+	}	
+	,mounted:function(){
+		this.op_date()	//日期
+		this.op_time()	//时间
+	}	
+})
+
+</script>
+</body>
+</html>

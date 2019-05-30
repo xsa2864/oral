@@ -1,0 +1,176 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div id="forms" class="mt0">
+            <div class="box">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div style="float: left;">   
+                            <i class="fa fa-add fa-object-group"></i>
+                        </div>
+                        <b>模板管理</b>
+                    </div>
+                    <div class="box_center">
+                        <form  name="form1" class="jqtransform" >
+                            <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td class="td_right">选择单位:</td>
+                                    <td>
+                                    <select name="unit_id"  class="select">
+                                        {volist name="unit" id="vo"}
+                                        <option value="{$vo.UnitId}">{$vo.unitname}</option>
+                                        {/volist}
+                                    </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">名 称 :</td>
+                                    <td><input type="text" name="title" id="title" class="input-text lh30" size="30" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">模板内容:</td>
+                                    <td>
+                                        <textarea name="content" id="content" cols="30" rows="10" class="textarea"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">添加变量:</td>
+                                    <td>
+                                        <input type="button" name="temp_name" class="ext_btn ext_btn_success" value="姓名">
+                                        <input type="button" name="temp_hall" class="ext_btn ext_btn_success" value="科室">
+                                        <input type="button" name="temp_doctor" class="ext_btn ext_btn_success" value="医生">
+                                        <input type="button" name="temp_code" class="ext_btn ext_btn_success" value="预约号码">
+                                        <input type="button" name="temp_date" class="ext_btn ext_btn_success" value="日期">
+                                    </td>
+                                </tr>
+                                </table> 
+                                <div class="box_top" style="text-align: center;">
+                                    <input type="hidden" name="id" id="id" class="input-text lh30" size="4" value="">
+                                    <input type="button" name="button" class="btn btn82 btn_save2" onclick="save()" value="保存" style="margin-right: 20px;"> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>               
+                </form>
+
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">
+                <form name="form1" class="jqtransform" >
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                           class="list_table" id="table1">
+                        <tr>
+                            <th width="15%">所属单位</th>
+                            <th width="15%">标题名称</th>
+                            <th>内容</th>
+                            <th width="12%">添加时间</th>
+                            <th width="12%">录入人</th>
+                            <th width="12%">操作</th>
+                        </tr>
+                        {empty name="list"}
+                        <tr class="tr">
+                            <td class="td_center" colspan="12">您还没有配置预约的单位，请找单位管理员进行配置，谢谢！</td>
+                        </tr>
+                        {else /}
+                        {volist name="list" id="vo"}
+                        <tr class="tr td_center">
+                            <td>{$vo.unitname}</td>
+                            <td>{$vo.title}</td>
+                            <td>{$vo['content']}</td>
+                            <td>{$vo.add_time|date="Y-m-d H:i"}</td>
+                            <td>{$vo['FullName']}</td>
+                            <td>
+                                <a href="javascript:Operation('edit',{$vo['id']});">修改</a> 
+                                    |
+                                <a href="javascript:Operation('del',{$vo['id']});">删除</a>
+                            </td>
+                        </tr>
+                        {/volist}
+                        {/empty}
+                    </table>
+                    </form>
+                    <!-- 分页开始 -->
+                    <div class="page mt10">
+                        {$page|raw}         
+                    </div>
+                    <!-- 分页结束 -->
+                </div>
+            </div>
+        </div>
+
+            </div>
+        </div>
+<script type="text/javascript">
+// 更新数据
+function save(){
+    $.post('{:url("admin/sms/smsTemSave")}',
+        $("form").serialize(), 
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }
+            alert(data.msg);
+    },'json')
+
+}
+
+function Operation(str,id){
+    if(str=='edit'){
+        $.post('{:url("admin/sms/getTempInfo")}',
+            {'id':id},
+            function(data){
+                console.log(data)
+                if(data.success==1){
+                    var da = data.data;
+                    $("#id").val(da.id)
+                    $("#title").val(da.title)
+                    $("#content").val(da.content)
+                    $("select option").each(function(n,e){
+                        if($(e).val()==da.unit_id){
+                            $(e).prop("selected",true)
+                        }
+                    })
+                }else{
+                    alert(data.msg)
+                }
+            },'json')
+    }else if(str == 'del'){
+        if(confirm("确认删除?")){
+            $.post('{:url("admin/sms/templateDel")}',
+                {'id':id},
+                function(data){
+                    if(data.success==1){
+                        location.reload();
+                    }
+                    alert(data.msg)
+                },'json')
+        }
+    }
+        
+}
+
+
+$("input[name='temp_name']").on('click',function(){
+    var html = $("#content").val()+"[name]";
+    $("textarea").val(html)
+})
+$("input[name='temp_hall']").on('click',function(){
+    var html = $("#content").val()+"[hall]";
+    $("textarea").val(html)
+})
+$("input[name='temp_doctor']").on('click',function(){
+    var html = $("#content").val()+"[doctor]";
+    $("textarea").val(html)
+})
+$("input[name='temp_code']").on('click',function(){
+    var html = $("#content").val()+"[code]";
+    $("textarea").val(html)
+})
+$("input[name='temp_date']").on('click',function(){
+    var html = $("#content").val()+"[date]";
+    $("textarea").val(html)
+})
+</script>
+{/block}

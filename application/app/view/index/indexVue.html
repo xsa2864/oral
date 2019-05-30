@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+    <style type="text/css">
+        body{
+            margin: 0px;
+        }
+        .layui-fluid{
+            padding:0;
+        }
+        .itemList{
+            padding: 25px 10px;
+            text-align: center;
+            border: 1px solid #eee;
+            border-width: 0 1px 1px 0px;
+            cursor: pointer;
+        }    
+        .itemList i{
+            font-size: 25px;
+            color: #5a87cc;
+        }
+        .footer{
+            text-align: center;
+            padding-top: 10px;
+        }
+        .footer p{
+            color:#828181;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                <div class="layui-carousel" id="loop">
+                    <div carousel-item>
+                        <div v-for="(item,index) in attr1">
+                            <img v-bind:src="'__IMG__' + item.img" style="height: 100%;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                <template v-for="item in menu">
+                    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4 itemList" @click="gohead(item.url)">
+                        <i v-bind:class="item.logo"></i>
+                        <p>{{ item.title }}</p>
+                    </div>
+                </template>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                <div class="layui-carousel" id="loops">
+                    <div carousel-item>
+                        <div v-for="(item,index) in attr2">
+                            <img v-bind:src="'__IMG__' + item.img" style="height: 100%;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 footer">
+                <a href="http://www.zkitsoft.com" target="_blank">福州中科易达计算机技术有限公司 0591-87563369</a>
+                <p>Copyright © 2018 zkitsoft.com</p>
+            </div>
+        </div>
+    </div>   
+</body>
+<script>
+    var ins = '',lins='';
+    layui.use('carousel', function(){
+        var carousel = layui.carousel;
+        //建造实例
+        ins = carousel.render({
+          elem: '#loop'
+          ,width: '100%' //设置容器宽度
+          ,arrow: 'hover' //始终显示箭头
+          ,interval:6000
+          ,height:230
+          ,indicator:'none'
+          // ,anim: 'updown' //切换动画方式
+        });
+        lins = carousel.render({
+          elem: '#loops'
+          ,width: '100%' //设置容器宽度
+          ,arrow: 'hover' //始终显示箭头
+          ,interval:6000
+          ,height:180
+          ,indicator:'none'
+          // ,anim: 'updown' //切换动画方式
+        });
+    });
+    var vm = new Vue({
+        el: '.layui-fluid',
+        data:{
+            attr1:{},
+            attr2:{},
+            menu:[
+                {'logo':'layui-icon layui-icon-username','title':'我要预约','url':"{:url('app/hall/selectList')}"},
+                {'logo':'layui-icon layui-icon-search','title':'查询预约','url':"{:url('app/hall/searchDetail')}"},
+                {'logo':'layui-icon layui-icon-unlink','title':'取消预约','url':"{:url('app/hall/searchDetail',['status'=>1])}"},
+                {'logo':'layui-icon layui-icon-dialogue','title':'新闻资讯','url':"{:url('app/article/articleLists',['cate_id'=>1])}"},
+                {'logo':'layui-icon layui-icon-notice','title':'注意事项','url':"{:url('app/article/detail',['cate_id'=>7])}"},
+                {'logo':'layui-icon layui-icon-about','title':'关于我们','url':"{:url('app/article/detail',['cate_id'=>2])}"},
+            ]
+        }
+        ,methods:{
+            getBase:function(){
+                var vm = this
+                axios
+                    .get('{:url("/api/a1/index/getBase")}')
+                    .then(function(res){
+                        vm.attr1 = res.data.attr1
+                        vm.attr2 = res.data.attr2
+                        setTimeout(function () {
+                            vm.reLoop()
+                        },100)
+                    })
+            },
+            gohead:function(url){
+                location.href = url
+            }
+            ,reLoop:function(){
+                ins.reload()
+                lins.reload()
+            }
+        }
+        ,created:function(){ 
+            this.getBase()
+        }
+    })
+</script>
+</html>

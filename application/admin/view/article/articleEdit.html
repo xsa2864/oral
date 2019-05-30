@@ -1,0 +1,145 @@
+{extend name="base/base" /}
+{block name="js"}
+<!-- 注意， 只需要引用 JS，无需引用任何 CSS ！！！-->
+<script type="text/javascript" src="__STATIC__/editor/release/wangEditor.min.js"></script>
+{/block}
+{block name="main"}
+<div id="forms" class="mt10">
+    <div class="box">
+        <div class="box_border">
+            <div class="box_top">
+                <div style="float: left;">   
+                        <i class="fa fa-add fa-file-powerpoint-o"></i>
+                    </div>
+                <b>文章编辑</b>
+            </div>
+            <div class="box_center">
+                <form class="jqtransform">
+                <table class="form_table pt15 pb15" style="width: 100%">
+                <tr>
+                  	<td class="td_right">标题：</td>
+                    <td class=""> 
+	                    <input type="text" name="title" class="input-text lh30" size="35" value="{$list.title}">
+	                </td>
+                </tr>
+                <tr>
+                  	<td class="td_right">副标题：</td>
+                    <td class=""> 
+	                    <input type="text" name="subtitle" class="input-text lh30" size="65" value="{$list.subtitle}">
+	                </td>
+                </tr>
+	            <tr >
+	                <td class="td_right">文章分类：</td>
+	                <td class="">
+	                    <select name="cate_id" class="select"> 
+	                    	<option value="0">请选择分类</option> 
+	                    	{volist name="cate" id="vo"}
+	                        <option value="{$vo.id}" {if condition="$vo.id==$list.cate_id"}selected{/if}>{$vo.unitname} -- {$vo.name}</option> 
+	                        {/volist}
+	                    </select> 
+	                </td>
+                </tr>
+                <tr>
+                    <td class="td_right">上传图片：</td>
+                    <td>    
+                    <form enctype="multipart/form-data" class="jqtransform">
+                        <img src="{$list.head_img|default='__APP__/images/pic_160.png'}" id="show_img" style="width: 80px;">
+                        <input type="hidden" name="head_img" id="head_img" value="{$list.head_img}">
+                        <input type="file" name="image" /> 
+                        <input type="button" onclick="imgupload()" value="上传" style="padding: 3px 11px;border-radius: 5px;"/> 
+                   
+                    </form> 
+                    </td>                    
+                </tr>
+                <tr>
+	                <td class="td_right">文章内容：</td>
+	            </tr>
+                <tr>
+	                <td class="td_right"></td>
+	                <td class="">
+                        <div id="editor"  name="content" style="width:950px;">{$list.content|raw}</div>
+                        <textarea id="content" name="content" style="display: none;"></textarea>
+	                </td>
+                </tr>
+
+                <tr>
+                  	<td class="td_right">状态：</td>
+                  	<td class="">
+	                    <input type="radio" name="status" {if condition="$list.status==1"}checked{/if} value="1"> 开启
+	                    <input type="radio" name="status" {if condition="$list.status==0"}checked{/if} value="0"> 关闭
+                  	</td>
+                </tr>
+                <tr>
+                    <td class="td_right">&nbsp;</td>
+                    <td class="">
+                    	<input type="hidden" name="id" value="{$list.id}">
+	                    <input type="button" name="button" class="btn btn82 btn_save2" onclick="articleSave()" value="保存"> 
+	                    <input type="button" name="button" class="btn btn82 btn_res" value="重置"> 
+                    </td>
+                </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+var E = window.wangEditor
+var editor = new E('#editor')
+// 或者 var editor = new E( document.getElementById('editor') )
+editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024;
+editor.customConfig.uploadImgServer = '{:url("admin/ads/upload_e")}';
+editor.customConfig.onchange = function (html) {
+    // 监控变化，同步更新到 textarea
+    $("#content").val(html)
+}
+editor.create()
+$("#content").val(editor.txt.html())
+
+// 上传头像
+function imgupload(){
+    var imgdata = new FormData();
+    var file = $("input[name='image']")[0].files[0];
+    if(file==''||file==null){
+        alert("请选择图片");
+        return false;
+    }
+    imgdata.append("height",250);
+    imgdata.append("width",250);
+    imgdata.append("image",file);
+    $.ajax({
+        'url':'/admin/ads/upload',
+        'type':'post',
+        'cache': false,
+        'data': imgdata,
+        'dataType':'json',
+        'processData': false,
+        'contentType': false,
+        success:function(data){
+            if(data.success==1){
+                var str = '';
+                var img = data.msg;          
+                $("#head_img").val(data.msg);
+                $("#show_img").attr("src",img);
+            }else{
+                alert(data.msg);
+            }
+        }
+    })
+}
+
+// 保存文章
+function articleSave() {
+	$.post('{:url("admin/article/articleSave")}',
+		$("form").serialize(),
+		function(data){
+            if(data.success==1){
+                history.go(-1);
+            }else if(data.success==2){
+                location.reload();
+            }
+            alert(data.msg)
+		},'json')
+}
+</script>
+{/block}

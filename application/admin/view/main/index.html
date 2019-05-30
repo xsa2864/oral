@@ -1,0 +1,185 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>{block name="title"}中科易达智能预约排队管理平台 IRQS-5000{/block}</title>
+<link rel="stylesheet" href="__STATIC__/admin/css/common.css">
+<link rel="stylesheet" href="__STATIC__/admin/css/style.css">
+<link rel="stylesheet" href="__STATIC__/admin/css/main.css">
+<script type="text/javascript" src="__STATIC__/admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/js/jquery.SuperSlide.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/js/common.js"></script>
+<script type="text/javascript">
+    $(function () {
+       $(".sideMenu").slide({  //这是一个JQuery插件
+            titCell: "h3", //- 自定义标题标签, 支持选择符
+            targetCell: "ul", //
+            defaultIndex: 0, //默认选中的标签索引从0开始
+            effect: 'slideDown',
+            delayTime: '500',
+            trigger: 'click', //滑动触发方式. 默认为click, 可选择mouseover
+            triggerTime: '150', //
+            defaultPlay: true, //
+            returnDefault: false, //
+            easing: 'easeInQuint', //
+            endFun: function () {       //
+                scrollWW();
+            }
+        });
+
+        /*
+         * defaultIndex  - 默认选中的标签索引从0开始
+         * titOnClassName - 标签选中时的样式
+         * titCell   - 自定义标题标签, 支持选择符
+         * mainCell   - 自定义标题标签, 支持选择符
+         * delayTime  - 延迟触发时间. 当这个时间小于切换动画效果时间时, 动画将被禁用
+         * interTime  - 自动切换时间. 当这个时间大于0时, 标签将定时自动切换
+         * trigger   - 滑动触发方式. 默认为click, 可选择mouseover
+         * effect   - 切换动画. 默认不使用动画. 目前仅提供fade(淡出), slide(向下展开)两种
+         * omitLinks - 是否忽略带链接标签，默认为否
+         这是个jquery的插件
+         */
+
+        $(window).resize(function () {
+            scrollWW();
+        });
+        $("li").click(function () {
+            $("li").attr({"class": "no"});  //改变CSS样式
+            $(this).attr({"class": "on"});
+        });
+        $("h3").click(function () {
+            $("li").toggle(1000);
+        });
+    });
+
+    function scrollWW() {
+        if ($(".side").height() < $(".sideMenu").height()) {
+            $(".scroll").show();
+            var pos = $(".sideMenu ul:visible").position().top - 38;
+            $('.sideMenu').animate({top: -pos});
+        } else {
+            $(".scroll").hide();
+            $('.sideMenu').animate({top: 0});
+            n = 1;
+        }
+
+    }
+
+    var n = 1;
+    function menuScroll(num) {
+        var Scroll = $('.sideMenu');
+        var ScrollP = $('.sideMenu').position();
+        /*alert(n);
+         alert(ScrollP.top);*/
+        if (num == 1) {
+            Scroll.animate({top: ScrollP.top - 38});
+            n = n + 1;
+        } else {
+            if (ScrollP.top > -38 && ScrollP.top != 0) {
+                ScrollP.top = -38;
+            }
+            if (ScrollP.top < 0) {
+                Scroll.animate({top: 38 + ScrollP.top});
+            } else {
+                n = 1;
+            }
+            if (n > 1) {
+                n = n - 1;
+            }
+        }
+    }
+//退出
+function logout(){
+    $.post('{:url("admin/index/logout")}',
+        function(data){
+            alert(data.msg);
+            location.href = '{:url("admin/login/index")}';
+    },'json')
+}
+</script>
+</head>
+<body>
+    <div class="top">
+        <div id="top_t">
+            <div id="logo" class="fl"></div>
+            <div id="photo_info" class="fr">
+                <div id="photo" class="fl">
+                    <a href="#"><img src="__STATIC__/admin/images/a.png" alt="" width="60" height="60"></a>
+                </div>
+                <div id="base_info" class="fr">
+                    <div class="help_info">
+                        <a href="" id="hp">&nbsp;</a> 
+                        <a href="" id="gy">&nbsp;</a> 
+                        <a href="javascript:logout()" id="out">&nbsp;</a>
+                    </div>
+                    <div class="info_center">
+                            <!--<span id="nt">通知</span><span><a href="#" id="notice"></a></span>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="side_here">
+            <div id="side_here_l" class="fl"></div>
+            <div id="button" class="mt12">
+<!--                    <input type="button" name="button" class="btn btn82 btn_config" style="margin-top:5px;"  onclick="GetUrl(11)" value="主界面"> 
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="button" name="button" class="btn btn82 btn_config " style="margin-top:5px;" onclick="GetUrl(11)" value="配置"> -->
+                <input type="button" name="button" class="btn btn82 btn_count" onclick="location.href='/index.php/admin/appointment/listdata'" style="margin-top:5px;" value="查询"> 
+                <input type="button" name="button" class="btn btn82 btn_checked" onclick="location.href='/index.php/admin/appointment/registration'" style="margin-top:5px;" value="预约"> 
+<!--                    <input type="button" name="button" class="btn btn82 btn_nochecked" style="margin-top:5px;" onclick="GetUrl(52)" value="刷卡"> 
+                    <input type="button" name="button" class="btn btn82 btn_export" style="margin-top:5px;" value="刷新">-->
+   
+            </div>
+            <div id="here_area" class="fl">
+                <h4 class="fl" id="address1">当前位置：数据库链接<h4>
+            </div>
+        </div>
+        </div>
+        <div class="side" id="demo">
+            <div class="sideMenu" style="margin: 0 auto" id="">
+                <h3>预约管理</h3>
+                <ul>
+                    <li onclick="GetUrl(21)">医院配置</li>
+                    <li onclick="GetUrl(210)">部门配置</li>
+                    <li onclick="GetUrl(22)">医生配置</li>
+                    <li onclick="GetUrl(23)">管理员</li>
+                </ul>
+
+                <h3>查询统计</h3>
+                <ul>
+                    <li onclick="GetUrl(24)">预约查询</li>
+                    <li onclick="GetUrl(241)">预约统计</li>    
+                </ul>
+                
+                <h3>短信管理</h3>
+                <ul>
+                    <li>预约确认</li>
+                    <li>预约提醒</li>  
+                    <li>短信群发</li> 
+                    <li>短信查询</li>
+                </ul>
+                <h3>预约资询</h3>
+                <ul>
+                    <li onclick="GetUrl(25);">预约排队</li>
+                    <li onclick="GetUrl(252);">预约查询</li> 
+                    <li>预约统计</li>                                        
+                    <li  onclick="GetUrl(253);">部门分组</li>
+                    <li onclick="GetUrl(254);">人员管理</li> 
+                </ul>
+                <h3>其它管理</h3>
+                <ul>
+                    <li>用户管理</li>
+                    <li>黑名单</li> 
+                    <li>个人管理</li>                                         
+                </ul>
+            </div>
+        </div>
+    <div class="main">
+        {block name="main"}主内容{/block}
+    </div>
+    <div class="bottom">
+        <div id="bottom_bg" >福州中科易达计算机技术有限公司版权所有 服务电话：0591-87563369</div>
+    </div>
+</body>
+</html>
+
+

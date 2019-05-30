@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>呼叫器终端</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="renderer" content="webkit">	
+	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+	<!--[if (IE 8)|(IE 9)]>
+		<script type="text/javascript">
+			window.onload = function () {
+				var ie = '';
+				ie = setInterval(function () {
+					getNext(0)
+				},2000)
+			}
+		</script>
+	<![endif]-->
+</head>
+<body style="background-color: #FFF;">
+<style type="text/css">
+.layui-col-xs6{
+	padding: 6px;
+}
+.layui-col-xs4{
+	text-align: center;
+	padding-bottom: 15px;
+}
+.layui-col-xs12{
+	text-align: center;
+	padding: 0px 15px 20px 15px;
+}
+.layui-this,.layui-tab-content{
+	background-color: #81bef73d;
+}
+.layui-btn{
+	background-color: #298ad3;
+}
+.layui-tab-item{
+	height: 380px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.layui-tab-title li{
+	    min-width: 40px;
+}
+{if $flag}
+#select_quene{
+	display: none;
+}
+{else/}
+.layui-tab{
+	display: none;
+}
+{/if}
+blockquote{
+	margin-bottom: 0px !important;
+	background-color: #2177b7 !important;
+	border-width: 1px 1px 1px 1px !important;
+	color: #FFF;
+	font-size: 1rem;
+}
+.layui-tab{
+	margin: 1px;
+}
+.r_msg{
+	float: right;
+	color:#fd5151;
+}
+.w_msg{
+	float: right;
+	color:#FFF;
+}
+/*====文字滚动 css======*/
+.marquee{
+	white-space: nowrap;
+    overflow: hidden;
+    padding-right: 10px;
+}
+/*====文字滚动 css======*/
+.change_color{
+	background-color: #f44336;
+}
+</style>
+<blockquote class="layui-elem-quote layui-quote-nm">
+ 	<img src="{if(empty($doctor.pic))}__STATIC__/admin/images/doctor.jpg{else/}__IMG__/{$doctor.pic}{/if}"class="layui-nav-img" style="float: left;width: 60px;height: 60px;border-radius: 10%;"> 
+ 	<div style="padding: 10px;"> 		
+		科室：{$arr.devices_name|default=''}
+		<br>
+		医生：{$doctor.QueName}
+ 	</div>
+ 	<span style="position: absolute;right: 5px;top: 5px;font-size: 12px;color: #aaa;">
+ 		<a href="javascript:;" lay-submit lay-filter="logout">退出</a>
+ 	</span>
+</blockquote>
+<blockquote class="layui-elem-quote layui-quote-nm" style="padding: 10px;">
+	<div class="layui-row">
+	    <div class="layui-col-xs3" style="width: 66px;">
+	      	<span style="color: #03ea03;">新消息：</span>
+	    </div>
+	    <div class="layui-col-xs8 marquee">
+	      	{$msg.content}&nbsp;
+	    </div>
+	    <div class="layui-col-xs1">
+	      	<a href="javascript:;" lay-submit lay-filter="readMsg" title="点击后表示已阅读" class="w_msg"><i class="layui-icon layui-icon-reply-fill"></i></a>
+	    </div>
+  	</div>
+  	<audio id="video" controls src="__HUI__/music/2.mp3" style="display: none;"></audio>
+</blockquote>
+
+<div id="select_quene">
+	<div class="layui-row">
+		{empty name="list"}
+		<div class="layui-col-xs12">	
+			<br>
+			<h3>联系管理员配置服务队列</h3>
+		</div>
+		{else/}
+		<div class="layui-col-xs12">	
+			<br>
+			<h3 onclick="makeQuene('5')">请选择您本次的服务队列</h3>
+		</div>
+		{volist name="list" id="vo"}
+		<div class="layui-col-xs4">	
+			<input type="checkbox" name="que_id[]" id="q{$vo.QueId}" value="{$vo.QueId}" {if(in_array($vo.QueId,$mk_arr))}checked{/if}><label for="q{$vo.QueId}">{$vo.QueName}</label>
+		</div>
+		{/volist}
+		<div class="layui-col-xs12">
+		  	<button class="layui-btn layui-btn-fluid"  lay-submit lay-filter="makeDemo">确定</button>
+		</div>
+		{/empty}
+	</div>
+</div>
+
+<div class="layui-tab">
+	<ul class="layui-tab-title">
+	    <li class="layui-this">功能</li>
+	    <li lay-submit lay-filter="overList">完成</li>
+	    <li lay-submit lay-filter="waitList">等候</li>
+	    <li layui-btn-fluid" lay-submit lay-filter="cancelList">过号</li>
+	</ul>
+	<div class="layui-tab-content">
+<!-- 一 tab -->
+<div class="layui-tab-item layui-show">
+	<div class="layui-row layui-col-space15">		
+		<div class="layui-row">
+			<div class="layui-col-xs6">	
+						  	
+			  	<button class="layui-btn layui-btn-fluid" id="callDemo" lay-submit lay-filter="callDemo"><i class="layui-icon layui-icon-speaker"></i>呼叫</button>
+			</div>
+			<div class="layui-col-xs6">
+			  	<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="rcallDemo"><i class="layui-icon layui-icon-refresh-1"></i></i>重呼</button>
+		 	</div>
+			<div class="layui-col-xs6">
+			  	<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="cancelDemo"><i class="layui-icon layui-icon-next"></i>过号</button>
+		 	</div>
+		 	<div class="layui-col-xs6">				  	
+			  	<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="overDemo"><i class="layui-icon layui-icon-ok-circle"></i>完成</button>
+			</div>
+			<div class="layui-col-xs6">				  	
+			  	<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="stopDemo"><i class="layui-icon layui-icon-close-fill"></i>停诊</button>
+			</div>
+			<div class="layui-col-xs6">
+			  	<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="msg"><i class="layui-icon layui-icon-reply-fill"></i>信息</button>
+		 	</div>
+		 	<div class="layui-col-xs6">				  	
+			  	<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="move"><i class="layui-icon layui-icon-senior"></i>转移</button>
+			</div>
+			<div class="layui-col-xs6">				  	
+			  	<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="warning"><i class="layui-icon layui-icon-notice"></i>安保</button>
+			</div>
+		</div>
+	</div>	
+
+<div class="layui-form" id="message" style="display: none;border: 1px solid #e1effd;
+    background-color: #FFF;">
+<fieldset class="layui-elem-field layui-field-title" style="margin: 5px 0;">
+  <legend style="font-size: 1rem;">向服务台发送信息</legend>
+</fieldset>
+  	<div class="layui-form-item layui-form-text" style="padding: 0 10px;">
+    	<div class="layui-input-full">
+      		<textarea name="content" placeholder="请输入内容" class="layui-textarea" style="min-height: 75px;"></textarea>
+    	</div>
+  	</div>
+  	<div class="layui-form-item">
+	    <div style="text-align: center;">
+	      	<button class="layui-btn layui-btn-xs" lay-submit="" lay-filter="sendMsg">发送</button>
+	    </div>
+  	</div>
+</div>
+
+	<table class="layui-table">
+	  <colgroup>
+	    <col width="50%">
+	    <col width="50%">
+	  </colgroup>
+	  <tbody>
+	    <tr>
+	      <td>等候情况：</td>
+	      <td id="number">0 人</td>
+	    </tr>
+	    <tr>
+	      <td>队列名称：	</td>
+	      <td id="title">无</td>
+	    </tr>
+	    <tr>
+	      <td>当前号码：</td>
+	      <td id="code">无</td>
+	    </tr>
+	    <tr>
+	      <td>当前姓名：</td>
+	      <td id="name">无</td>
+	    </tr>
+	  </tbody>
+	</table>
+</div>
+<!-- 一 tab -->
+	    <div class="layui-tab-item">
+	    	<table class="layui-table">
+			  <colgroup>
+			    <col width="40%">
+			    <col width="40%">
+			    <col>
+			  </colgroup>
+			  <thead>
+			    <tr>
+			      <th>号码</th>
+			      <th>姓名</th>
+			      <th>操作</th>
+			    </tr> 
+			  </thead>
+			  <tbody id="overList">
+			  </tbody>
+			</table>
+	    </div>
+	    <div class="layui-tab-item">
+	    	<table class="layui-table">
+			  <colgroup>
+			    <col width="40%">
+			    <col width="40%">
+			    <col>
+			  </colgroup>
+			  <thead>
+			    <tr>
+			      <th>号码</th>
+			      <th>姓名</th>
+			      <th>操作</th>
+			    </tr> 
+			  </thead>
+			  <tbody id="waitList">
+			  </tbody>
+			</table>
+	    </div>
+	    <div class="layui-tab-item">
+	    	<table class="layui-table">
+			  <colgroup>
+			    <col width="40%">
+			    <col width="40%">
+			    <col>
+			  </colgroup>
+			  <thead>
+			    <tr>
+			      <th>号码</th>
+			      <th>姓名</th>
+			      <th>操作</th>
+			    </tr> 
+			  </thead>
+			  <tbody id="cancelList">
+			  </tbody>
+			</table>
+	    </div>
+	    <!-- 转移 -->
+		<div class="layui-form" id="move" style="display: none;border: 1px solid #e1effd;
+		    background-color: #FFF;">
+			<fieldset class="layui-elem-field layui-field-title" style="margin: 5px 0;">
+			  	<legend style="font-size: 0.8rem;">转移患者</legend>
+			</fieldset>
+		  	<div class="layui-form-item layui-form-text" style="padding: 0 10px;">
+		    	<div class="layui-input-full">
+		      		<select name="queue_id" id="queue_id" lay-verify="required">
+				    </select>
+		    	</div>
+		  	</div>
+		  	<div class="layui-form-item">
+			    <div style="text-align: center;">
+			      	<button class="layui-btn layui-btn-xs" lay-submit="" lay-filter="moveTic">转移</button>
+			    </div>
+		  	</div>
+		</div>
+	</div>
+</div>
+
+
+
+<blockquote class="layui-elem-quote layui-quote-nm" style="padding: 15px;">
+	<span>福州中科易达计算机技术有限公司</span><br>
+	<label>服务支持：0591-87563369</label>
+</blockquote>
+
+ <!-- 1920 290 -->
+<script>
+	
+var push_flag = true;
+layui.use(['slider','layer','colorpicker','element','form'], function(){
+  	var $ = layui.$
+  	,element = layui.element
+  	,form = layui.form
+  	,colorpicker = layui.colorpicker
+  	,slider = layui.slider;
+
+	// 选中队列
+	form.on('submit(makeDemo)', function(data){
+		var str = '';
+		$("input[name='que_id[]']:checked").each(function(n,e){
+			if(str != ''){
+				str += ',';
+			}
+			str += $(e).val();
+		})
+		$.post('{:url("pavilion/index/selectQuene")}',
+			{'id':str},
+			function(data){
+				if(data.code==200){
+					location.reload() 
+					$("#select_quene").hide();
+					$(".layui-tab").show();
+					getNext(0);
+				}else if(data.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}
+			},'json')
+	})
+	
+	
+	$(function(){
+		getNext(0);
+		connectSocket('{$devices_ip}',$,"terminal",'{$doctor.id}',getNext);
+		var m = setTimeout(Marquee,2000);
+	})
+	form.on('submit(callDemo)',function(data){
+		getNext(1);
+	})
+	form.on('submit(rcallDemo)',function(data){
+		getNext(2);
+	})
+	// 停诊
+	form.on('submit(stopDemo)',function (data) {
+		$.post('{:url("pavilion/index/stopInfo")}',
+			function(res){
+				if(res.code == 200){					
+					layer.msg(res['msg'], {offset: '15px',icon: 1,time: 1000});
+			  	}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+					layer.msg(res['msg'], {offset: '15px',icon: 2,time: 1000});
+			  	}
+			},'json')
+	})
+
+	// 过号
+	form.on("submit(cancelDemo)",function(data){
+		executeQueue(0)
+	})
+	// 完成就诊
+	form.on("submit(overDemo)",function(data){		
+		executeQueue(5)
+	})
+	// 过号 完成就诊
+	function executeQueue(status){
+		$.post('{:url("pavilion/index/executeQueue")}',
+			{'status':status},
+			function(res){
+				if(res.code == 200){					
+					getNext(0);
+					$("#callDemo").attr("style","").attr("lay-filter","callDemo").removeClass("layui-btn-disabled")		
+			  	}else if(res.code == 208){
+			  		getNext(1);
+			  	}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+			  		layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+			  		$("#callDemo").attr("style","").attr("lay-filter","callDemo").removeClass("layui-btn-disabled")		
+			  	}
+			},'json')
+	}
+	//呼叫安保
+	form.on("submit(warning)",function(data){	
+		if(confirm("确认呼叫保安？")){			
+			$.post('{:url("pavilion/index/warning")}',
+				function(res){
+					if(res.code == 200){
+						layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000});
+				  	}else if(res.code == 204){
+				  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+				  			location.reload();
+	 					});
+			  		}else{
+				  		layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+				  	}
+				},'json')
+		}
+	})
+ 	//监听立即推送
+ 	form.on('submit(formDemo)', function(data){   
+ 		if(!push_flag){
+ 			return false;
+ 		}		
+ 		if(confirm("确定推送内容?")){ 			
+	 		if(data.field.devices_content==''||data.field.devices_content==null){
+	 			layer.msg("请填推送内容", {offset: '15px',icon: 2,time: 1000});
+	 			return false;
+	 		}
+	 		push_flag = false;
+	 		$.post('{:url("pavilion/index/publish")}',
+	 			data.field,
+	 			function(res){
+	 				if(res.code == 200){
+			  			layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000});
+			  		}else if(res.code == 204){
+			  			layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+				  			location.reload();
+	 					});
+			  		}else{
+			  			layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+			  		}
+			  		push_flag = true;
+	 			},'json')
+ 		}
+ 	});
+ 	// 退出
+ 	form.on('submit(logout)', function(data){  	
+ 		layer.confirm('确定退出?', function(index){
+	 		$.post('{:url("pavilion/display/logout")}',
+	 			data.field,
+	 			function(res){
+	 				if(res.success == 1){
+		  			layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000}, function(){
+				          location.href = '{:url("pavilion/login/index")}';
+				        });
+		  			}else{
+		  				layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+		  			}
+	 			},'json')
+		});       
+ 	});
+ 	//已呼列表
+ 	form.on('submit(overList)', function(data){  
+ 		getListInfo(5);
+ 	})
+ 	//等候列表
+ 	form.on('submit(waitList)', function(data){  
+ 		getListInfo(1);
+ 	})
+ 	//过号列表
+ 	form.on('submit(cancelList)', function(data){  
+ 		getListInfo(0);
+ 	})
+ 	//消息
+ 	form.on('submit(msg)',function(data){
+ 		$("#message").toggle()
+ 		$("#move").hide()
+ 	})
+ 	//转移
+ 	form.on('submit(move)',function(data){ 		
+ 		$.post('{:url("pavilion/index/getSerque")}',
+ 			function(res) {
+ 				var html = '<option value="">请选择队列</option>';
+ 			 	if(res.code==200){
+ 			 		var da = res.data
+					for(x in da){
+						html += '<option value="'+da[x].id+'">'+da[x].QueName+'</option>';
+					}
+					$("#move").toggle()
+ 					$("#message").hide()
+	 				$("#queue_id").html(html);
+	 				form.render()
+ 				}else if(res.code==204){
+ 					layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+				  			location.reload();
+	 					});
+ 				}else{
+ 					layer.msg("还没有患者", {offset: '15px',icon: 2,time: 1000});
+ 				}
+ 		},'json')
+ 	})
+ 	form.on('submit(moveTic)',function(data) {
+ 		var queue_id = $("#queue_id").val()
+ 		$.post('{:url("pavilion/index/moveTicket")}',
+ 			{'queue_id':queue_id},
+ 			function(res) {
+ 				if(res.code==200){
+ 					layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+	 					$("#move").toggle();	
+	 					getNext(0);	
+	 					$("#callDemo").attr("style","").attr("lay-filter","callDemo").removeClass("layui-btn-disabled")	
+ 					});
+ 				}else if(res.code == 204){
+ 					layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+ 					layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+ 				}
+ 			},'json')
+ 	})
+ 	// 发送消息
+ 	form.on('submit(sendMsg)',function(data){
+ 		$.post('{:url("pavilion/index/sendMsg")}',data.field,
+ 			function(res){
+ 				if(res.code==200){
+ 					layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+	 					$("textarea[name='content']").val('');
+	 					$("#message").toggle(); 	
+
+ 					});
+ 				}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+ 					layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+ 				}
+ 			},'json')
+ 	})
+ 	//标注已读信息
+ 	form.on('submit(readMsg)',function(data){
+ 		$.post('{:url("pavilion/index/readMsg")}',
+ 			function(res){
+ 				if(res.code==200){
+ 					layui.$(".marquee").html(res.msg)
+ 				}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+ 					layui.$(".marquee").html('&nbsp;')
+ 					layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+ 				}
+ 			},'json')
+ 	})
+
+ 	// 获取信息列表
+ 	function getListInfo(status){
+ 		$.post('{:url("pavilion/index/getListInfo")}',
+ 			{'status':status},
+ 			function(data){
+ 				var str = '';
+ 				if(data.code==200){
+ 					var da = data.data;
+ 					for(x in da){
+	 					var time = '';
+	 					if(status==0){
+
+	 					}
+ 						str += '<tr>';
+ 						str += '<td>'+da[x].prefix+da[x].code+'</td>';
+ 						str += '<td>'+da[x].name+'</td>';
+ 						str += '<td><button class="layui-btn layui-btn-xs" lay-submit lay-filter="appointCall" value="'+da[x].id+'">呼叫</button></td>';
+ 						str += '</tr>';
+ 					} 					
+ 				}else{
+ 					str += '<tr><td colspan="3">'+data.msg+'</td></tr>';
+ 				}
+ 				if(status==1){
+					$("#waitList").html(str);
+ 				}else if(status==5){
+					$("#overList").html(str);
+ 				}else{
+ 					$("#cancelList").html(str);
+ 				}
+ 			},'json')
+ 	}
+ 	// 指定呼叫
+ 	form.on('submit(appointCall)',function(data) {
+ 		$.post('{:url("pavilion/index/appointCall")}',
+ 			{'ticked_id':data.elem.value},
+ 			function(res){
+ 				if(res.code == 200){
+					var da = res.data				
+					$('#number').html(da.number+' 人');
+					$('#title').html(da.title);
+					$('#code').html(da.code);
+					$('#name').html(da.name);		
+					$("#callDemo").attr("style","background-color: #FBFBFB").attr("lay-filter","").addClass("layui-btn-disabled");	
+					layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000});
+					$(".layui-tab-title li:first").click()
+			  	}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+					layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+			  	}
+ 			},'json')
+ 	})
+});
+
+function sendAgain(key){
+	if(confirm("确定推送？")){		
+	  	layui.$.post('{:url("pavilion/index/sendAgain")}',
+	  		{'key':key},
+	  		function(data){
+	  			if(data.code==200){
+	  				layer.msg(data.msg, {offset: '15px',icon: 1,time: 1000});
+	  			}else if(data.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{  			
+	  				layer.msg(data.msg, {offset: '15px',icon: 2,time: 1000});
+	  			}
+	  		},'json')
+	}
+}
+
+//呼叫
+	function getNext(flag){
+		layui.$.post('{:url("pavilion/index/getQueueInfo")}',
+			{'flag':flag},
+			function(res){
+				if(res.code == 200){
+					var da = res.data
+					var str = layui.$('#number').html();
+					if(da.number == 1 && str=='0 人'){
+						var ch = setInterval(function () {
+							if(layui.$("#number").hasClass('change_color')){
+								layui.$("#number").removeClass('change_color');
+							}else{
+								layui.$("#number").addClass('change_color');
+							}
+						},500)
+						setTimeout(function (argument) {
+							clearInterval(ch)
+							layui.$("#number").removeClass('change_color');
+						},10000)
+						
+					}
+					layui.$('#number').html(da.number+' 人');
+					if(da.status==2){						
+						layui.$('#title').html(da.title);
+						layui.$('#code').html(da.code);
+						layui.$('#name').html(da.name);		
+					}else{
+						layui.$('#title').html('无');
+						layui.$('#code').html('无');
+						layui.$('#name').html('无');		
+					}
+					if(flag){
+						layui.$("#callDemo").attr("style","background-color: #FBFBFB").attr("lay-filter","").addClass("layui-btn-disabled");	
+						layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000});
+					}
+			  	}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+			  		if(flag!=2){			  			
+				  		layui.$('#number').html('0 人');
+						layui.$('#title').html('无');
+						layui.$('#code').html('无');
+						layui.$('#name').html('无');	
+			  		}
+					if(flag){		
+						layui.$("#callDemo").attr("style","").attr("lay-filter","callDemo").removeClass("layui-btn-disabled");		
+						layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+					}
+			  	}
+			},'json')
+	}
+
+/*========文字滚动 js========*/
+var run = '';
+var scrollLeft = function(){
+	layui.$(".marquee").scrollLeft(0)
+}
+var Marquee = function(){	
+	var  num = 0
+		,speed = 50;
+	clearInterval(run);
+	var rolling = function(){		
+		num += 1;
+			ch = layui.$(".marquee").scrollLeft()
+			layui.$(".marquee").scrollLeft(num)
+			if(ch == layui.$(".marquee").scrollLeft()){
+				num = 0;
+				clearInterval(run)
+				setTimeout(scrollLeft,2000)
+				setTimeout(Marquee,4000)
+			}		
+	}
+	run = setInterval(rolling, speed)
+} 
+/*=========文字滚动 js========*/
+
+</script>
+<script type="text/javascript" src="__STATIC__/admin/js/zsocket.js"></script> 
+</body>
+</html>

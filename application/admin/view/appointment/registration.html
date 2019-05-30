@@ -1,0 +1,314 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<style type="text/css">
+#table1 td{
+    float:left;
+}
+#addbut{
+    width:160px;height: 35px;margin: 5px;font-size: 15px;
+}
+#QueName{
+    width:80px;height: 30px;margin: 2px;font-size: 15px;
+}
+.cs_date{
+    font-size: 1.2rem;
+    margin: 5px 0;
+}
+
+.box_top_l .fav{
+    float: left;
+}
+.full_color{
+    border:none;
+    background-image: none;
+    background-color: #ccc;
+}
+.focus{
+    background: none;
+    background-color: #57ab2d !important;
+}
+
+</style>
+<script type="text/javascript">
+$(function(){
+    $("input[name='addbut']").on('click',function(){    
+        $("input[name='addbut']").removeClass("focus");
+        $(this).addClass("focus");
+    })    
+})
+// 选择专家  
+function check(id,name){
+    $("#que_id").val(id);
+    $("#que_name").val(name);
+    $.post('{:url("admin/appointment/getName")}',
+        {'id':id},function(data){
+            var str = '<table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table"><tr><td>';
+            if(data.success==1){
+                var arr = data.msg;
+                for(x in arr){
+                    str += '<input type="button" name="QueName" id="QueName" class="ext_btn ext_btn_submit doctor" onclick="checkdata('+arr[x].id+',\''+arr[x].QueName+'\','+id+')" value="'+arr[x].QueName+' "/> ';
+                }
+            }else{
+                str += '没有信息';
+            }
+            str += "</td></tr></table>";
+            $("#doctordiv").html(str);  
+            reset1();    
+            reset2();      
+            $("input[name='QueName']").on('click',function(){    
+                $("input[name='QueName']").removeClass("focus");
+                $(this).addClass("focus");
+            })       
+        },'json')
+}
+function reset1(){
+    $("#queid").val('');
+    $("#quename").val('');     
+    $("#datediv").html(''); 
+    rhide();
+}
+function reset2(){ 
+    $("#date1").val('');   
+    $("#timediv").html(''); 
+    rhide(); 
+}
+// 选择日期
+function checkdata(queid,name,hallno){
+    $("#queid").val(queid);
+    $("#quename").val(name);
+    $.post('{:url("admin/appointment/getTime")}',
+        {'queid':queid,'hallno':hallno},
+        function(data){
+            var str = '<table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table"><tr><td>';
+            if(data.success==1){
+                var arr = data.msg;
+                var ndata = arr.data;
+                var date_num = arr.date_num;
+                var c_num = arr.data_n;
+                var all_num = arr.all_num;
+                var week = arr.date_week
+                for( x in ndata){        
+                    var full_color = '';
+                    var re = '';
+                    if(c_num[x]>=all_num){
+                        full_color = 'full_color';
+                        re = 'readonly';
+                    }            
+                    str += '<input type="button" name="date" '+re+' id="date" class="ext_btn ext_btn_submit cs_date '+full_color+'" onclick="checktime(\''+ndata[x]+'\','+hallno+')" value="'+ndata[x]+'  '+c_num[x]+'/'+date_num[x]+'  周'+week[x]+'"/> ';
+                }
+            }else{
+                str += '没有信息';
+            }
+            str += "</td></tr></table>";
+            $("#datediv").html(str);
+            reset2();       
+            $("input[name='date']").on('click',function(){    
+                $("input[name='date']").removeClass("focus");
+                $(this).addClass("focus");
+            })              
+        },'json')
+}
+// 选择时间
+function checktime(ndata,hallno){
+    reset2();
+    var queid = $("#queid").val();
+    $("#date1").val(ndata);
+    $.post('{:url("admin/appointment/getCheckTime")}',
+        {'ndata':ndata,'queid':queid,'hallno':hallno},
+        function(data){
+            var str = '<table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table"><tr><td>';
+            if(data.success==1){
+                var arr = data.msg;
+                var time = arr.time;
+                var number = arr.number;
+                for( x in time){                    
+                    var full_color = '';
+                    var re = '';
+                    var cl = '';
+                    if(number[x]>=arr.HourSum){
+                        full_color = 'full_color';
+                        re = 'readonly';
+                    }else{
+                        cl = 'onclick=show(\''+time[x]+'\')';
+                    }
+                    str += '<input type="button" name="dates" '+re+' id="dates" class="ext_btn ext_btn_submit cs_date '+full_color+'" '+cl+' value="'+time[x]+'  '+number[x]+'/'+arr.HourSum+'"/> ';
+                }
+            }else{
+                str += '没有信息';
+            }
+            str += "</td></tr></table>";
+            $("#timediv").html(str);       
+            $("input[name='dates']").on('click',function(){    
+                $("input[name='dates']").removeClass("focus");
+                $(this).addClass("focus");
+            })              
+        },'json')
+}
+// 显示录入
+function show(str){
+    $("#time1").val(str);
+    $("#yydiv").show();
+}
+// 隐藏录入
+function rhide(){
+    $("#time1").val('');
+    $("#yydiv").hide();
+}
+// 添加预约
+function addDespeak(){
+    $.post('{:url("admin/appointment/addDespeak")}',
+        $("form").serialize(),
+        function(data){
+            if(data.success==1){
+                var arr = data.msg;
+                var str = '<table class="list_table" width="100%" cellpadding="0" cellspacing="0">';
+                    str +='<tr><td colspan="4" class="ext_btn_success"> 预约成功！</td></tr>';
+                    str +='<tr>';
+                    str +='    <td> 预约人员：</td>';
+                    str +='    <td>'+arr.name+' '+arr.idcard+' </td>';
+                    str +='    <td> 手机号码：</td>';
+                    str +='    <td>'+arr.mobile+'</td>';
+                    str +='</tr>';
+                    str +='<tr>';
+                    str +='    <td> 预约队列：</td>';
+                    str +='    <td>'+arr.queName+'</td>';
+                    str +='    <td> 预约医生：</td>';
+                    str +='    <td>'+arr.d_name+'</td>';
+                    str +='</tr>';
+                    str +='<tr>';
+                    str +='    <td> 就诊日期：</td>';
+                    str +='    <td>'+arr.despeakDate+'</td>';
+                    str +='    <td> 就诊时间：</td>';
+                    str +='    <td>'+arr.time_Part_S+'-'+arr.time_Part_O+'</td>';
+                    str +='</tr></table>';
+                    $("#yydiv").html(str);
+            }else{
+                alert(data.msg);
+            }
+        },'json')
+}
+</script>
+<div class="container">
+    <div class="main_top">
+        <div class="main_left fl span10">
+            <form name="form99">
+                <!--选择科室-->
+                <div class="box pr0">
+                    <div class="box_border">
+                        <div class="box_top" >                           
+                            <div class="box_top_l fl">
+                                <div class="fav"><i class="fa fa-add fa-sitemap"></i></div>
+                                <b  style="margin: 0px;">选择队列:</b>
+                                <input type="text" name="que_id" id="que_id" class="input-text" size="5" style="height: 20px;" readonly>
+                                <input type="text" name="que_name" id="que_name" class="input-text " size="25"  style="height: 20px;" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box span10 oh">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" id="table1">
+                        <tr>
+                        {volist name="list" id="vo"}
+                        <td><input type="button"  name="addbut" id='addbut' class="ext_btn ext_btn_submit dept" onclick="check('{$vo.QueId}','{$vo.QueName}')" value="{$vo.QueName}"> 
+                            </td>
+                        {/volist}
+                        </tr>
+                    </table>
+                </div>
+                <!--选择医生-->                        
+                <div class="box pr0">
+                    <div class="box_border">
+                        <div class="box_top">                           
+                            <div class="box_top_l fl">
+                                <div class="fav"><i class="fa fa-add fa-plus-square"></i></div>
+                                <b  style="margin: 0px;">选择医生:</b>
+                                <input type="text" name="queid" id="queid" class="input-text" size="5" style="height: 20px;" readonly>
+                                <input type="text" name="quename" id="quename" class="input-text " size="25"  style="height: 20px;" readonly>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>            
+
+                        <div class="box span10 oh" id="doctordiv">  <!--接收Ajax传来的值-->
+                        </div>
+                        <!--选择日期-->
+                        <div class="box pr0">
+                            <div class="box_border">
+                                <div class="box_top">                           
+                                    <div class="box_top_l fl">
+                                        <div class="fav"><i class="fa fa-add fa-calendar"></i></div>
+                                        <b  style="margin: 0px;">选择日期:</b>
+
+                                        <input type="text" name="date1" id="date1" class="input-text " size="25"  style="height: 20px;" readonly>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>            
+
+                        <div class="box span10 oh" id="datediv">  <!--接收Ajax传来的值-->
+                        </div>
+
+                        <!--选择时间-->
+                        <div class="box pr0">
+                            <div class="box_border">
+                                <div class="box_top">                           
+                                    <div class="box_top_l fl">
+                                        <div class="fav"><i class="fa fa-add fa-clock-o"></i></div>
+                                        <b  style="margin: 0px;">选择时间段:</b>
+
+                                        <input type="text" name="time1" id="time1" class="input-text " size="30"  style="height: 20px;" readonly>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>   
+                        <div class="box span10 oh" id="timediv">  <!--接收Ajax传来的值-->
+                        </div>
+
+                <!--输入预约-->
+                <div class="box pr0">
+                    <div class="box_border">
+                        <div class="box_top">                           
+                            <div class="box_top_l fl">
+                                <div class="fav"><i class="fa fa-add fa-server"></i></div>
+                                <b  style="margin: 0px;">录入预约人员:</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>            
+
+                <div class="box span10 oh" id="yydiv" style="display: none;">  <!--接收Ajax传来的值-->
+<table class="list_table" width="100%" cellpadding="0" cellspacing="0" style="font-size: 1rem;">
+    <tr>
+        <td class="td_right">预约人身份证号：</td>
+        <td><input type="text" name="idcard" id="idcard" class="input-text lh30" maxlength="18"  size="30" placeholder="请输入预约人身份证号" >[必填]</td> 
+        <td class="td_right">预约人手机号码：</td>
+        <td>
+            <input type="text" maxlength="11" name="mobile" id="mobile" class="input-text lh30" size="30" placeholder="请输入预约人手机号" >[必填]
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">预约人姓名：</td>
+        <td><input type="text" name="name" id="name" class="input-text lh30" size="18" placeholder="请输入预约人姓名" >[必填]</td>
+        <td class="td_right">备注：</td>
+        <td>
+            <input type="text" name="remark" id="remark" class="input-text lh30" size="30" >
+        </td>
+    </tr>  
+    <tr>
+        <td colspan="4">
+            <div class="box_top" style="text-align: center;">
+                <input type="button" name="add" class="btn btn82 btn_add" id="add" value="新增" onclick="addDespeak()">
+            </div>
+        </td>
+    </tr>
+</table>
+                </div>
+            </form>   
+        </div>
+    </div>
+</div> 
+{/block}

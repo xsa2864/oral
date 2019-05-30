@@ -1,0 +1,143 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div class="box_top_l fl" >
+                            <div style="float: left;">   
+                                <i class="fa fa-add fa-user-circle-o"></i>
+                            </div>
+                            <b>预约员管理</b>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <form name="form1" class="">       
+            <div class="box">
+                <div class="box_border">						  
+                    <div class="box_center">   
+                        <table style="width: 100%" class="form_table pt15 pb15">
+                            <tr>
+                                <td class="td_right" width="10%">用户名称：</td>
+                                <td class="" width="40%">
+                                    <input type="text" name="UserName" id="uasername" class="input-text lh30" size="20" lay-verify="required" placeholder="用户名！" value="{$list.UserName}">[必填]
+                                </td>
+                                <td class="td_right" width="10%">姓    名：</td>
+                                <td width="40%"><input type="text" name="FullName" id="name" class="input-text lh30" size="20" lay-verify="required" value="{$list.FullName}">[必填]</td>
+                            </tr>
+                            <tr >
+                                <td class="td_right">密    码：</td>
+                                <td class=""><input type="text" name="password" class="input-text lh30" placeholder="默认密码：123456" size="20" value="123456"></td>
+                                <td class="td_right">确认密码：</td>
+                                <td><input type="text" name="password1" class="input-text lh30" size="20" placeholder="默认密码：123456" value="123456"></td>
+
+                            </tr>
+                            <tr>
+                                <td class="td_right">性    别：</td>
+                                <td class="">
+                                    <input type="radio" name="Sex" title="男" value="男" checked> 男 &nbsp;
+                                    <input type="radio" name="Sex" title="女" value="女" {if $list.Sex=="女"}checked{/if}> 女 
+                                </td>
+                                <td class="td_right">手    机：</td>	
+                                <td class="td_left"><input type="text" name="BodNo" id="mob" class="input-text lh30" size="20" value="{$list.BodNo}" ></td>
+                            </tr> 
+                            <tr>
+                                <td class="td_right">角    色：</td>
+                                <td class="" colspan="3">    
+                                    {volist name="group" id="role"}    
+                                    <input type="radio" name="group_id" title="{$role.title}" value="{$role.id}" {if condition="$role.id==$group_id"}checked{/if}/> {$role.title}
+                                    {/volist}          		 
+                                </td>
+                            </tr>
+                            <tr id="selectunit">
+                                <td class="td_right" width="10%">选择单位：</td>
+                                <td class="" width="40%">
+                                    <div class="select_containers"> 
+                                    <select name="unitid" id="unitid" class="select"onchange="deptajx($(this).val())"> 
+                                        <option value="0">请选择单位</option>
+                                        {volist name="unit" id="un"}
+                                        <option value="{$un.UnitId}" {if condition="$un.UnitId==$list.unitid"}selected{/if}>{$un.unitname}</option>
+                                        {/volist}        
+                                    </select>    
+                                    </div>
+                                </td>              
+                                <td class="td_right" width="10%">选择分组：</td>
+                                <td class="" width="40%">
+                                    <div class="select_containers"> 
+                                    <select name="yygroup_id" id="yygroup_id" class="select" > 
+                                        <option value="0">请选择分组</option>
+                                        {volist name="glist" id="gl"}
+                                        <option value="{$gl.id}" {if condition="$gl.id==$list.yygroup_id"}selected{/if}>{$gl.HallName}</option>
+                                        {/volist}        
+                                    </select>    
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div class="box_top" style="text-align: center;">
+                	<input type="hidden" name="id" value="{$list.UserId}">
+                    <input type="button" name="button" class="btn btn82 btn_save2" lay-submit lay-filter="formDemo" value="保存" style="margin-right:30px;">
+                    <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="javascript:history.go(-1);" value="取消"> 
+                </div>		  
+            </div>
+        </div>
+    </div>
+</div> 
+<script type="text/javascript">
+layui.use('form', function(){
+  var form = layui.form;
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    $.post('{:url("admin/appointment/manageSave")}',
+            $("form").serialize(),
+            function(data){
+                if(data.success==1){
+                    location.reload();
+                }else if(data.success==2){
+                    history.go(-1);
+                }
+                alert(data.msg)
+        },'json')
+  });
+
+  form.on('select(unitid)', function(data){    
+    deptajx(data.value);
+  })
+
+});
+    $(function(){
+        var unitid = "{$list.unitid}";
+        if(unitid != '' || unitid == null){
+            deptajx(unitid);
+        }
+    })
+    // 获取部门数据
+    function deptajx(id) {
+        $.post('{:url("admin/appointment/getGroup")}',
+                {'id':id},
+                function(data){
+                    var str = '<option value="0">请选择分组</option>';
+                    if(data.success==1){
+                        var arr = data.msg;
+                        for(n in arr){
+                            var select = '';
+                            if(arr[n].id=='{$list.yygroup_id}'){
+                                select = 'selected';
+                            }
+                            str += '<option value="'+arr[n].id+'" '+select+'>'+arr[n].DispName+'</option>';
+                        }
+                    }
+                    $("#yygroup_id").html(str);
+            },'json')
+    }
+</script>
+{/block}

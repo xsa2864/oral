@@ -1,0 +1,443 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>{block name="title"}中科易达智能预约排队管理平台 IRQS-5000{/block}</title>
+<script type="text/javascript" src="__STATIC__/admin/js/jquery.min.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/js/jquery.SuperSlide.js"></script>
+<link rel="stylesheet" href="__STATIC__/admin/awesome/css/font-awesome.css">
+<link rel="stylesheet" href="__STATIC__/admin/css/common.css">
+<link rel="stylesheet" href="__STATIC__/admin/css/style.css">
+<link rel="stylesheet" href="__STATIC__/admin/css/main.css">
+<script type="text/javascript" src="__STATIC__/admin/js/common.js"></script>
+<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function () {
+        jQuery(".box_top").slide({
+            titCell:".hd ul"
+            ,mainCell:".bd ul"
+            ,autoPage:true
+            ,effect:"top"
+            ,autoPlay:true
+            ,vis:1
+            ,trigger:"click"
+        });
+       $(".sideMenu").slide({  //这是一个JQuery插件
+            titCell: "h3", //- 自定义标题标签, 支持选择符
+            targetCell: "ul", //
+            defaultIndex: 0, //默认选中的标签索引从0开始
+            effect: 'slideDown',
+            delayTime: '500',
+            trigger: 'click', //滑动触发方式. 默认为click, 可选择mouseover
+            triggerTime: '150', //
+            defaultPlay: true, //
+            returnDefault: false, //
+            easing: 'easeInQuint', //
+            endFun: function () {       //
+                // scrollWW();
+            }
+        });
+
+        /*
+         * defaultIndex  - 默认选中的标签索引从0开始
+         * titOnClassName - 标签选中时的样式
+         * titCell   - 自定义标题标签, 支持选择符
+         * mainCell   - 自定义标题标签, 支持选择符
+         * delayTime  - 延迟触发时间. 当这个时间小于切换动画效果时间时, 动画将被禁用
+         * interTime  - 自动切换时间. 当这个时间大于0时, 标签将定时自动切换
+         * trigger   - 滑动触发方式. 默认为click, 可选择mouseover
+         * effect   - 切换动画. 默认不使用动画. 目前仅提供fade(淡出), slide(向下展开)两种
+         * omitLinks - 是否忽略带链接标签，默认为否
+         这是个jquery的插件
+         */
+        $("li").click(function () {
+            $("li").attr({"class": ""});  //改变CSS样式
+            $(this).attr({"class": "on"});
+            var attrid = $(this).attr("attrid");
+            sessionStorage.setItem("menu_key", attrid);
+        });
+        $("h3").click(function (n,e) {
+            $("ul").hide();
+            $($(this).parent()[0]).find("ul").toggle();
+        });
+        onId();
+    });
+    function scrollWW() {        
+            if ($(".side").height() < $(".sideMenu").height()) {
+                $(".scroll").show();
+                var pos = $(".sideMenu ul:visible").position().top - 38;
+                $('.sideMenu').animate({top: -pos});
+            } else {
+                $(".scroll").hide();
+                $('.sideMenu').animate({top: 0});
+                n = 1;
+            }
+    }
+
+    var n = 1;
+    function menuScroll(num) {
+        var Scroll = $('.sideMenu');
+        var ScrollP = $('.sideMenu').position();
+        /*alert(n);
+         alert(ScrollP.top);*/
+        if (num == 1) {
+            Scroll.animate({top: ScrollP.top - 38});
+            n = n + 1;
+        } else {
+            if (ScrollP.top > -38 && ScrollP.top != 0) {
+                ScrollP.top = -38;
+            }
+            if (ScrollP.top < 0) {
+                Scroll.animate({top: 38 + ScrollP.top});
+            } else {
+                n = 1;
+            }
+            if (n > 1) {
+                n = n - 1;
+            }
+        }
+    }
+// 跳转
+function gourl(url,id){
+    sessionStorage.setItem("onId", id);
+    location.href = url;
+}
+function onId(){
+    var id = sessionStorage.getItem("onId");
+    if(id){ 
+        $("li").each(function(n,e){
+            if($(e).attr("attrid")==id){                
+                $(e).attr("class",'on');
+                $($(e).parent().parent()).find("h3").click();
+            }
+        })
+    }else{
+        scrollWW();
+    }
+}
+//清缓存
+function celarTemp() {
+    if(confirm("确定清楚缓存？")){        
+        $.post('{:url("admin/index/celarTemp")}',
+            function(data){
+                location.reload();
+        },'json')
+    }
+}
+//退出
+function logout(){
+    $.post('{:url("admin/index/logout")}',
+        function(data){
+            alert(data.msg);
+            location.href = '{:url("admin/login/index")}';
+    },'json')
+}
+
+</script>
+<style type="text/css">
+body,td,th {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    color: #1d1007;
+    font-size: 1rem;
+}
+#gy{
+    background-color: #2c8fe0;
+    color: #FFFFFF;
+    padding-top: 3px;
+}
+</style>
+{block name="js"}{/block}
+</head>
+<body>
+    <div class="top">
+        <div id="top_t">
+            <div id="logo" class="fl"></div>
+            <div id="photo_info" class="fr">
+                <div id="photo" class="fl">
+                    <a href="#"><img src="__STATIC__/admin/images/a.png" alt="" width="60" height="60"></a>
+                </div>
+                <div id="base_info" class="fr">
+                    <div class="help_info">
+                        <a href="" id="hp">&nbsp;</a> 
+                        <a href="javascript:celarTemp();" id="gy">清缓存</a> 
+                        <a href="javascript:logout()" id="out">&nbsp;</a>
+                    </div>
+                    <div class="info_center">{$user.FullName} &nbsp; {if $user.UserId==1}*{/if}{$title}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="side_here">
+            <div id="side_here_l" class="fl"></div>
+            <div id="button" class="mt12">
+                <ul class="site-doc-icon">
+                    <li>
+                        <a href="javascript:gourl('{:url('admin/nurse/index')}',0)">
+                        <i class="fa fa-home"></i>
+                        <div class="doc-icon-name">首页</div>
+                        </a>
+                    </li>
+                    {if in_array(115,$rules)||$admin_flag}
+                    <li>
+                        <a href="javascript:gourl('{:url('admin/nurse/payCard')}',115)">
+                        <i class="fa fa-drivers-license"></i>
+                        <div class="doc-icon-name">分诊取号</div>
+                        </a>
+                    </li>
+                    {/if} 
+                    {if in_array(12,$rules)||$admin_flag} 
+                    <li>
+                        <a href="javascript:gourl('{:url('admin/appointment/registration')}',12)">
+                        <i class="fa fa-calendar"></i>
+                        <div class="doc-icon-name">现场预约</div>
+                        </a>
+                    </li>
+                    {/if} 
+                    {if in_array(142,$rules)||$admin_flag} 
+                    <li>
+                        <a href="javascript:gourl('{:url('admin/highcharts/line')}',142)">
+                        <i class="fa fa-bar-chart"></i>
+                        <div class="doc-icon-name">查询统计</div>
+                        </a>
+                    </li>
+                    {/if}  
+                    {if in_array(6,$rules)||$admin_flag}
+                    <li>
+                        <a href="javascript:gourl('{:url('admin/doctor/listdata')}',6)">
+                        <i class="fa fa-cubes"></i>
+                        <div class="doc-icon-name">队列管理</div>
+                        </a>
+                    </li>
+                    {/if}  
+                    {if in_array(113,$rules)||$admin_flag}
+                    <li>
+                        <a href="javascript:gourl('{:url("admin/doctor/listdatas")}',113)">
+                        <i class="fa fa-plus-square"></i>
+                        <div class="doc-icon-name">医生管理</div>
+                        </a>
+                    </li>
+                    {/if}  
+                    {if in_array(139,$rules)||$admin_flag}
+                    <li>
+                        <a href="javascript:gourl('{:url("admin/doctor/classtime")}',139)">
+                        <i class="fa fa-calendar-check-o"></i>
+                        <div class="doc-icon-name">排班管理</div>
+                        </a>
+                    </li>
+                    {/if}  
+                    {if in_array(116,$rules)||$admin_flag}
+                    <li>
+                        <a href="javascript:gourl('{:url("/admin/terminal/listdata")}',116)">
+                        <i class="fa fa-calculator"></i>
+                        <div class="doc-icon-name">呼叫终端</div>
+                        </a>
+                    </li>
+                    {/if}  
+                    {if in_array(82,$rules)||$admin_flag}
+                    <li>
+                        <a href="javascript:gourl('{:url("admin/android/infoTwo")}',82)">
+                        <i class="fa fa-television"></i>
+                        <div class="doc-icon-name">显示终端</div>
+                        </a>
+                    </li>
+                    {/if}  
+                    {if in_array(114,$rules)||$admin_flag}
+                    <li>
+                        <a href="javascript:gourl('{:url("admin/voice/setvoice")}',114)">
+                        <i class="fa fa-file-sound-o"></i>
+                        <div class="doc-icon-name">语音配置</div>
+                        </a>
+                    </li>    
+                    {/if}  
+                    <li>
+                        <a href="javascript:gourl('{:url("admin/message/listdata")}',130)">
+                        <i class="fa fa-commenting-o"></i>
+                        <span style="font-size: 1rem;color: #e00707;position: absolute;" id="info_num">{$msg_num}</span>
+                        <div class="doc-icon-name">消息</div>
+                        </a>
+                        <audio id="video" controls src="__HUI__/music/2.mp3" style="display: none;">您的浏览器不支持 audio 标签。</audio>
+                    </li>
+                </ul>        
+            </div>            
+        </div>
+        </div>            
+        <div class="side" id="demo">
+            <div class="sideMenu" style="margin: 0 auto" id="">
+            {volist name="listmenu" id="vo"}
+                <div id="{$vo.id}">                    
+                    <h3>{$vo.title}</h3>
+                    {notempty name="$vo.child"}
+                        <ul style="max-height: 250px;overflow-y: auto;">
+                        {volist name="$vo.child" id="vd"}  
+                        <li onclick="gourl('{:url($vd.name)}',{$vd.id})" attrid="{$vd.id}"><i class="fa {$vd.ico}"></i>{$vd.title}</li>
+                        {/volist} 
+                        </ul>
+                    {/notempty}
+                </div>
+            {/volist}
+                <div id="{$vo.id}">                    
+                    <h3>当前医生</h3>
+                    <div style="text-align: center;padding: 5px 0;display: none;" id="message">
+                        <input type="hidden" name="doctor_id" id="doctor_id" value="">
+                        <input type="text" name="scontent" id="scontent" class="input-text" placeholder="发送内容" style="margin-bottom: 5px;">
+                        <input type="button" class="ext_btn ext_btn_success" onclick="send()" value="发送">
+                    </div>
+                        <ul style="max-height: 250px;overflow-y: auto;">
+                    {notempty name="$ilist"}
+                        {volist name="$ilist" id="ld"}  
+                            <li onclick="sendMsg({$ld.id})" attrid="{$ld.id}">
+                                <i class="fa fa-user"></i>{$ld.title} {$ld.name}
+                            </li>
+                        {/volist} 
+                    {else/}
+                            <li>
+                                <i class="fa fa-user"></i>没有在线医生
+                            </li>
+                    {/notempty}
+                        </ul>
+                </div>
+            </div>
+        </div>
+    <div class="main">
+        {if(!empty($msg_list))}
+        <div class="box_border">
+            <div class="box_top" >
+                <b class="pl15" style="float: left;"> 消 息： </b>
+                <div class="bd">                    
+                    <ul class="picScroll-msg">
+                        {volist name="msg_list" id="msg"}
+                        <li value="{$msg.id}"> {$msg.QueName} : {$msg.content} <a href="javascript:;" onclick="read({$msg.id},this)">标记已读</a></li>
+                        {/volist}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {/if}
+        {block name="main"}Welcome{/block}
+    </div>
+    <div class="bottom">
+        <div id="bottom_bg" >福州中科易达计算机技术有限公司版权所有 服务电话：0591-87563369 软件授权给：{if $user.UserId==1}超级管理员{else/}{$unitname}{/if} {if $validDate<=30}剩余有效期{$validDate|default=0}天{/if}</div>
+    </div>
+    <div class="scroll" style="display: none;">
+        <a href="javascript:;" class="per" title="使用鼠标滚轴滚动侧栏" onclick="menuScroll(1);"></a> 
+        <a href="javascript:;" class="next" title="使用鼠标滚轴滚动侧栏" onclick="menuScroll(2);"></a>
+    </div>
+    <style type="text/css">
+    .main{
+        /*top: 150px;*/
+        margin-left: 2px;
+    }
+    .main .mt10,.span10,.main_top{
+        margin-top: 1px;
+    }
+    #side_here{
+        height: 90px;
+    }
+    .container{
+        padding: 0 1px;
+    }
+    .site-doc-icon{
+        display: block !important;
+    }
+    .site-doc-icon li{
+        float: left;
+        padding: 2px 0;
+        /*margin-left: 10px;*/
+        margin: 2px 0 2px 5px;
+        border: 1px solid #217eb2;
+        width: 72px;
+        text-align: center;
+        border-radius: 6px;
+    }    
+    .site-doc-icon li i{
+        font-size:40px;
+        color:#81BEF7
+    }
+    .sideMenu ul li i{
+        width: 20px;
+    }
+    .sideMenu ul li .fa{
+        font-size:16px;
+        color:#81BEF7;
+    }
+    .sideMenu ul>li{
+        padding-left: 40px;
+        background:none;
+    }
+    .sideMenu ul>li.on i{
+        color: #FFF;
+    }
+    .fa-add{
+        font-size: 22px;
+        color:#81BEF7;
+        margin: 5px;
+    }
+    .doc-icon-name{
+        color: #333;
+    }
+    .picScroll-msg{
+        display: block !important;
+    }
+    .picScroll-msg a{
+        color: #3eafe0d1;
+        font-size: 0.8rem;
+    }
+    </style>
+    <script type="text/javascript">
+    $(document).ready(function(){        
+        $(".site-doc-icon>li").hover(function(){
+            $(this).find("i").css("color","#108afb");
+        },function(){
+            $(this).find("i").css("color","#81BEF7");
+        })
+        connectSocket('{$devices_ip}',$,'z_admin',0);        
+    })
+    
+
+    function sendMsg(id) {
+        $("#doctor_id").val(id)
+        $("#message").show();
+    }
+    function send(){
+        var doctor_id = $("#doctor_id").val();
+        if(doctor_id==null||doctor_id==''){
+            alert("请选择医生!");
+            return false;
+        }
+        var content = $("#scontent").val();
+        $.post('{:url("admin/message/sendMsg")}',
+            {"doctor_id":doctor_id,'content':content},
+            function(res){
+                if(res.success==1){
+                    sendMsg('');
+                    $("#scontent").val('');
+                }else{
+                    location.reload();
+                }
+                alert(res.msg)
+            },'json')
+    }
+    function read(id,str) {
+        $.post('{:url("admin/message/readMsg")}',
+            {"id":id},
+            function(res){
+                if(res.success==1){
+                    $(str).parent().remove()
+                    jQuery(".box_top").slide({
+            titCell:".hd ul"
+            ,mainCell:".bd ul"
+            ,autoPage:true
+            ,effect:"top"
+            ,autoPlay:true
+            ,vis:1
+            ,trigger:"click"
+        });
+                }
+            },'json')
+    }
+    </script>
+    <script type="text/javascript" src="__STATIC__/admin/js/zsocket.js"></script> 
+</body>
+</html>
+
+

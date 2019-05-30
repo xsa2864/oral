@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+    <link rel="stylesheet" href="__STATIC__/admin/css/login.css">
+    <script type="text/javascript" src="__STATIC__/admin/js/jquery.min.js"></script>
+	<title>中科易达智能预约排队管理平台 IRQS-5000</title>
+</head>
+
+<body>
+	<div id="login_top">
+		<div id="welcome">
+			欢迎使用中科易达Q5预约排队管理平台
+		</div>
+		<div id="back">
+			<!--<a href="#">返回首页</a>&nbsp;&nbsp; | &nbsp;&nbsp;-->
+			<!-- <a href="#">帮助</a> -->
+		</div>
+	</div>
+	<div id="login_center">
+		<div id="login_area" >
+			<div id="login_form">
+				<form>
+					<div id="login_tip"  >
+						授权信息
+					</div>
+					<div><h2>{$item.unitname}</h2></div>
+					<div style="padding: 10px 0 0 0;">机器码：{$mac}</div>
+					<div style="padding: 10px 0 0 0;">剩余天数：{if $validDate<(365*5)}{$validDate}天{else/}永久{/if}</div>
+                    <div style="margin-top: 10px;">
+						<input type="button" name="submit" id="sub_btn" onclick="login()" value="授&nbsp;&nbsp;权">
+						<a href="{:url("admin/login/index")}" style="text-decoration: none;    padding-left: 20px;">返回登录</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div id="login_bottom">
+		福州中科易达计算机技术有限公司 版权所有
+	</div>
+<script type="text/javascript">
+function login() {
+	location.href = "{:url('admin/login/getGenuine')}";
+}	
+
+</script>
+</body>
+</html>

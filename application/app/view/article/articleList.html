@@ -1,0 +1,31 @@
+{extend name="common/public" /}
+{block name="title"}文章列表{/block}
+{block name="content"}
+<script type="text/javascript">
+function goto(url) {
+  location.href = url;
+}
+</script>
+<style type="text/css">
+.weui-cells{
+  margin-top: 0px;
+}
+.weui-cell{
+  cursor: pointer;
+}
+</style>
+  <div class="weui-cells">
+  {volist name="list" id="vo"}
+      <div class="weui-cell"  onclick="goto('{:url('app/article/content',['id'=>$vo.id])}')">
+        <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
+          <img src="{$vo.head_img|default='__APP__/images/pic_160.png'}" style="width: 50px;height: 50px;display: block">
+        </div>
+        <div class="weui-cell__bd">
+          <p>{$vo.title|mb_substr=0,16}</p>
+          <p style="font-size: 13px;color: #888888;">{:date("Y-m-d H:i",$vo.addtime)}</p>
+        </div>
+      </div>
+  {/volist}
+  </div>
+{/block}
+  

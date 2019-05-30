@@ -1,0 +1,135 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div id="forms" class="mt0">
+            <div class="box">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div class="box_top_l fl">
+                            <div style="float: left;">   
+                            <i class="fa fa-add fa-bank"></i>
+                        </div>
+                        <b>编辑终端</b>
+                    </div>
+                    <div class="box_center">
+                        <form  name="form1" class="jqtransform" >
+                            <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td class="td_right">选择区域：</td>
+                                    <td>
+                                        <select name="hall_id" id="hall_id" class="select" style="width: 260px;" onchange="getDevice($(this).val())">
+                                            <option value="">请选择区域</option>
+                                            {volist name="hall" id="vo"}
+                                            <option value="{$vo.HallNo}" {if $vo.HallNo==$list.hall_id}selected{/if}>{$vo.HallName}</option>
+                                            {/volist}
+                                        </select>
+                                        <input type="hidden" name="hall_name" id="hall_name" value="{$list.hall_name}">
+                                    </td>                                    
+                                    <td class="td_right">呼叫终端IP：</td>
+                                    <td>
+                                        <input type="text" name="ip" id="ip" class="input-text lh30" size="30" value="{$list.ip}">
+                                    </td>
+                                </tr>
+                                <!-- <tr>
+                                    <td class="td_right">呼叫器编号：</td>
+                                    <td>
+                                        <input type="text" name="code" id="code"  lay-verify="required" class="input-text lh30 " size="30" value="{$list.code}">
+                                    </td>
+                                    <td class="td_right">呼叫器名称：</td>
+                                    <td>
+                                        <input type="text" name="title" id="title" class="input-text lh30" size="30" value="{$list.title}">
+                                    </td>
+                                </tr> -->
+                                <tr>
+                                    <td class="td_right">房间名称：</td>
+                                    <td><input type="text" name="room_name" id="room_name" class="input-text lh30" size="30" value="{$list.room_name}">
+                                    </td>
+                                    <td class="td_right">终端座席名称：</td>
+                                    <td><input type="text" name="seat_name" id="seat_name" class="input-text lh30" size="30" value="{$list.seat_name}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">显示终端：</td>
+                                    <td>
+                                        <select name="devices_ip" id="devices_ip" class="select" style="width: 260px;" onchange="selectName()">
+                                            <option>请选择显示端</option>
+                                        </select>
+                                        <input type="hidden" name="devices_name" id="devices_name" class="input-text lh30" size="30" value="">
+                                    </td>
+                                    <td class="td_right">终端类型：</td>
+                                    <td>
+                                        <select name="z_type" id="z_type" class="select" style="width: 260px;">
+                                            <option value="1" {if $list.z_type==2}selected{/if}>呼叫端</option>
+                                            <option value="2" {if $list.z_type==2}selected{/if}>手术端</option>
+                                        </select>
+                                    </td>       
+                                </tr>   
+                                </table> 
+                                <div class="box_top" style="text-align: center;">
+                                    <input type="hidden" name="id" class="input-text lh30" size="4" value="{$list.id}">
+                                    <input type="button" name="button" class="btn btn82 btn_save2"  lay-submit lay-filter="formDemo" value="保存" style="margin-right: 20px;"> 
+                                    <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="history.back(-1);" value="取消"> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+                </form>
+            </div>
+        </div>
+<script type="text/javascript">
+layui.use('form', function(){
+  var form = layui.form;
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    $.post('{:url("admin/terminal/saveInfo")}',
+        $("form").serialize(), 
+        function(data){
+            if(data.success==2){
+                location.reload();
+            }else if(data.success==1){
+                history.go(-1);
+            }
+            alert(data.msg);
+    },'json')
+  });
+
+});
+
+
+    // 显示终端列表
+    function getDevice(hall_id){
+        $.post('{:url("admin/terminal/getTerminal")}',
+            {'hall_id':hall_id}, 
+            function(data){
+                if(data.success==1){
+                    var str = '<option value="">请选择显示端</option>';
+                    var da = data.data;
+                    for(x in da){
+                        var select = ''
+                        if(da[x].devices_ip=='{$list.devices_ip}'){
+                            select = 'selected';
+                        }
+                        str += '<option value="'+da[x].devices_ip+'" '+select+'>'+da[x].devices_name+'</option>';
+                    }
+                    $("#devices_ip").html(str);
+                    var str = $('#hall_id option:selected').text();
+                    $("#hall_name").val(str);
+                }
+            },'json')
+    }
+    function selectName(){
+        var str = $('#devices_ip option:selected').text();
+        $("#devices_name").val(str);
+    }
+$(function(){
+    {if $list.hall_id}
+    getDevice('{$list.hall_id}')
+    {/if}
+})
+</script>
+{/block}

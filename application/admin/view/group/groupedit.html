@@ -1,0 +1,90 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">       
+        <div id="forms" class="mt0">
+            <div class="box">
+                    <div class="box_top">
+                        <div style="float: left;">   
+                                <i class="fa fa-add fa-cubes"></i>
+                            </div>
+                        <b>编辑预约分组</b>   
+                    </div>
+
+                    <form name="form1">
+                        <div class="box_center">
+                            <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td class="td_right">预约组名：</td>
+                                    <td style="width: 330px;">
+                                        <input type="text" name="hallname" id="hallname" class="input-text lh30" lay-verify="required" size="30"  value="{$list.HallName}">[必填]
+                                    </td>
+                                    <td class="td_right"></td>
+                                    <td></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="td_right">启用/暂停：</td>
+                                    <td class=""> 
+                                        <input type="radio" name="EnableFlag" title="启用" value="1" checked> 启用 &nbsp;
+                                        <input type="radio" name="EnableFlag" title="暂停" value="0" {if $list.EnableFlag==0}checked{/if}> 暂停 
+                                    </td>
+                                    <td class="td_right">所属单位：</td>
+                                    <td class=""> 
+                                        <span class="fl">
+                                            <div class="select_border"> 
+                                                <div class="select_containers "> 
+                                                    <select name="unitId" class="select"  style="width: 200px;">  
+                                                    <option value="0">请选择</option>
+                                                    {volist name="unit" id="vo"}
+                                                    <option value="{$vo.UnitId}" {if $vo.UnitId==$list.unitId}selected
+                                                    {/if}>{$vo.unitname}</option>
+                                                    {/volist}          
+                                                    </select> 
+                                                </div> 
+                                            </div> 
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">接口标识：</td>
+                                    <td> <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list.SerInterface}"></td> 
+                                    <td class="td_right"></td>
+                                    <td> 
+                                    </td>
+                                </tr>
+                        </table>
+                     	<div class="box_top" style="text-align: center;">
+                     		<input type="hidden" name="id" value="{$list.id}">
+                            <input type="button" name="button" class="btn btn82 btn_save2" lay-submit lay-filter="formDemo" value="保存"> 	
+                            <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="history.back(-1);" value="取消"> 
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+layui.use('form', function(){
+  var form = layui.form;
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    $.post('{:url("admin/group/saveGroup")}',
+        $("form").serialize(),
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }else if(data.success==2){
+                history.go(-1);
+            }
+            alert(data.msg)
+        },'json')
+  });
+});
+
+</script>
+{/block}

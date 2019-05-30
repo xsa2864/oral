@@ -1,0 +1,117 @@
+{extend name="common/public" /}
+{block name="title"}查询预约{/block}
+{block name="js"}
+<script type="text/javascript">
+// 查询信息 
+function select() {
+	var idcard = $("#idcard").val();
+	var mobile = $("#mobile").val();
+	var status = $("#status").val();
+	$.post('{:url("app/hall/getDataMark")}',
+		{'idcard':idcard,'mobile':mobile,'status':status},
+		function(data){
+			if(data.success==1){
+				var da = data.msg;
+				var str = '';
+				for(x in da){ 
+					var mobile = da[x].mobile.replace(/(\d{3})\d{4}(\d{4})/,'$1****$2');
+					var idcard = da[x].idcard.replace(/(\d{6})\d{8}(\d{3})([0-9A-Za-z]{1})/, '$1*******$2$3');
+					var status = da[x].status==1?'预约中':(da[x].status==0?'已取消':'已完成');
+					if(da[x].status==1){
+						if(da[x].despeakTime < (Date.parse(new Date())/1000)){
+							status = '已过期';
+						}
+					}else{
+						status = da[x].status==3?'已过期':(da[x].status==0?'已取消':'已完成');
+					}
+					var cli = '';
+					var time = '';
+					cki = da[x].status==1?' onclick="reMark('+da[x].queId+','+da[x].despeak_id+');"':'';
+					time = da[x].despeakDate+' '+da[x].time_Part_S+'-'+da[x].time_Part_O;
+	str += '<div class="weui-form-preview">';
+	str += '    <div class="weui-form-preview__hd">';
+	str += '      	<div class="weui-form-preview__item">';
+	str += '        	<label class="weui-form-preview__label">'+da[x].HallName+'</label>';
+	str += '        	<em class="weui-form-preview__value">'+da[x].QueName+'</em>';
+	str += '     	</div>';
+	str += '    </div>';
+	str += '    <div class="weui-form-preview__bd" '+cki+'>';
+	str += '      	<div class="weui-form-preview__item">';
+	str += '      	  	<label class="weui-form-preview__label">手机号</label>';
+	str += '      	  	<span class="weui-form-preview__value">'+mobile+'</span>';
+	str += '      	</div>';
+	str += '      	<div class="weui-form-preview__item">';
+	str += '      	  	<label class="weui-form-preview__label">身份证号</label>';
+	str += '      	  	<span class="weui-form-preview__value">'+idcard+'</span>';
+	str += '      	</div>';
+	str += '      	<div class="weui-form-preview__item">';
+	str += '      	  	<label class="weui-form-preview__label">就诊时间</label>';
+	str += '      	  	<span class="weui-form-preview__value" style="font-size:0.8rem;color:#000;" id="'+da[x].despeak_id+'">'+time+'</span>';
+	str += '      	</div>';
+	str += '      	<div class="weui-form-preview__item">';
+	str += '      	  	<label class="weui-form-preview__label">状 态</label>';
+	str += '      	  	<span class="weui-form-preview__value">'+status+'</span>';
+	str += '      	</div>';
+	str += '    </div>';
+	{if condition="$status==1"}
+	str += '    <div class="weui-form-preview__ft">';
+	str += ' <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:cancel('+da[x].despeak_id+');">取消预约</a>';
+	str += '    </div>';
+	{/if}
+    str += '</div><br>';
+				}
+				$("#data_list").html(str);
+			}else{
+				$("#data_list").html('<div class="weui-form-preview"><div class="weui-form-preview__ft"><a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:;">没有查询到数据</a></div></div>');
+			}
+		},'json')
+}
+// 重新预约
+function reMark(qid,did){
+	location.href = '{:url("app/hall/getMark")}?id='+qid+'&did='+did;
+}
+// 取消预约
+function cancel(id){	
+	var str = $("#"+id).html();
+	if(confirm("确定取消 "+str+" 的预约？")){
+		$.post('{:url("app/hall/cancelMark")}',
+		{'id':id},
+		function(data){
+			if(data.success==1){
+				location.reload();
+			}
+			alert(data.msg)
+		},'json')
+	}
+}
+</script>
+{/block}
+{block name="content"}
+    <div class="weui-cells__title" style="background-color: ">填写下面内容</div>
+    <form>
+    <div class="weui-cells weui-cells_form" style="margin-top: 0px;">
+        <div class="weui-cell">
+          <div class="weui-cell__hd"><label class="weui-label">身份证号：</label></div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" type="text" name="idcard" id="idcard" placeholder="请输入身份证号" value="{$idcard}">
+          </div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__hd"><label class="weui-label">手机号：</label></div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" type="tel" name="mobile" id="mobile" placeholder="请输入手机号" value="{$mobile}">
+          </div>
+        </div>
+    </div>
+    <div class="weui-cells__title">确认完成</div>
+    <input type="hidden" name="QueId" value="">
+    <input type="hidden" name="status" id="status" value="{$status}">
+    </form>
+    <div class="weui-btn-area">
+      <a class="weui-btn weui-btn_primary" href="javascript:select();" id="showTooltips">确定</a>
+    </div>
+
+    <div class="weui-cells__title">数据列表</div>
+    <div id="data_list"></div>
+{/block}
+  

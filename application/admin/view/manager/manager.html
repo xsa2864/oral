@@ -1,0 +1,108 @@
+{extend name="base/base" /}
+
+{block name="main"}
+ <div id="forms" class="mt10">
+   <div class="box">
+     <div class="box_border">
+       <div class="box_top">
+            <div style="float: left;">   
+              <i class="fa fa-add fa-keyboard-o"></i>
+            </div>
+            <b>账户信息</b>
+        </div>
+       <div class="box_center">
+         <form>
+          <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+             <td class="td_right">账 号 名:</td>
+             <td class=""> 
+               {$user.UserName}
+             </td>
+           </tr>
+           <tr>
+             <td class="td_right">归属单位:</td>
+             <td class=""> 
+               {if $user.UserId==1}超级管理员{else/}{$user.unitname}{/if}
+             </td>
+           </tr>
+           <tr>
+             <td class="td_right">姓 名 :</td>
+             <td class=""> 
+               <input type="text" name="FullName" class="input-text lh30" size="40" value="{$user.FullName}">
+             </td>
+           </tr>
+
+           <tr>
+             <td class="td_right">手 机 号:</td>
+             <td class=""> 
+               <input type="text" name="BodNo" class="input-text lh30" size="40" value="{$user.BodNo}">
+             </td>
+           </tr>
+
+           <tr>
+             <td class="td_right"> 密 码 :</td>
+             <td class=""> 
+               <input type="password" name="password" id="password" class="input-text lh30" size="40"placeholder="密码为空表示不修改密码">
+             </td>
+           </tr>
+
+           <tr>
+             <td class="td_right">确认密码:</td>
+             <td class=""> 
+               <input type="password2" name="password2" class="input-text lh30" size="40" placeholder="请输入确认密码">
+             </td>
+           </tr>
+
+           <tr>
+             <td class="td_right">单 选 :</td>
+             <td class="">
+               <input type="radio" name="Sex" value="男" title="男" checked> 男 &nbsp;
+               <input type="radio" name="Sex" value="女" title="女" {if $user.Sex=='女'}checked{/if}> 女
+             </td>
+            </tr>
+            <tr>
+              <td class="td_right">&nbsp;</td>
+              <td class="">
+                <input type="button" name="button" lay-submit lay-filter="demo1" class="btn btn82 btn_save2" value="保存"> 
+               <input type="button" name="button" class="btn btn82 btn_res" value="重置"> 
+              </td>
+            </tr>
+          </table>
+          </form>
+       </div>
+     </div>
+   </div>
+</div>
+
+<script>
+layui.use(['form'], function(){
+  var form = layui.form
+  ,layer = layui.layer;
+  
+  //自定义验证规则
+  form.verify({
+    FullName: function(value){
+      if(value.length < 2){
+        return '姓名至少得2个字符啊';
+      }
+    }
+    ,BodNo:[/(^1[3|4|5|7|8]\d{9}$)|(^09\d{8}$)/,'手机号码有误']
+    ,content: function(value){
+      layedit.sync(editIndex);
+    }
+  });
+  
+  //监听提交
+  form.on('submit(demo1)', function(data){
+    $.post('{:url("admin/manager/managerSave")}',
+      $("form").serialize(),
+      function(data){
+        layer.alert(data.msg)
+      },'json')
+      return false;
+  });
+ 
+});
+</script>
+
+{/block}

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>综合显示屏</title>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+</head>
+<body>
+<style type="text/css">
+html,body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}/*这里是关键*/
+
+.grid-demo {
+    line-height: 230%;
+    text-align: center;
+    background-color: #79C48C;
+    color: #fff;
+}
+
+.grid-center{
+	background-color: #235695;
+	border-top: 1px solid #FFF;
+	padding: 5px 10px;
+}
+.grid-time{
+	background-color: #fe7f18;
+}
+.grid-th{
+	background-color: #fc6f05;
+}
+.grid-blue{
+	background-color: #235695;
+}
+
+.layui-table th {
+	text-align: center;
+	color: #FFFFFF;
+}
+
+/*===第一行===*/
+.grid-ltop{
+	height: 100%;
+	padding-left: 1vw;
+	font-size: 3vw;
+	line-height: 200%;
+	background-color: #015486;
+	color: #fff;
+}
+.grid-rtop{
+	height: 100%;
+	font-size: 1.5vw;
+	line-height: 1.5vw;
+	padding-top: 1.5vw;
+	background-color: #fe7f18;
+	color: #fff;
+	text-align: center;
+}
+/*===第二行====*/
+.grid-ltop2{
+	height:100%;
+	text-align: center;
+	background-color: #015486;
+	line-height: 190%;
+	color: #fff;	
+	font-size: 2.3vw;
+}
+.grid-rtop2{
+	text-align: left;
+	padding-left: 5px;
+	background-color: #fe7f18;
+}
+/*===第二行====*/
+.grid-ltop3{
+	height:100%;
+	font-size: 2.2vw;
+	color: #ffffff;
+	background-color: #015486;
+	line-height: 190%;
+	text-align: right;
+}
+.grid-rtop3{
+	text-align: left;
+}
+table{
+	height: 80% !important;	
+	border-bottom: 2px solid #FFF;
+	border-top: 2px solid #FFF;
+	margin: 0px !important;
+}
+table thead tr th,td{
+	font-size: 1.8vw !important;
+	height: 2.1vw !important;
+}
+table tr:nth-child(even){
+	background: #fef4ea;
+}
+
+#data_list tr td{
+	font-weight: bold;
+	color: #fc6f05;
+	/*white-space: nowrap;*/
+}
+/*====文字滚动 css======*/
+.marquee{
+	white-space: nowrap;
+    overflow: hidden;
+}
+/*====文字滚动 css======*/
+</style>
+<!-- <div>
+	<img src="__IMG__/thumb/zh.jpg">
+</div> -->
+<div class="layui-fluid" style="padding: 0px;margin: 0px;height: 100%;">  
+	<div class="layui-row" style="height: 100%;">
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 11%;">
+	  		<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%;">
+	  			<div class="grid-ltop" id="grid-ltop" style="background-image: url('__IMG__{$top_logo}');background-size: 100%;background-repeat: no-repeat;white-space: pre;">{if !empty($top_text)}&nbsp;{$top_text|raw}{else/}&nbsp;&nbsp;中科易达排队综合显示系统{/if}
+	  		</div>
+	  		</div>
+	  		<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%">
+	  			<div class="grid-rtop">
+	  				<div id="date"></div>
+	  				<div id="time"></div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12 grid-center" style="height: 81%;">
+	  	  	<div class="layui-col-xs8 layui-col-sm8 layui-col-md8" style="    background-color: #dfe8ef;padding: 10px;height: 100%;">
+	  	  		<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 10%;">
+	  	  			<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%">
+	  	  				<div class="grid-ltop2">当前叫号</div>
+	  	  			</div>
+	  	  			<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%">
+	  	  				<div class="marquee grid-ltop2 grid-rtop2" id="now">&nbsp;</div>
+	  	  			</div>
+	  	  		</div>
+	  	  		<table class="layui-table" lay-skin="nob">
+					<colgroup>
+					</colgroup>
+					<thead>
+					    <tr>
+					      <th class="grid-time" colspan="4">当前就诊</th>
+					      <th class="grid-th">等候就诊</th>
+					      <th class="grid-blue">医&nbsp;生</th>
+					    </tr> 
+					</thead>
+					<tbody id="data_list">					    
+					</tbody>
+				</table>
+				<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 10%;">
+					<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%;">
+	  	  				<div class="grid-demo"  style="font-size: 2.3vw;height: 100%;line-height:190%;background-color: #f64a1a;">过号人员</div>
+	  	  			</div>
+	  	  			<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%;">
+	  	  				<div class="grid-demo grid-time" style="color: #ffffff;text-align: left;line-height:190%;font-size: 2.3vw;height: 100%;" id="hall_false">&nbsp;</div>
+	  	  			</div>
+	  	  		</div>
+	  		</div>
+	  		<div class="layui-col-xs4 layui-col-sm4 layui-col-md4" style="padding-left: 10px;height: 100%;">	  			
+	  			<div class="layui-carousel" id="test1">
+				  <div carousel-item>
+				  	{volist name="img" id="vo"}
+				    <div><img src="__IMG__/{$vo.img}" style="width: 100%;height: 100%;" /></div>
+				    {/volist}
+				  </div>
+				</div>
+	  		</div>
+	  	</div>
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 8%;">
+			<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%">
+				<div class="grid-ltop3">友情提示：</div>
+		  	</div>
+		  	<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%">
+				<div class="grid-ltop3 grid-rtop3">{$tips|default='请叫到号码的人员到相应诊室就诊，其他人保持现场秩序与安静，耐心等候！'}</div>
+		  	</div>
+	  	</div>
+	</div>
+</div>
+
+<div class="layui-form layui-form-pane" style="display: none;">
+	<div class="layui-form-item">
+	    <div class="layui-inline">
+	      <div class="layui-input-inline" style="width: 100px;">
+	        <input type="text" name="devices_ip" lay-verify="required" value="{$devices_ip}" placeholder="设备通信编号" autocomplete="off" class="layui-input">
+	      </div>	      
+	      <div class="layui-input-inline" style="width: 100px;">
+	        <button class="layui-btn layui-btn-radius" onclick="changeCode()"> 保 存 </button>
+	      </div>	      
+	    </div>
+	</div>
+</div>
+
+<script type="text/javascript">
+layui.use(['carousel','jquery'], function(){
+  	var  $ = layui.$
+  		,start_num=0
+  		,end_num=0
+  		,pg=''
+  		,carousel = layui.carousel;
+  
+  	$(function() {
+  		showDate()
+		showTime();
+		var tm = setInterval(showDate,1000)
+		connectSocket()		
+		showHallQueue(1)
+		// pg = setInterval(c_showHallQueue,20000)
+		// Marquee()	
+	})
+	carousel.render({
+	    elem: '#test1'
+	    ,width: '100%' //设置容器宽度
+	    ,height: '100%' //设置容器宽度
+	    ,arrow: 'none' //始终显示箭头
+	    ,indicator:'none'
+	    ,interval:10000
+	    //,anim: 'updown' //切换动画方式
+	});
+	function c_showHallQueue(){
+		showHallQueue(1)
+	}
+	function showDate(){
+		var str = "";  
+		var dt = new Date(); // 得到当前时间
+		var week = dt.getDay();  
+		if (week == 0) {  
+		        str = "星期日";  
+		} else if (week == 1) {  
+		        str = "星期一";  
+		} else if (week == 2) {  
+		        str = "星期二";  
+		} else if (week == 3) {  
+		        str = "星期三";  
+		} else if (week == 4) {  
+		        str = "星期四";  
+		} else if (week == 5) {  
+		        str = "星期五";  
+		} else if (week == 6) {  
+		        str = "星期六";  
+		}  
+
+		var h = dt.getHours();
+		if(h<10) h='0' + h;
+		var i = dt.getMinutes();
+		if(i<10) i='0' + i;
+		var s = dt.getSeconds();
+		if(s<10) s='0' + s;
+		str +=  ' '+ h + ':' + i + ':' + s;
+		$("#time").html(str);
+	}
+	function showTime(){
+		var dt = new Date(); // 得到当前时间
+		var y = dt.getFullYear(); // 当前年份
+		var m = dt.getMonth() + 1; // 当前月份，getMonth 返回值是 0-11 对应 1-12月，因此全部加1
+		var d = dt.getDate();
+		if(m<10) m='0' + m;
+		if(d<10) d='0' + d;	 
+		var str =  y + '年' + m + '月' + d + '日';
+		$("#date").html(str); // 将格式化后的内容装载到容器中
+	}
+
+	var ws = "",i = '',data = '',s = '',arr = new Array();
+
+	function connectSocket()
+	{
+		data = '{"type":"login","devices_ip":"{$devices_ip}"}';
+		ws = new WebSocket('ws://'+document.domain+':23452');
+		ws.onopen = function(){
+			// console.log(data)
+		    i = setInterval(heartbeat,40000);
+		    ws.send(data);
+		    clearInterval(s);
+		    console.log("连接成功");  
+		};
+
+		ws.onmessage = function(e){
+			var obj = eval('(' + e.data + ')');	
+			var str = '';
+			console.log(obj)
+			if(obj.ping){
+				console.log(obj.ping);
+			}else if(obj.warning){
+				$("#now").html(obj.warning);//显示叫号信息
+			}else{
+				$("#hall_false").html(obj.hall_false?obj.hall_false:'&nbsp;')
+				showHallQueue()
+			}
+		};
+		//关闭重连
+		ws.onclose = function (event) {
+			s = setTimeout(conSend,5000);
+			clearInterval(i);
+		}
+	}
+	// 心跳
+	function heartbeat(){
+		ws.send('{"type":"ping"}');
+	}
+	//重连
+	function conSend(){
+		console.log("断线重连中...");
+		connectSocket();
+	}
+
+	// 综合显示屏显示
+	function showHallQueue(num) {
+		$.post('{:url("pavilion/display/showHallQueue")}',			
+			{'hall_id':"{$hall_id}"},
+			function(res){
+				var html = '';
+				var n = 8;
+				var field = '';
+				if(res){					
+					var arr = res.list;
+					field = res.field;					
+					// $("#now").html(res.now);//显示叫号信息
+					if(num!=1){
+						setTitle(res.now)
+					}
+					var x = 0;
+					if(num==1){
+						x = end_num;
+					}else{
+						x = start_num;
+					}	
+					for (var i = 0; i < 8; i++) {	
+						if(res.number < i+1){
+							break;
+						}
+						var mark = '';
+						if(arr[x].items.order==1){
+							mark = '<span style="font-size: 1.1vw;">(预约)</span>';
+						}
+						html += '<tr>';
+						html += '   <td>'+arr[x].que_name+'</td>';
+						html += '   <td>'+arr[x].items.prefix+''+arr[x].items.code+mark+'</td>';
+						html += '   <td>'+arr[x].items.name+'</td>';
+						html += '   <td>'+arr[x].room_name+'</td>';					
+						html += '   <td class="txtMarquee-left">'+arr[x].title+'</td>';
+						html += '   <td>'+arr[x].name+'</td>';
+						html += '</tr>';
+						n--;
+						//记录显示数据定位
+						if(num==1 && res.number>7){
+							if(i==0){
+								start_num = x;	
+							}else{
+								end_num = x;
+							}	
+						}				
+						x++;
+						//数据到尾、重头获取
+						if(x >= res.number){
+							x = 0;
+						}
+					}						
+				}
+				
+				for (var i = 1; i <= n; i++) {
+					html += '<tr>';
+					html += '   <td>&nbsp;</td>';
+					html += '   <td>&nbsp;</td>';
+					html += '   <td>&nbsp;</td>';
+					html += '   <td>&nbsp;</td>';
+					html += '   <td>&nbsp;</td>';
+					html += '   <td>&nbsp;</td>';
+					html += '</tr>';
+				}
+				$("#data_list").html(html);
+				if(field){
+					var show = ["1","2","3","4","5","6"];
+					var fn = 4;
+					var col = '';
+					for(m in show){
+						if(field.indexOf(show[m])==-1){							
+							if(show[m]=="5" || show[m]=="6"){
+								$('table.layui-table thead tr th:nth-child('+(show[m]-3)+')').addClass('layui-hide');
+							}
+							$('table.layui-table tr td:nth-child('+show[m]+')').addClass('layui-hide');
+							if(show[m]<=4){
+								fn--;
+							}
+						}else{							
+							if(show[m]=="5"){
+								col += '<col>';
+							}else{
+								col += '<col>';
+							}							
+						}
+					}
+					$("colgroup").html(col)
+					$("table.layui-table thead tr th:nth-child(1)").attr("colspan",fn)
+				}
+		},'json')
+	}
+
+	/*========文字滚动 js========*/	
+	var run = '';
+	var scrollLeft = function(){
+		layui.$(".marquee").scrollLeft(0)
+	}
+	var Marquee = function(){	
+		var  num = 0
+			,speed = 50;
+		clearInterval(run);
+		var rolling = function(){		
+			num += 1;
+				ch = layui.$(".marquee").scrollLeft()
+				layui.$(".marquee").scrollLeft(num)
+				if(ch == layui.$(".marquee").scrollLeft()){
+					num = 0;
+					clearInterval(run)
+					setTimeout(scrollLeft,2000)
+					setTimeout(Marquee,4000)
+				}		
+		}
+		run = setInterval(rolling, speed)
+	} 
+	/*=========文字滚动 js========*/
+
+	// 通信編號配置
+	$(".grid-rtop3").on("click",function(){
+		$(".layui-form").toggle()
+	})
+});
+	function changeCode(){
+		var devices_ip = layui.$("input[name='devices_ip']").val();
+	  	//请求登入接口
+	  	layui.$.post('{:url("pavilion/display/changeCode")}',
+	  		{'devices_ip':devices_ip},
+	  		function(res){
+	  			if(res){
+	  				location.reload();
+	  			}else{
+	  				alert('配置出错')
+	  			}
+	  		},'json')
+	}
+
+function setTitle(str) {
+	var n = sessionStorage.length;
+	sessionStorage.setItem(n,str);
+	showTitle(0)
+}
+function showTitle(num){
+	var n = sessionStorage.length;
+	if(n>num){
+		var str = sessionStorage.getItem(num);
+		opChange();
+		layui.$("#now").html(str);
+		setTimeout(function(){
+			num ++;
+			showTitle(num);
+		},5000)
+	}else{
+		sessionStorage.clear();
+		console.log("show all over")
+	}
+}
+function opChange() {
+	var c = setInterval("changeColor()",500);
+	setTimeout(function () {
+		layui.$("#now").css("color","#FFFFFF");
+		clearInterval(c);
+	},3000)
+}
+function changeColor(){
+	var cl = layui.$("#now").css("color");
+	var color="#0f0|#00f";
+	var n=0;
+	if(cl == 'rgb(0, 255, 0)'){
+		n=1;
+	}
+	color=color.split("|");
+	layui.$("#now").css("color",color[n]);
+}
+</script>
+</body>
+</html>

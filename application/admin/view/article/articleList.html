@@ -1,0 +1,66 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="main_left fl span10">
+    <div class="box pr0">
+        <div class="box_border">
+            <div class="box_top">
+                <div class="box_top_l fl">
+                    <div style="float: left;">   
+                        <i class="fa fa-add fa-briefcase"></i>
+                    </div>
+                    <b>文章列表</b>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="table" class="mt10">
+    <div class="box span10 oh">
+        <table class="list_table" style="font-size: 1rem;width: 100%">
+            <tr>
+               <th width="50">ID</th>
+               <th width="13%">单位名称</th>
+               <th width="20%">标题</th>
+               <th width="35%">副标题</th>
+               <th width="80">分类</th>
+               <th width="80">状态</th>
+               <th>操作</th>
+            </tr>
+            {volist name="list" id="vo"}
+            <tr class="tr td_center">
+               <td>{$vo.id}</td>
+               <td>{$vo.unitname}</td>
+               <td>{$vo.title}</td>
+               <td>{$vo.subtitle}</td>
+               <td>{$vo.name}</td>
+               <td>{$vo.status==1?'开启':'关闭'}</td>
+               <td>
+                   <a href="{:url('admin/article/article',['id'=>$vo.id])}">编辑</a> |
+                   <a href="javascript:del({$vo.id});">删除</a>
+               </td>
+            </tr>
+            {/volist}
+        </table>
+        <div class="page mt10">
+            <div class="pagination">
+                {$page|raw}
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+//  
+function del(id) {
+    if(confirm("确定删除?")){
+      $.post('{:url("admin/article/articleDel")}',{"id":id},
+        function(data){
+          if(data.success==1){
+            location.reload()
+          }
+          alert(data.msg);
+        },'json')
+    }
+}
+</script>
+{/block}

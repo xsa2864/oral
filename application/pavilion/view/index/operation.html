@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>手麻终端</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="renderer" content="webkit">	
+	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+</head>
+<body style="background-color: #FFF;">
+<style type="text/css">
+.layui-col-xs6{
+	padding: 6px;
+}
+.layui-col-xs4{
+	text-align: center;
+	padding-bottom: 15px;
+}
+.layui-col-xs12{
+	text-align: center;
+	padding: 0px 15px 20px 15px;
+}
+.layui-this,.layui-tab-content{
+	background-color: #81bef73d;
+}
+.layui-btn{
+	background-color: #298ad3;
+}
+.layui-tab-item{
+	height: 380px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.layui-tab-title li{
+	    min-width: 40px;
+}
+
+blockquote{
+	margin-bottom: 0px !important;
+	background-color: #2177b7 !important;
+	border-width: 1px 1px 1px 1px !important;
+	color: #FFF;
+	font-size: 1rem;
+}
+.layui-tab{
+	margin: 1px;
+}
+.r_msg{
+	float: right;
+	color:#fd5151;
+}
+.w_msg{
+	float: right;
+	color:#FFF;
+}
+/*====文字滚动 css======*/
+.marquee{
+	white-space: nowrap;
+    overflow: hidden;
+    padding-right: 10px;
+}
+/*====文字滚动 css======*/
+.change_color{
+	background-color: #f44336;
+}
+</style>
+<blockquote class="layui-elem-quote layui-quote-nm">
+ 	<img src="{if(empty($doctor.pic))}__STATIC__/admin/images/doctor.jpg{else/}__IMG__/{$doctor.pic}{/if}"class="layui-nav-img" style="float: left;width: 60px;height: 60px;border-radius: 10%;"> 
+ 	<div style="padding-top: 10px;"> 		
+		科室：{$item.room_name} 
+		<br>
+		医生：{$doctor.QueName}
+ 	</div>
+ 	<span style="position: absolute;right: 5px;top: 5px;font-size: 12px;color: #aaa;">
+ 		<a href="javascript:;" lay-submit lay-filter="logout">退出</a>
+ 	</span>
+</blockquote>
+<blockquote class="layui-elem-quote layui-quote-nm" style="padding: 10px;">
+	<div class="layui-row">
+	    <div class="layui-col-xs3" style="width: 66px;">
+	      	<span style="color: #03ea03;">新消息：</span>
+	    </div>
+	    <div class="layui-col-xs8 marquee">
+	      	{$msg.content}&nbsp;
+	    </div>
+	    <div class="layui-col-xs1">
+	      	<a href="javascript:;" lay-submit lay-filter="readMsg" title="点击后表示已阅读" class="w_msg"><i class="layui-icon layui-icon-reply-fill"></i></a>
+	    </div>
+  	</div>
+  	<audio id="video" controls src="__HUI__/music/2.mp3" style="display: none;">您的浏览器不支持 audio 标签。</audio>
+</blockquote>
+
+<div class="layui-tab">
+	<ul class="layui-tab-title">
+	    <li class="layui-this">数据发送</li>
+	    <li lay-submit lay-filter="waitList">改变状态</li>
+	    <li lay-submit lay-filter="overList">完成人员</li>
+	</ul>
+	<div class="layui-tab-content">
+<!-- 一 tab -->
+<div class="layui-tab-item layui-show layui-form">	
+	<div class="layui-form-item">
+	    <label class="layui-form-label">患者姓名</label>
+	    <div class="layui-input-block">
+	      <input type="text" name="name" onchange="showName()" autocomplete="off" placeholder="请输入姓名" class="layui-input">
+	    </div>
+	</div>
+	<div class="layui-form-item">
+	    <label class="layui-form-label">当前状态</label>
+	    <div class="layui-input-block">
+	      <select name="status" lay-filter="status">
+	      	{volist name="list" id="vo"}
+	        <option value="{$key}">{$vo}</option>
+	        {/volist}
+	      </select>
+	    </div>
+	</div>
+	<div class="layui-form-item layui-form-text">
+	    <label class="layui-form-label"> 组 合 </label>
+	    <div class="layui-input-block" id="show_content">
+	      <textarea placeholder="显示的内容" class="layui-textarea" readonly=""></textarea>
+	    </div>
+	</div>
+	<div class="layui-form-item">
+	    <div class="layui-input-block">
+	      <button class="layui-btn" lay-submit="" lay-filter="appointCall">发送</button>
+	    </div>
+	</div>
+</div>
+<!-- 一 tab -->
+	    <div class="layui-tab-item">
+	    	<table class="layui-table">
+			  <colgroup>
+			    <col width="30%">
+			    <col width="30%">
+			    <col>
+			  </colgroup>
+			  <thead>
+			    <tr>
+			      <th>姓名</th>
+			      <th>状态</th>
+			      <th>操作</th>
+			    </tr> 
+			  </thead>
+			  <tbody id="waitList">
+			  </tbody>
+			</table>
+	    </div>	    
+	    <div class="layui-tab-item">
+	    	<table class="layui-table">
+			  <colgroup>
+			    <col width="30%">
+			    <col width="30%">
+			    <col>
+			  </colgroup>
+			  <thead>
+			    <tr>
+			      <th>姓名</th>
+			      <th>状态</th>
+			      <th>完成时间</th>
+			    </tr> 
+			  </thead>
+			  <tbody id="overList">
+			  </tbody>
+			</table>
+	    </div>
+	</div>
+</div>
+
+
+
+<blockquote class="layui-elem-quote layui-quote-nm" style="padding: 15px;">
+	<span>福州中科易达计算机技术有限公司</span><br>
+	<label>服务支持：0591-87563369</label>
+</blockquote>
+
+ <!-- 1920 290 -->
+<script>
+	
+var push_flag = true;
+layui.use(['slider','layer','colorpicker','element','form'], function(){
+  	var $ = layui.$
+  	,element = layui.element
+  	,form = layui.form
+  	,colorpicker = layui.colorpicker
+  	,slider = layui.slider;
+
+	$(function(){
+		connectSocket('{$devices_ip}',$,"terminal",'{$doctor.id}');
+		var m = setTimeout(Marquee,2000);
+	})
+
+	
+ 	//监听立即推送
+ 	form.on('submit(formDemo)', function(data){   
+ 		if(!push_flag){
+ 			return false;
+ 		}		
+ 		if(confirm("确定推送内容?")){ 			
+	 		if(data.field.devices_content==''||data.field.devices_content==null){
+	 			layer.msg("请填推送内容", {offset: '15px',icon: 2,time: 1000});
+	 			return false;
+	 		}
+	 		push_flag = false;
+	 		$.post('{:url("pavilion/index/publish")}',
+	 			data.field,
+	 			function(res){
+	 				if(res.code == 200){
+			  			layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000});
+			  		}else if(res.code == 204){
+			  			layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+				  			location.reload();
+	 					});
+			  		}else{
+			  			layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+			  		}
+			  		push_flag = true;
+	 			},'json')
+ 		}
+ 	});
+ 	// 退出
+ 	form.on('submit(logout)', function(data){  	
+ 		layer.confirm('确定退出?', function(index){
+	 		$.post('{:url("pavilion/display/logout")}',
+	 			data.field,
+	 			function(res){
+	 				if(res.success == 1){
+		  			layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000}, function(){
+				          location.href = '{:url("pavilion/login/index")}';
+				        });
+		  			}else{
+		  				layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+		  			}
+	 			},'json')
+		});       
+ 	});
+ 	//已呼列表
+ 	form.on('submit(overList)', function(data){  
+ 		getListInfo(3);
+ 	})
+ 	//等候列表
+ 	form.on('submit(waitList)', function(data){  
+ 		getListInfo(1);
+ 	})
+ 	//消息
+ 	form.on('submit(msg)',function(data){
+ 		$("#message").toggle()
+ 		$("#move").hide()
+ 	})
+ 	//转移
+ 	form.on('submit(move)',function(data){ 		
+ 		$.post('{:url("pavilion/index/getSerque")}',
+ 			function(res) {
+ 				var html = '<option value="">请选择队列</option>';
+ 			 	if(res.code==200){
+ 			 		var da = res.data
+					for(x in da){
+						html += '<option value="'+da[x].id+'">'+da[x].QueName+'</option>';
+					}
+					$("#move").toggle()
+ 					$("#message").hide()
+	 				$("#queue_id").html(html);
+	 				form.render()
+ 				}else if(res.code==204){
+ 					layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+				  			location.reload();
+	 					});
+ 				}else{
+ 					layer.msg("还没有患者", {offset: '15px',icon: 2,time: 1000});
+ 				}
+ 		},'json')
+ 	})
+ 	
+ 	
+ 	//标注已读信息
+ 	form.on('submit(readMsg)',function(data){
+ 		$.post('{:url("pavilion/index/readMsg")}',
+ 			function(res){
+ 				if(res.code==200){
+ 					layui.$(".marquee").html(res.msg)
+ 				}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+ 					layui.$(".marquee").html('&nbsp;')
+ 					layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+ 				}
+ 			},'json')
+ 	})
+
+ 	// 获取信息列表
+ 	function getListInfo(status){
+ 		$.post('{:url("pavilion/index/getDayInfo")}',
+ 			{'status':status},
+ 			function(data){
+ 				var str = '';
+ 				if(data.code==200){
+ 					var da = data.data;
+ 					for(x in da){
+	 					var time = '';
+	 					var s_name = da[x].status==1?'准备':(da[x].status==2?'进行中':'完成');
+ 						str += '<tr>';
+ 						str += '<td>'+da[x].sufferer+'</td>';
+ 						str += '<td>'+s_name+'</td>';
+ 						if(da[x].status==3){
+ 							str += '<td>'+da[x].otime+'</td>';
+ 						}else if(da[x].status==1){
+ 							str += '<td style="text-align: center;"><button class="layui-btn layui-btn-xs" lay-submit lay-filter="appointCalls" value="'+da[x].id+'">进行中</button></td>';
+ 						}else if(da[x].status==2){
+ 							str += '<td style="text-align: center;"><button class="layui-btn layui-btn-xs" lay-submit lay-filter="appointCalls" value="'+da[x].id+'"> 完 成 </button></td>';
+ 						}
+ 						str += '</tr>';
+ 					} 					
+ 				}else{
+ 					str += '<tr><td colspan="3">'+data.msg+'</td></tr>';
+ 				}
+ 				if(status==3){
+					$("#overList").html(str);
+ 				}else{
+					$("#waitList").html(str);
+ 				}
+ 			},'json')
+ 	}
+ 	// 指定呼叫
+ 	form.on('submit(appointCall)',function(data) {
+ 		$.post('{:url("pavilion/index/operationCall")}',
+ 			data.field,
+ 			function(res){
+ 				if(res.code == 200){					
+					layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000});
+			  	}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+					layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+			  	}
+ 			},'json')
+ 	})
+ 	form.on('submit(appointCalls)',function(data) {
+ 		var obj = {}
+ 		obj.id = data.elem.value;
+ 		$.post('{:url("pavilion/index/operationCall")}',
+ 			obj,
+ 			function(res){
+ 				if(res.code == 200){					
+					layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000});
+					getListInfo(1)
+			  	}else if(res.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{
+					layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+			  	}
+ 			},'json')
+ 	})
+ 	
+ 	form.on('select(names)',function(data) {
+ 		console.log(data)
+ 		var obj = {};
+ 		obj.name = $("input[name='name']").val();
+ 		obj.status = data.value;
+ 		// getContent(obj)
+ 	})
+ 	form.on('select(status)',function(data) {
+ 		console.log(data)
+ 		var obj = {};
+ 		obj.name = $("input[name='name']").val();
+ 		obj.status = data.value;
+ 		getContent(obj)
+ 	})
+});
+
+function showName() {
+ 	var obj = {};
+ 	obj.name = layui.$("input[name='name']").val();
+ 	obj.status = layui.$("select[name='status'] option:checked").val();
+ 	getContent(obj)
+}
+function getContent(obj) {
+	layui.$.post('{:url("pavilion/index/getContent")}',
+		obj,
+		function(res){
+			if(res.code == 200){					
+				layui.$("textarea").val(res.data)
+		  	}
+		},'json')
+}
+
+function sendAgain(key){
+	if(confirm("确定推送？")){		
+	  	layui.$.post('{:url("pavilion/index/sendAgain")}',
+	  		{'key':key},
+	  		function(data){
+	  			if(data.code==200){
+	  				layer.msg(data.msg, {offset: '15px',icon: 1,time: 1000});
+	  			}else if(data.code == 204){
+			  		layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000},function(){
+			  			location.reload();
+ 					});
+			  	}else{  			
+	  				layer.msg(data.msg, {offset: '15px',icon: 2,time: 1000});
+	  			}
+	  		},'json')
+	}
+}
+/*========文字滚动 js========*/
+var run = '';
+var scrollLeft = function(){
+	layui.$(".marquee").scrollLeft(0)
+}
+var Marquee = function(){	
+	var  num = 0
+		,speed = 50;
+	clearInterval(run);
+	var rolling = function(){		
+		num += 1;
+			ch = layui.$(".marquee").scrollLeft()
+			layui.$(".marquee").scrollLeft(num)
+			if(ch == layui.$(".marquee").scrollLeft()){
+				num = 0;
+				clearInterval(run)
+				setTimeout(scrollLeft,2000)
+				setTimeout(Marquee,4000)
+			}		
+	}
+	run = setInterval(rolling, speed)
+} 
+/*=========文字滚动 js========*/
+
+</script>
+<script type="text/javascript" src="__STATIC__/admin/js/zsocket.js"></script> 
+</body>
+</html>

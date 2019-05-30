@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+    <style type="text/css">
+        body{
+            margin: 0px;
+        }
+        .layui-fluid{
+            padding:0;
+            overflow: hidden;
+        }        
+       .header{
+            position: fixed;
+            line-height: 40px;
+            font-size: 15px;
+            text-align: center;
+            background-color: #5a87cc;
+            z-index: 99;
+        }
+        .header .layui-icon-prev{
+            position: absolute;
+            font-size: 18px;
+            left: 0;
+            padding: 0 15px;
+            color: #FFFFFF;
+        }
+        .header .layui-icon-home{
+            position: absolute;
+            right: 0;
+            padding: 0 15px;
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header">
+                <a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-prev"></i></a>
+                <label style="color:#fff;">{{ title }}</label>
+                <a href="{:url('app/index/indexs')}"><i class="layui-icon layui-icon-home"></i></a>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="margin-top: 40px;padding:3px;">
+                <h2 v-html="item.title"></h2>
+                <div v-html="item.content"></div>
+            </div>        
+        </div>
+    </div>  
+</body>
+<script>
+layui.use('flow', function(){
+    var $ = layui.jquery; //不用额外加载jQuery，flow模块本身是有依赖jQuery的，直接用即可。
+   
+});
+
+var vm = new Vue({
+    el: '.layui-fluid',
+    data:{
+    	item:'',
+        title:'详情',        
+    }
+    ,methods:{
+        getDetail:function(){
+            var vm = this
+            let id = this.getUrlKey("id")
+            let cate_id = this.getUrlKey("cate_id")
+            axios
+                .get('{:url("/api/a1/article/getDetail")}',{params:{'id':id,'cate_id':cate_id}})
+                .then(function(res){
+                    vm.item = res.data
+                })
+        },
+        gohead:function(url){
+            location.href = url
+        }
+        ,getUrlKey: function (name) {
+            return decodeURIComponent((new RegExp('[?|&|/]' + name + '/' + '([^&;]+?)(&|#|;|$|.)').exec(location.href) || [, ""])[1].replace(/\+/g, '%20')) || null
+        }
+    }
+    ,created:function(){ 
+        this.getDetail()       
+    }
+})
+</script>
+</html>

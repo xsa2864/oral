@@ -1,0 +1,133 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">   
+                    <div class="box_top" style="background: url;">
+                        <div class="box_top_l fl" >
+                            <img src="__STATIC__/admin/images/icons/5.png" width="30" height="30" style="margin: 5px;">
+                            <b>显示屏在线信息&nbsp;&nbsp;&nbsp;&nbsp;</b></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">
+                <form name="form1" class="jqtransform" method="get"  >
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size: 1rem;">
+                        <tr>
+                            <th width="10%">显示屏编号</th>
+                            <th width="10%">显示屏状态</th>
+                            <th width="14%">登录时间</th>
+                            <th width="14%">离线时间</th>
+                            <th>广告位显示</th>
+                        </tr>  
+                        <tbody id="list_project"></tbody>       
+
+                    </table> 
+                </form>
+            </div>
+        </div> 
+    </div>
+</div> 
+<style type="text/css">
+tr input{
+    border: 1px solid #636262;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+    showInfo()
+})
+
+function showInfo() {
+  $.post('{:url("admin/android/showInfo")}',
+    function(data){
+        var str = '';
+        if(data){            
+            for(da in data){
+                var status = data[da].devices_status==1?"在线":"离线";
+                var s_time = data[da].devices_start_time?new Date(data[da].devices_start_time*1000).toLocaleString():'';
+                var e_time = data[da].devices_end_time?new Date(data[da].devices_end_time*1000).toLocaleString():'';
+                var video1 = '';
+                var video2 = '';
+                if(data[da].video==2){
+                    video2 = 'checked=true';
+                }else{
+                    video1 = 'checked=true';
+                }
+                var url = '';
+                if(str == ''){
+                    str += '<tr class="tr td_center"><td colspan="3">向全部显示屏推送</td><td></td>';    
+                    str += ' <td><input type="radio" name="video0" id="video10" value="1" '+video1+'><label for="video10"> 图 片 </label> <input type="text" name="devices_ads_id" id="devices_ads_id"placeholder="广告位ID" onchange="changeInput(this,1)" value="'+(data[da].devices_ads_id?data[da].devices_ads_id:'')+'"/>&nbsp;&nbsp;<input type="radio" name="video0" id="video20" value="2" '+video2+'><label for="video20"> 视 频 </label> ';  
+                    str += '     <input type="hidden" name="code" id="code" value="0"> ';
+                    str += '     <input type="text" name="devices_video" id="devices_video" placeholder="视频源 或 视频名称" onchange="changeInput(this,2)" value="'+(data[da].devices_video?data[da].devices_video:'')+'">';
+                    str += '        </td></tr>   ';   
+                }else{                    
+                    url += '<input type="radio" name="video'+da+'" id="video1'+da+'" value="1" '+video1+'/><label for="video1'+da+'"> 图 片 </label> <input type="text" name="devices_ads_id" id="devices_ads_id"placeholder="广告位ID" onchange="changeInput(this,1)" value="'+(data[da].devices_ads_id?data[da].devices_ads_id:'')+'"/>&nbsp;&nbsp;';
+                    url += '<input type="radio" name="video'+da+'" id="video2'+da+'" value="2" '+video2+'><label for="video2'+da+'"> 视 频 </label>   <input type="hidden" name="code" id="code" value="'+da+'"/> <input type="text" name="devices_video" id="devices_video"placeholder="视频源 或 视频名称" onchange="changeInput(this,2)" value="'+(data[da].devices_video?data[da].devices_video:'')+'"/>';
+                    str += '<tr class="tr td_center">';
+                    str += '    <td>'+da+'</td>';
+                    str += '    <td>'+status+'</td>';
+                    str += '    <td>'+s_time+'</td>';
+                    str += '    <td>'+e_time+'</td>';
+                    str += '    <td>'+url+'</td>';
+                    str += '</tr>';
+                }
+            }
+            $("#list_project").html(str);
+            $("input[type=radio]").on('click',function(e){
+                var strs  = $(e).attr("currentTarget");
+                var code = $(strs).parent().find("#code").val();
+                var url  = $(strs).parent().find("#devices_video").val();
+                var type = $(strs).val();
+                if(type==1){
+                    url = $(strs).parent().find("#devices_ads_id").val();
+                }
+                change(code,url,type);
+            })
+        }
+    },'json')
+}
+var i = setInterval(showInfo,5000);
+//切换显示
+function change(code,url,type){
+    if(confirm("确定切换显示？")){
+        $.post('{:url("admin/android/change")}',
+            {'code':code,'url':url,'type':type},
+            function(data){
+                if(data.code!=200){                    
+                    alert(data.msg)
+                }
+            },'json')
+    }
+}
+function changeInput(e,n){
+    var type = $(e).parent().find("input[type=radio]:checked").val();
+    var code = $(e).parent().find("#code").val();
+    var url = $(e).val();
+    if(n==1){
+        if(type==2){
+            type=4;
+        }
+    }else{        
+        if(type==1){
+            type=3;
+        }
+    }
+        if(url!=''||url==null){        
+            $.post('{:url("admin/android/change")}',
+                {'code':code,'url':url,'type':type},
+                function(data){
+                    if(data.code!=200){                    
+                        console.log(data.msg)
+                    }
+                },'json')
+        }
+}
+</script>
+{/block}

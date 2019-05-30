@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{block name="title"}中科易达{/block}</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1, user-scalable=no">
+
+<meta name="description" content="福州中科易达计算机技术有限公司成立于2008年，注册资金801万，是一家集计算机相关软、硬件产品研发、销售与服务为一体的科技创新型企业。几年以来，公司本着“诚信为本、科技创新、以质为本”的企业宗旨，经过全体员工的不懈努力，与广大客户的大力支持下，公司的产品与服务在全国范围得到了广泛的应用于发展，赢得了业界的一致好评与信任！">
+
+<link rel="stylesheet" href="__STATIC__/admin/awesome/css/font-awesome.css">
+<link rel="stylesheet" href="__APP__/lib/weui.min.css">
+<link rel="stylesheet" href="__APP__/css/jquery-weui.css">
+<link rel="stylesheet" href="__APP__/css/demos.css">
+<script src="__APP__/lib/jquery-2.1.4.js"></script>
+<script src="__APP__/lib/fastclick.js"></script>
+{block name="js"}{/block}
+{block name="css"}{/block}
+<style type="text/css">
+.weui-search-bar{
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 99;
+}
+.b_content{
+	position: absolute;
+    width: 100%;
+    top: 41px;
+}
+iframe{
+	display: none !important;
+}
+</style>
+</head>
+
+<body ontouchstart>
+<div class="weui-search-bar weui-search-bar_focusing">
+	<div style="width: 100%;text-align: center;">{$Subtitle|default="内容列表"}</div>
+	<a href="javascript:history.go(-1)" class="weui-search-bar__cancel-btn" style="float: left;position: absolute;">&lt;返回</a>
+</div>
+
+<div class="b_content">	
+{block name="content"}<!-- 主内容 -->{/block}
+</div>
+
+<script>
+$(function() {
+  	FastClick.attach(document.body);
+});
+</script>
+<script src="__APP__/js/jquery-weui.js"></script>
+{block name="js2"}{/block}
+</body>
+</html>

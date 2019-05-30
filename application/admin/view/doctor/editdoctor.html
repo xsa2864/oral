@@ -1,0 +1,211 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="addsdiv" class="mt0">
+    <div class="main_left fl span10">
+        <div class="box pr0">
+            <div class="box_border">
+                <div class="box_top">
+                    <div class="box_top_l fl" >
+                        <div style="float: left;">   
+                            <i class="fa fa-add fa-plus-square"></i>
+                        </div>
+                        <b>编辑队列</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <form name="form2" id="form2" class="jqtransform">
+        <div class="main_left fl span10" id="ajaxdiv3">
+            <div class="box_center" id="ajaxdiv2">
+            <table class="form_table pt15 pb15" style="width: 100%">
+    <tr>    
+        <td class="td_right">队列名称：
+        </td>
+        <td>
+            <input type="text" name="quename" id="quename" class="input-text lh30" size="30" value="{$list.QueName}" >[必填]
+        </td>
+        <td class="td_right">队列编号：
+        </td>
+        <td>
+            <input type="text" name="code" id="code" class="input-text lh30" size="30" value="{$list.code}" >[必填]
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">启用/暂停：</td>
+        <td class=""> 
+            <input type="radio" name="EnableFlag" title="启用" value="1" checked> 启用   &nbsp;
+            <input type="radio" name="EnableFlag" title="暂停" value="0" {if $list.EnableFlag==0}checked{/if}>  暂停
+        </td>
+        <td class="td_right">预约方式：</td>
+        <td class=""> 
+            <div class="select_containers"> 
+                <select name="QueForm" class="select"  style="width: 200px;"> 
+                    <option value="1" {if condition="$list.QueForm==1"}selected="selected"{/if}>1-按号码预约</option> 
+                    <option value="2" {notempty name="list"}{if condition="$list.QueForm==2"}selected="selected"{/if}{else /}selected="selected"{/notempty}>2-按时间预约</option> 
+                    <option value="3" {if condition="$list.QueForm==3"}selected="selected"{/if}>3-混合模式</option>
+                </select> 
+            </div> 
+        </td>
+    </tr>
+
+    <tr>
+        <td class="td_right">号码前置字符：</td>
+        <td class="">
+        	<input type="text" name="NoChar" class="input-text lh30" size="15" style="width: 62px;" value="{$list.NoChar}">
+        </td>					
+        <td class="td_right">绿色通道前置字符：</td>
+        <td class="">
+            <input type="text" name="quick_char" class="input-text lh30" size="15" style="width: 62px;" value="{$list.quick_char}">
+        </td>   
+    </tr>
+    <tr>                  
+        <td class="td_right">起始号码：</td>
+        <td>
+            <input type="number" name="StarNo" class="input-text lh30" size="15" value="{$list.StarNo>0?$list.StarNo:'1000'}">
+        </td>
+        <td class="td_right">步 长 ：</td>
+        <td>
+            <input type="number" name="step" class="input-text lh30" size="15" style="width: 62px;" value="{$list.step}">
+        </td>
+    </tr>
+
+    <tr>
+        <td class="td_right">取号机显示：</td>
+        <td  colspan="3">
+            <input type="checkbox" name="ClassesTime[]" value="11" {if condition="in_array(11,$work)"}checked="checked"{/if} title="周一上午" lay-skin="primary"> 周一上午
+            <input type="checkbox" name="ClassesTime[]" value="12" {if condition="in_array(12,$work)"}checked="checked"{/if} title="周一下午" lay-skin="primary"> 周一下午
+            <input type="checkbox" name="ClassesTime[]" value="21" {if condition="in_array(21,$work)"}checked="checked"{/if} title="周二上午" lay-skin="primary"> 周二上午
+            <input type="checkbox" name="ClassesTime[]" value="22" {if condition="in_array(22,$work)"}checked="checked"{/if} title="周二下午" lay-skin="primary"> 周二下午
+            <input type="checkbox" name="ClassesTime[]" value="31" {if condition="in_array(31,$work)"}checked="checked"{/if} title="周三上午" lay-skin="primary"> 周三上午
+            <input type="checkbox" name="ClassesTime[]" value="32" {if condition="in_array(32,$work)"}checked="checked"{/if} title="周三下午" lay-skin="primary"> 周三下午
+            <input type="checkbox" name="ClassesTime[]" value="41" {if condition="in_array(41,$work)"}checked="checked"{/if} title="周四上午" lay-skin="primary"> 周四上午
+            <input type="checkbox" name="ClassesTime[]" value="42" {if condition="in_array(42,$work)"}checked="checked"{/if} title="周四下午" lay-skin="primary"> 周四下午
+            <br><input type="checkbox" name="ClassesTime[]" value="51" {if condition="in_array(51,$work)"}checked="checked"{/if} title="周五上午" lay-skin="primary"> 周五上午
+            <input type="checkbox" name="ClassesTime[]" value="52" {if condition="in_array(52,$work)"}checked="checked"{/if} title="周五下午" lay-skin="primary"> 周五下午
+            <input type="checkbox" name="ClassesTime[]" value="61" {if condition="in_array(61,$work)"}checked="checked"{/if} title="周六上午" lay-skin="primary"> 周六上午
+            <input type="checkbox" name="ClassesTime[]" value="62" {if condition="in_array(62,$work)"}checked="checked"{/if} title="周六下午" lay-skin="primary"> 周六下午
+            <input type="checkbox" name="ClassesTime[]" value="71" {if condition="in_array(71,$work)"}checked="checked"{/if} title="周日上午" lay-skin="primary"> 周日上午
+            <input type="checkbox" name="ClassesTime[]" value="72" {if condition="in_array(72,$work)"}checked="checked"{/if} title="周日下午" lay-skin="primary"> 周日下午
+        </td>
+
+    </tr>
+    <tr>
+        <td class="td_right">介绍说明：</td>
+        <td colspan="3"> <input type="text" name="AlternateField1" id="AlternateField1" class="input-text lh30" size="100%" value="{$list.AlternateField1}"></td>  
+       
+    </tr>
+    <tr>
+        <td class="td_right">选择单位：</td>
+        <td >
+            <div class="select_containers"> 
+            <select name="unitid" id="unitid" class="select" onchange="deptajx($(this).val())"> 
+                <option value="">请选择单位</option>
+                {volist name="unit" id="un"}
+                <option value="{$un.UnitId}" {if condition="$un.UnitId==$list.UnitId"}selected{/if}>{$un.unitname}</option>
+                {/volist}        
+            </select>
+            </div>
+        </td>
+        <td class="td_right">选择区域：</td>
+        <td >
+            <div class="select_containers"> 
+            <select name="hall_id" id="hall_id" class="select"> 
+                <option value="">请选择区域</option>
+                {volist name="hall" id="un"}
+                <option value="{$un.HallNo}" {if condition="$un.HallNo==$list.HallNo"}selected{/if}>{$un.HallName}</option>
+                {/volist}        
+            </select>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="td_right">接口标识：</td>
+        <td> <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list.InterfaceID}"> <b style="color: red;font-size: 0.2em;">对应服务器 业务设置》业务编号</b> </td>  
+        <td class="td_right">语音地址：</td>
+        <td> 
+            <input type="text" name="voice_addr" id="voice_addr" class="input-text lh30" size="6" value="{$list.voice_addr}"></td>  
+        </td>  
+    </tr>
+</table>
+            </div>
+            <div class="box_top" style="text-align: center;">
+            	<input type="hidden" name="queid" value="{$list.QueId}">
+                <input type="hidden" name="pic" value="{$list.pic}">
+                <input type="button" name="savebut" onclick="saveDoctor()" class="btn btn82 btn_add" value="保存">
+                <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="history.back(-1);" value="取消">
+            </div>
+        </div>
+    </form>
+</div>
+<style type="text/css">
+#pic{
+    max-width: 200px;
+    max-height: 220px;
+}
+</style>
+<script type="text/javascript">
+
+// 保存信息
+function saveDoctor() {
+    $.post('{:url("admin/doctor/saveDoctor")}',
+        $("#form2").serialize(),
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }else if(data.success==2){
+                history.go(-1);
+            }
+            alert(data.msg)
+        },'json')
+}
+// 获取部门数据
+function deptajx(id) {
+    $.post('{:url("admin/appointment/gethall")}',{'id':id},
+            function(data){
+                var str = '<option value="">请选择部门</option>';
+                if(data.success==1){
+                    var arr = data.msg;
+                    for(n in arr){
+                        var select = '';
+                        if(arr[n].HallNo=='{$list.HallNo}'){
+                            select = 'selected';
+                        }
+                        str += '<option value="'+arr[n].HallNo+'" '+select+'>'+arr[n].HallName+'</option>';
+                    }
+                }
+                $("#dept").html(str);
+        },'json')
+}
+
+// 上传头像
+function imgupload(){
+    var imgdata = new FormData();
+    var file = $("input[name='image']")[0].files[0];
+    if(file==''||file==null){
+        alert("请选择图片");
+        return false;
+    }
+    imgdata.append("image",file);
+    $.ajax({
+        'url':'{:url("admin/doctor/upload")}',
+        'type':'post',
+        'cache': false,
+        'data': imgdata,
+        'dataType':'json',
+        'processData': false,
+        'contentType': false,
+        success:function(data){
+            if(data.success==1){
+                $("input[name='pic']").val(data.msg);
+                $("#pic").attr("src",'__IMG__/'+data.msg)
+            }else{
+                alert(data.msg);
+            }
+        }
+    })
+}
+</script>
+{/block}

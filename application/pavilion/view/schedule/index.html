@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>排班</title>
+  <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+  <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+</head>
+<style type="text/css">
+	html,body{
+	    margin: 0;
+	    padding: 0;
+	    width: 100%;
+	    height: 100%;
+	    background-color: #235695;
+	}/*这里是关键*/
+	.layui-fluid,.layui-row{
+		height: 100%;
+	}
+	/*.layui-row>div>div>div>div{
+		height: 50px;
+	}*/
+	.grid-demo{
+		color:#FFFFFF;
+	}
+	.layui-table td{
+		padding: 2vw 1vw;
+	}
+	.layui-btn-container .layui-btn{
+		margin:0 0.7vw 0 0;
+		padding: 0 1vw;		
+		width: 10.1vw;
+		height: 5vw;
+		font-size: 3vw;
+	}
+	.layui-btn-disabled{
+		border:none;
+		/*background-color: #aaa0;*/
+		visibility: hidden;
+	}
+	.layui-btn-warm{
+		border-bottom: 1px solid #c59347;
+    	border-right: 2px solid #c59347;
+	}
+</style>
+<body> 
+<div class="layui-fluid"  style="background-image: url('__IMG__{$config.img}');background-size: 100% 100%;;background-repeat: no-repeat;">  
+	<div class="layui-row" style="height: 8%;">
+	  	<div class="layui-col-xs8 layui-col-sm8 layui-col-md8" style="height: 100%;">
+	      	<div class="grid-demo" style="font-size: 4.5vw;line-height: 13vw;">{$config.title}</div>
+	    </div>
+	    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4" style="height: 100%;">
+		    <div class="grid-demo" style="font-size: 3.2vw;padding-top: 2vw;line-height: 5vw;;text-align: center;">		    	
+	      		<div>医生出诊一览表</div>
+	      		<div id="time" style="font-size: 2.8vw;"></div>
+		    </div>	      	
+	    </div>
+	</div>
+	<div class="layui-row" style="height: 8%;">
+	  	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%;">
+	    	<div class="grid-demo" style="text-align: left;padding-left:5px;font-size: 4.5vw;color: #fe7f18;line-height: 12vw;"> 科 室</div>
+	    </div>
+	    <div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="height: 100%;">
+	    	<div class="grid-demo" style="text-align: left;font-size: 4.5vw;line-height: 12vw;">医 生</div>
+	    </div>
+	    <div class="layui-col-xs8 layui-col-sm8 layui-col-md8" style="height: 100%;">
+	      	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+		      	<div style="text-align: center;font-size: 2.8vw;color: #fe7f18;line-height: 7vw;letter-spacing: 10px;">出诊时间安排</div>
+		    </div>
+		    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align: center;color: #ffffff;line-height: 5vw;position: absolute;bottom: 2px;font-size: 3vw;">
+		    	<div class="layui-row layui-col-space5">
+		      	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2"><div style="background-color: #fe7f18;">星期一</div></div>
+		    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2"><div style="background-color: #3ac2ea;">星期二</div></div>
+		    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2"><div style="background-color: #fe7f18;">星期三</div></div>
+		    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2"><div style="background-color: #3ac2ea;">星期四</div></div>
+		    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2"><div style="background-color: #fe7f18;">星期五</div></div>
+		    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2"><div style="background-color: #3ac2ea;">星期六</div></div>
+		    	</div>
+		    </div>
+	    </div>
+	</div>
+	<div class="layui-row" style="height: 78%;overflow: hidden;">
+	<div class="layui-row scroll" style="height: 100%;width: 106%;overflow-y: auto;">
+		<table class="layui-table" style="color:#FFFFFF;margin: 0px;">
+		  <colgroup>
+		    <col width="12%">
+		    <col width="20%">
+		    <col>
+		  </colgroup>
+		  <tbody>
+			{volist name="list" id="vo"}	
+		        {volist name="$vo.data" id="vos"}
+		        <tr>
+		        	{if($key==0)}
+		        	<td rowspan="{:count($vo.data)*3}" style="font-size: 5vw;line-height: 5.5vw;background-color: #fe7f18;padding-left:3vw;">{$vo.title}</td>
+		        	{/if}
+			        <td rowspan="3" style="background-color: #3ac2ea;line-height: 3.5vw;">
+			        	<div style="font-size: 4vw;padding-bottom: 5px;">{$vos.name}</div>
+			        	<div style="font-size: 2.5vw;">{$vos.type}</div>
+			    	</td>		    
+		        </tr>
+		        <tr style="color: #fe7f18;">
+		        	<td style="padding: 5px 1px 0 3px;">
+		        		<div class="layui-btn-container">		
+		        		{volist name="$vos.detail" id="de"}
+		        			{if($key%2==0 && $key lt 12)}
+		        				{if($de==1)}
+			        			<button class="layui-btn layui-btn-sm layui-btn-warm" value="{$vos.id},{$vo.title}>{$vos.name}">上午</button>
+			        			{else/}
+			        			<button class="layui-btn layui-btn-sm layui-btn-disabled"></button>
+			        			{/if}
+		        			{/if}
+		        		{/volist}
+		        		</div>
+		        	</td>
+		        </tr>
+		        <tr style="background-color: #f3d0b47d;color: #fe7f18;">
+		        	<td style="padding: 5px 1px 0 3px;">
+		        		<div class="layui-btn-container">		        			
+		        		{volist name="$vos.detail" id="de"}
+			        		{if($key%2==1 && $key lt 12)}
+				        		{if($de==1)}
+				        		<button class="layui-btn layui-btn-sm layui-btn-warm" value="{$vos.id},{$vo.title}>{$vos.name}">下午</button>
+				        		{else/}
+				        		<button class="layui-btn layui-btn-sm layui-btn-disabled"></button>
+				        		{/if}
+			        		{/if}
+		        		{/volist}
+		        		</div>
+		        	</td>
+		        </tr>
+		        {/volist}
+			{/volist}
+		  </tbody>
+		</table>
+	</div>
+	</div>
+	<div class="layui-row" style="height: 5%;">
+	    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="color: #FFFFFF;line-height: 5vw;font-size: 3vw;">
+	      友情提示：{$config.tip}
+	    </div>
+	</div>
+</div>
+
+<script>
+
+//一般直接写在一个js文件中
+layui.use(['jquery','layer', 'form'], function(){
+  var layer = layui.layer
+  ,$=layui.$
+  ,form = layui.form
+  ,move = ''
+  ,run = '';
+
+  	$(function() {
+  		showDate()
+		showTime();
+		var tm = setInterval(showDate,1000)
+		op()
+	})
+
+	function op(){
+		move = setTimeout(function(){
+			run = setInterval(res=>{
+				scorll()
+			},100)
+		},180000);
+	}
+	$("body").mousemove(function(e){
+		clearInterval(move)
+		clearInterval(run)
+		op()
+	})
+	function scorll(){	
+		var num = n = $(".scroll").scrollTop()
+		num += 1
+		$(".scroll").scrollTop(num)
+		if(n >= $(".scroll").scrollTop()){
+			clearInterval(move)
+			clearInterval(run)
+			setTimeout(function(){
+				$(".scroll").scrollTop(0)		
+				op()
+			},60000)
+		}
+	}
+
+  	function showDate(){
+		var str = "";  
+		var dt = new Date(); // 得到当前时间
+		var week = dt.getDay();  
+		if (week == 0) {  
+		        str = "星期日";  
+		} else if (week == 1) {  
+		        str = "星期一";  
+		} else if (week == 2) {  
+		        str = "星期二";  
+		} else if (week == 3) {  
+		        str = "星期三";  
+		} else if (week == 4) {  
+		        str = "星期四";  
+		} else if (week == 5) {  
+		        str = "星期五";  
+		} else if (week == 6) {  
+		        str = "星期六";  
+		}  
+
+		var h = dt.getHours();
+		if(h<10) h='0' + h;
+		var i = dt.getMinutes();
+		if(i<10) i='0' + i;
+		var s = dt.getSeconds();
+		if(s<10) s='0' + s;
+		str +=  ' '+ h + ':' + i + ':' + s;
+		$("#time").html(str);
+	}
+	function showTime(){
+		var dt = new Date(); // 得到当前时间
+		var y = dt.getFullYear(); // 当前年份
+		var m = dt.getMonth() + 1; // 当前月份，getMonth 返回值是 0-11 对应 1-12月，因此全部加1
+		var d = dt.getDate();
+		if(m<10) m='0' + m;
+		if(d<10) d='0' + d;	 
+		var str =  y + '年' + m + '月' + d + '日';
+		$("#date").html(str); // 将格式化后的内容装载到容器中
+	}
+	$(".layui-btn-warm").on('click',function (argument) {
+		var arr = $(this).val();
+		arrs = arr.split(",");
+		var url = '';
+		if({$config.status}==1){
+			url = '{:url("pavilion/schedule/showQr")}?id='+arrs[0];
+		}else{
+			url = '{:url("pavilion/schedule/getMark")}?id='+arrs[0];
+		}
+
+		layer.open({
+			title:arrs[1],
+			area: ['350px', '470px'],
+		  	type: 2, 
+		  	content: url //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+		}); 
+	})
+});
+		
+// 关闭弹窗
+function pageClose(){
+  	layer.closeAll();
+}
+
+</script> 
+</body>
+</html>

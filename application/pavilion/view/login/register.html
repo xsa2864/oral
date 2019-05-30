@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>登录</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="renderer" content="webkit">
+	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="__HUI__/custom/login.css" media="all">
+	<link rel="stylesheet" href="__HUI__/custom/admin.css" media="all">
+	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+	<script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+</head>
+<body style="background-color: #d9edf7;">
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login">
+  	<div class="layadmin-user-login-main">
+    <div class="layadmin-user-login-box layadmin-user-login-header">
+      <h2>呼叫器配置</h2>
+    </div>
+    <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+	    <div class="layui-form-item">
+		    <span class="layui-breadcrumb">
+		    	<span>配置信息：</span>
+			  <a>
+			  	<cite>
+			  	{volist name="hall" id="vo"}
+		        {if $ter.hall_id == $vo.HallNo}{$vo.HallName}{/if}
+		        {/volist}
+		    	</cite>
+			  </a>
+			  <a><cite>{$ter.room_name}</cite></a>
+			  <a><cite>{$ter.seat_name}</cite></a>
+			</span>
+	    </div>
+	    <div class="layui-form-item">
+		    <div class="layui-input-fluid">
+		      <select name="hall_id" lay-verify="required" lay-filter="aihao">
+		        <option value="">选择诊区</option>
+		        {volist name="hall" id="vo"}
+		        <option value="{$vo.HallNo}"s>{$vo.HallName}</option>
+		        {/volist}
+		      </select>
+		    </div>
+		</div>
+      	<div class="layui-form-item">
+        	<div class="layui-input-fluid">
+		      <select name="terminal_id" id="room" lay-verify="required">
+		        <option value="">选择呼叫器</option>
+		      </select>
+		    </div>
+      	</div>
+      <div class="layui-form-item">
+        <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="LAY-user-login-submit">保 存</button>
+      </div>
+      <div class="layui-trans layui-form-item layadmin-user-login-other">
+        <a href="{:url('pavilion/login/index')}" class="layadmin-user-jump-change layadmin-link">去登录</a>
+      </div>
+    </div>
+  </div>    
+</div>
+<script>
+layui.use(['form','element'], function(){
+	var $ = layui.$
+	,form = layui.form;  	
+	form.on('select(aihao)',function(data) {
+		$.post('{:url("pavilion/login/getTerminal")}',
+			{"hall_id":data.value},
+			function(res){
+				if(res.code==200){
+					var str = '<option value="">选择呼叫器</option>';
+					var da = res.data;
+					for(x in da){
+						str += '<option value="'+da[x].id+'">';
+						str += da[x].ip
+						str += da[x].room_name?'--'+da[x].room_name:'';
+						str += da[x].seat_name?'--'+da[x].seat_name:'';
+						str += '</option>';
+					}
+					$("#room").html(str)
+					form.render();
+				}
+		},'json')
+	});
+	//监听提交
+	form.on('submit(LAY-user-login-submit)', function(data){
+	  	// 请求登入接口
+	  	$.post('{:url("pavilion/Login/setUp")}',
+	  		data.field,
+	  		function(res){
+	  			if(res.code == 200){
+	  				layer.msg(res.msg, {
+			          offset: '15px'
+			          ,icon: 1
+			          ,time: 1000
+			        }, function(){
+			          location.href = '{:url("pavilion/login/index")}';
+			        });
+	  			}else{
+	  				layer.msg(res.msg, {
+			          offset: '15px'
+			          ,icon: 2
+			          ,time: 1000
+			        });
+	  			}
+	  		},'json')
+	  	return false;
+	});
+});
+
+</script>
+</body>
+</html>

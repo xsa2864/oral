@@ -1,0 +1,121 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div class="box_top_l fl">
+                            <div style="float: left;">   
+                            <i class="fa fa-add fa-bank"></i>
+                            </div>
+                            <b>单位配置</b>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">                
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                           class="list_table" id="table1" style="font-size: 1rem;">
+                        <tr>
+                            <th width="5%">ID</th>
+                            <th width="22%">单位全称</th>
+                            <th width="22%">副标题</th>
+                            <th width="5%">启用？</th>   
+                            <th width="12%">下属科室</th>
+                            <th width="">录入时间</th>
+                            <th>操作</th>
+                        </tr>
+                        {notempty name="list"}
+                            {volist name="list" id="vo"}
+                                <tr class="tr td_center">
+                                    <td>
+                                        {$vo.UnitId}
+                                    </td>
+                                    <td>{$vo.unitname}</td>
+                                    <td>{$vo.dispname}</td>
+                                    <td>
+                                        {if $vo.EnableFlag==1}
+                                        启用
+                                        {else /}
+                                        <font color='red' class='font'>暂停</font>
+                                        {/if}                                
+                                    </td>
+                                    <td>
+                                        <input type="button" class="showbm ext_btn ext_btn_success" onclick="goto({$vo.UnitId})" value="部门查看"/></td>
+                                    <td>{$vo.InTime}</td>
+                                    <td>
+                                        <a href="javascript:Operation('edit',{$vo.UnitId});">修改</a> |
+                                        <a href="javascript:Operation('del',{$vo.UnitId});">删除</a>
+                                    </td>
+                                </tr>
+                            {/volist}
+                        {else /}
+                            <tr class="tr">
+                                <td class="td_center" colspan="7">您还没有配置预约的单位，请找单位管理员进行配置，谢谢！</td>
+                            </tr>
+                        {/notempty}
+                    </table>
+                    <div class="box_top">
+                        <div class="box_top">
+                            <input type="button" name="button" class="btn btn82 btn_config" onclick=" Operation('add')" value="新增"> 
+                        </div>
+                    </div>
+
+                    <!-- 分页开始 -->
+                    {$page|raw}  
+                    <!-- 分页结束 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+function save(){
+    $.post('{:url("admin/appointment/saveUnit")}',
+        $("form").serialize(), 
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }else{
+                alert(data.msg);
+            }
+    },'json')
+
+}
+// 跳转编辑
+function goto(id){
+    // location.href = '/index.php/admin/appointment/editUnit/id/'+id;
+    location.href = '{:url("admin/hall/listdata")}?id='+id;
+}
+// 增 删 改 相应操作
+function Operation(str,id) {
+    if(str=='add'){
+        location.href = '{:url("admin/appointment/editUnit")}';
+    }else{      
+        if(id==''||id==null){
+            alert("请选择相应的数据");
+        }else{      
+            if(str=='edit'){
+                location.href = '{:url("admin/appointment/editUnit")}?id='+id;
+            }else if(str=='del'){
+                if(confirm("确认删除！")){
+                    $.post('{:url("admin/appointment/unitDel")}',
+                        {'id':id},
+                        function(data){
+                            if(data.success==1){
+                                location.reload();
+                            }
+                            alert(data.msg)
+                    },'json')
+                }
+            }
+        }
+    }
+}
+</script>
+{/block}

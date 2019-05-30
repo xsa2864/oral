@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>显示屏</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="renderer" content="webkit">	
+	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+</head>
+<body>			
+<div class="blockquote">{$item.devices_content|default="展示内容：点击配置设备号"}  </div>
+
+<div class="layui-form layui-form-pane" style="display: none;">
+	<div class="layui-form-item">
+	    <div class="layui-inline">
+	      <div class="layui-input-inline" style="width: 100px;">
+	        <input type="text" name="devices_ip" lay-verify="required" value="{$devices_ip}" placeholder="设备编号" autocomplete="off" class="layui-input">
+	      </div>
+	      <div class="layui-input-inline" style="width: 100px;">
+	        <input type="text" name="devices_name" lay-verify="required" value="{$item.devices_name?$item.devices_name:''}" placeholder="设备名称" autocomplete="off" class="layui-input">
+	      </div>
+	      <div class="layui-input-inline" style="width: 100px;">
+	        <button class="layui-btn layui-btn-radius" lay-submit lay-filter="LAY-save-submit"> 保 存 </button>
+	      </div>	      
+	    </div>
+	</div>
+</div>
+<style type="text/css">
+body{	
+	{notempty name='item.devices_image'}
+	/*background-size: cover;*/
+	background-size:100% 100%;
+	background-repeat: no-repeat;
+	background-image:url("__IMG__{php}echo str_replace("\\","/",$item["devices_image"]);{/php}") 
+	{else}
+	background-color: {$item.devices_background_color|default='#140cf1'};
+	{/notempty}
+}
+.blockquote{	
+	color:{$item.devices_font_color|default='#FFFFFF'};	
+}
+</style>
+<script type="text/javascript">	    
+var data = '{"type":"login","devices_ip":"{$devices_ip}"}';
+var ws = ""
+	,run = ''	//文字走马灯效果
+	,i = ''		//心跳
+	,s = ''		//断线重连
+  	,f_size		//字体大小随屏幕变化
+  	,height;
+
+layui.use(['slider','form'], function(){
+	var $ = layui.$
+	,slider = layui.slider
+	,form = layui.form
+	,default_size = 50
+	,size_flag;		
+  	w_width = $(window).width()
+  	w_height = $(window).height()
+
+  	size_flag = {:isset($item.devices_font_size)?1:0};
+  	if(w_width>w_height){
+  		default_size = w_height*50/100;  		
+  		f_size = size_flag?{$item.devices_font_size?$item.devices_font_size|default=0:0}:default_size;
+  		height = "margin-left: 390px;height:100%;line-height:"+(w_height)+"px;white-space: nowrap;";
+		$("body").css("height",w_height)
+  	}else{
+  		default_size = w_width*50/100;
+  		f_size = size_flag?{$item.devices_font_size?$item.devices_font_size|default=0:0}:default_size;
+  		height = "margin-top: 350px;text-align: center;line-height:"+f_size+"px;height:"+(w_height-350)+"px;";
+  	}
+  	$(".blockquote").attr("style","overflow: hidden;font-size:"+f_size+"px;"+height);
+
+	$(function () {
+		$("body").css("width",w_width)
+		connectSocket($);
+		setTimeout(Marquee,2000)
+	})
+
+	$(".blockquote").on("click",function(){
+		$(".layui-form").toggle()
+	})
+
+	form.on('submit(LAY-save-submit)', function(data){
+		data.field['devices_width'] = w_width;
+		data.field['devices_height'] = w_height;
+	  	//请求登入接口
+	  	$.post('{:url("pavilion/display/index")}',
+	  		data.field,
+	  		function(res){
+	  			if(res){
+	  				layer.msg('配置成功', {
+			          offset: '15px'
+			          ,icon: 1
+			          ,time: 1000
+			        }, function(){
+			          location.reload();
+			        });
+	  			}else{
+	  				layer.msg("配置出错", {
+			          offset: '15px'
+			          ,icon: 2
+			          ,time: 1000
+			        });
+	  			}
+	  		})
+	});
+});
+function connectSocket($)
+{
+	ws = new WebSocket('ws://'+document.domain+':23452');
+	ws.onopen = function(){
+	    i = setInterval(heartbeat,40000);
+	    ws.send(data);
+	    clearInterval(s);
+	    console.log("连接成功");  
+	};
+
+	ws.onmessage = function(e){
+		var obj = eval('(' + e.data + ')');	
+		console.log(obj)
+		var str = '';
+		if(obj.ping){
+			console.log(obj.ping);
+		}else if(obj.reload){
+			location.reload();
+		}else{
+			if(obj.devices_content){
+				layui.$(".blockquote").html(obj.devices_content);
+			}
+			layui.$(".blockquote").css("color",obj.devices_font_color);
+			if(obj.devices_font_size){
+				layui.$(".blockquote").css("font-size",obj.devices_font_size+"px").css("line-height",obj.devices_font_size+"px");
+			}
+			if(obj.devices_image){
+				layui.$("body").css("background-image","url(__IMG__"+obj.devices_image.replace(/\\/g,'/')+")")
+				layui.$("body").css("background-repeat", "no-repeat");
+				layui.$("body").css("background-size", "100% 100%");
+			}else{
+				if(obj.devices_background_color){					
+					layui.$("body").css("background-image","url()")
+					layui.$("body").css("background-color",obj.devices_background_color)
+				}
+			}			
+			Marquee()
+		}
+	};
+	//关闭重连
+	ws.onclose = function (event) {
+		s = setTimeout(conSend,5000);
+		clearInterval(i);
+	}
+}
+// 心跳
+function heartbeat(){
+	ws.send('{"type":"ping"}');
+}
+//重连
+function conSend(){
+	console.log("断线重连中...");
+	connectSocket();
+}
+
+//文字滚动
+var scrollLeft = function(){
+	layui.$(".blockquote").scrollLeft(0)
+}
+var scrollTop = function(){
+	layui.$(".blockquote").scrollTop(0)
+}
+var Marquee = function(){	
+	var  num = 0
+		,speed = 50
+		,width = document.body.offsetWidth
+		,height = document.body.offsetHeight;
+	clearInterval(run);
+	var rolling = function(){		
+		num += 2;
+		if(width>height){
+			ch = layui.$(".blockquote").scrollLeft()
+			layui.$(".blockquote").scrollLeft(num)
+			if(ch == layui.$(".blockquote").scrollLeft()){
+				num = 0;
+				clearInterval(run)
+				setTimeout(scrollLeft,2000)
+				setTimeout(Marquee,4000)
+			}
+		}else{
+			ch = layui.$(".blockquote").scrollTop()
+			layui.$(".blockquote").scrollTop(num)
+			if(ch == layui.$(".blockquote").scrollTop()){
+				num = 0;
+				clearInterval(run)
+				setTimeout(scrollTop,2000)
+				setTimeout(Marquee,4000)
+			}
+		}
+	}
+	run = setInterval(rolling, speed)
+}   
+</script>
+</body>
+</html>

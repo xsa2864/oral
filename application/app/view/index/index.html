@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>排队系统</title>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<meta name="description" content="福州中科易达计算机技术有限公司成立于2008年，注册资金801万，是一家集计算机相关软、硬件产品研发、销售与服务为一体的科技创新型企业。几年以来，公司本着“诚信为本、科技创新、以质为本”的企业宗旨，经过全体员工的不懈努力，与广大客户的大力支持下，公司的产品与服务在全国范围得到了广泛的应用于发展，赢得了业界的一致好评与信任！">
+
+{load href="__APP__/lib/weui.min.css" /}
+{load href="__APP__/css/jquery-weui.css" /}
+{load href="__APP__/css/demos.css" /}
+<script type="text/javascript">
+document.addEventListener( "plusready", function(){
+  $(".weui-cells__title").show();
+}, false );
+
+</script>
+<style>
+  body{
+    height: 100%;
+  }
+  .swiper-container {
+    width: 100%;
+  } 
+
+  .swiper-container img {
+    display: block;
+    width: 100%;
+  }
+</style>
+</head>
+
+<body ontouchstart>
+  <div class="weui-cells__title" style="text-align: center;display: none;">排队系统</div>
+    <div class="swiper-container">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+          <!-- Slides -->
+          {volist name="list1" id="vo"}
+          <div class="swiper-slide">
+          <a href="{$vo.url?$vo.url:'javascript:;'}">
+          <img src="__IMG__{$vo.img}" height="230" />
+          </a>
+          </div>
+          {/volist}
+        </div>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
+    </div>
+    <!-- <header class='demos-header'>
+      <h1 class="demos-title">jQuery WeUI</h1>
+      <p class='demos-sub-title'>轻量强大的UI库，不仅仅是 WeUI</p>
+    </header> -->
+
+    <div class="weui-grids">
+      <a href="{:url('app/hall/lists')}" class="weui-grid js_grid">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_button.png" alt="">
+        </div>
+        <p class="weui-grid__label">我要预约</p>
+      </a>
+      <a href="{:url('app/hall/selectMark')}" class="weui-grid js_grid">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_select.png" alt="">
+        </div>
+        <p class="weui-grid__label">查询预约</p>
+      </a>
+      <a href="{:url('app/hall/selectMark?status=1')}" class="weui-grid js_grid">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_cell.png" alt="">
+        </div>
+        <p class="weui-grid__label">取消预约</p>
+      </a>
+      <a href="{:url('app/article/articleList',['cate_id'=>1])}" class="weui-grid js_grid">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_dialog.png" alt="">
+        </div>
+        <p class="weui-grid__label">新闻资讯</p>
+      </a>
+      <a href="{:url('app/article/articleList',['cate_id'=>7])}" class="weui-grid js_grid">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_toast.png" alt="">
+        </div>
+        <p class="weui-grid__label">注意事项</p>
+      </a>
+      <a href="{:url('app/article/content',['cate_id'=>2])}" class="weui-grid js_grid">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_article.png" alt="">
+        </div>
+        <p class="weui-grid__label">关于我们</p>
+      </a>
+      <a href="javascript:;" class="weui-grid js_grid" style="display: none;">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_new.png" alt="">
+        </div>
+        <p class="weui-grid__label">
+          待开发
+        </p>
+      </a>
+      <a href="javascript:;" class="weui-grid js_grid" style="display: none;">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_new.png" alt="">
+        </div>
+        <p class="weui-grid__label">
+          待开发
+        </p>
+      </a>
+      <a href="{:url('app/express/index')}" class="weui-grid js_grid" style="display: none;">
+        <div class="weui-grid__icon">
+          <img src="__APP__/images/icon_nav_new.png" alt="">
+        </div>
+        <p class="weui-grid__label">
+          物流查询
+        </p>
+      </a>
+    </div>
+    {notempty name="list2"}
+    <div class="swiper-container">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+          <!-- Slides -->
+          {volist name="list2" id="vi"}
+          <div class="swiper-slide">
+          <a href="{$vi.url?$vi.url:'javascript:;'}">
+          <img src="__IMG__{$vi.img}" height="180" />
+          </a>
+          </div>
+          {/volist}
+        </div>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
+    </div>
+    {/notempty}
+<div class="weui-footer">
+  <p class="weui-footer__links">
+    <a href="http://www.zkyd.com" class="weui-footer__link">福州中科易达计算机技术有限公司 0591-87563369</a>
+  </p>
+  <p class="weui-footer__text">Copyright © 2018 zkyd.com</p>
+</div>
+
+<style>
+  .weui-footer {
+    margin: 25px 0 10px 0;
+  }
+</style>
+
+{load href="__APP__/lib/jquery-2.1.4.js" /}
+{load href="__APP__/lib/fastclick.js" /}
+{load href="__APP__/js/swiper.js" /}
+<script>
+$(function() {
+  FastClick.attach(document.body);
+});
+$(".swiper-container").swiper({
+  loop: true,
+  autoplay: 3000
+});
+</script>
+{load href="__APP__/js/jquery-weui.js" /}
+</body>
+</html>

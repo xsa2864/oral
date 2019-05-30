@@ -1,0 +1,193 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="search_bar" class="mt10">
+    <div class="box">
+        <div class="box_border">
+        	<form>
+            <div class="box_top">
+                <div style="float: left;">   
+                    <i class="fa fa-add fa-search-minus"></i>
+                </div>
+                <b>预约查询</b>
+            </div>
+            <div class="box_center pt10 pb10">
+              <table class="form_table" style="width: 100%">
+                <tr>
+                  <td>身份证号:</td>
+                  <td><input type="text" name="idcards" class="input-text lh25" size="20" value="{$wh['idcards']}"></td>
+                  <td>手 机 号:</td>
+                  <td><input type="text" name="mobile" class="input-text lh25" size="13" value="{$wh['mobile']}"></td>
+                  <td>姓 名 :</td>
+                  <td><input type="text" name="name" class="input-text lh25" size="10" value="{$wh['name']}"></td>
+                  <td>科室名称:</td>
+                  <td>
+                    <select name="hallname" class="select">
+                      <option value="">请选择科室</option>
+                      {volist name="list_hall" id="vo"}
+                      <option value="{$vo.HallName}" {if $vo.HallName==$wh['hallname']}selected{/if}>{$vo.HallName}</option>
+                      {/volist}
+                    </select>
+                  </td>
+                  <td>医生名字:</td>
+                  <td>
+                    <select name="quename" class="select">
+                      <option value="">请选择医生</option>
+                      {volist name="list_d" id="vs"}
+                      <option value="{$vs.QueName}" {if $vs.QueName==$wh['quename']}selected{/if}>{$vs.QueName}</option>
+                      {/volist}
+                    </select>
+                  </td>                  
+                </tr>
+                <tr>
+                  <td>就诊开始:</td>
+                  <td><input type="date" name="stime" class="input-text lh25" size="10" value="{$wh['stime']|default=date('Y-m-d',time())}"></td>
+                  <td>就诊结束:</td>
+                  <td><input type="date" name="etime" class="input-text lh25" size="10" value="{$wh['etime']|default=date('Y-m-d',time())}"></td>
+                  <td>预约状态:</td>
+                  <td>
+                    <select name="status" class="select">
+                      <option value="" {if $wh['status']==""}selected{/if}>全部</option>
+                      <option value="1" {if $wh['status']==1}selected{/if}>预约中</option>
+                      <option value="2" {if $wh['status']==2}selected{/if}>已完成</option>
+                      <option value="3" {if $wh['status']==3}selected{/if}>已过期</option>
+                      <option value="0" {if $wh['status']===0}selected{/if}>已取消</option>
+                    </select>
+                  </td>        
+                  <td>备 注 :</td>
+                  <td>
+                    <input type="text" name="remark" class="input-text lh20" value="{$wh['remark']}">
+                  </td>          
+                </tr>
+              </table>
+            </div>
+            <div class="box_bottom pb5 pt5 pr10" style="border-top:1px solid #dadada;">
+              <div class="search_bar_btn" style="text-align:right;">
+                 <input type="button" value="搜索" onclick="search()" class="ext_btn ext_btn_submit">
+                 <input type="reset" value="重置" class="ext_btn" style="display: none;">
+                 <input type="button" class="ext_btn ext_btn_success" onclick="getData()" value="导出">
+                 <a href="{:url('admin/appointment/registration')}" class="ext_btn"><span class="add"></span>添加</a>
+              </div>
+            </div>
+        	</form>
+        </div>
+    </div>
+</div>
+
+<div id="table" class="mt10">
+    <div class="box span10 oh">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table">
+        	<tr>
+	        <th width="3%">序号</th>
+	        <th width="8%">预约科室</th>
+            <th width="6%">预约队列</th>
+	        <th width="6%">预约医生</th>
+            <th width="5%">姓名</th>
+	        <th width="14%">预约者身份证</th>
+	        <th width="9%">预约者手机号</th>
+	        <th width="10%">就诊日期</th>
+	        <th width="8%">就诊时间</th>
+	        <th width="5%">状态</th>
+            <th width="5%">预约员</th>
+            <th width="5%">预约来源</th>
+            <th width="7%">备注</th>
+            <th width="7%">操作</th>
+        	</tr>  
+          {notempty name="list"}
+        	{volist name="list" id="vo"}          
+            <tr class="tr">
+               <td class="td_center">{$key+1}</td>
+               <td>{$vo.HallName}</td>
+               <td>{$vo.QueName}</td>
+               <td>{$vo.d_name}</td>
+               <td>{$vo.name}</td>
+               <td>{$vo.idcard}</td>
+               <td>{$vo.mobile}</td>
+               <td>{$vo.despeakDate}</td>
+               <td>{$vo.time_Part_S}~{$vo.time_Part_O}</td>
+               <td class="td_center">
+               	{switch $vo.status }
+        				    {case '0'}取消{/case}
+        				    {case 2}完成{/case}
+        				    {case 3}已过期{/case}
+        				    {default /}
+                    {if($vo.despeakTime>time())}
+                    预约中
+                    {else/}
+                    已过期
+                    {/if}
+        				{/switch}
+                </td>
+                <td>{$vo.FullName}</td>
+                <td>
+                  {if $vo.FullName}
+                    电话
+                  {else/}
+                    {if $vo.platform=='windows'}
+                    官网
+                    {else/}
+                    APP
+                    {/if}
+                  {/if}
+                </td>
+                <td>{$vo.remark}</td>
+                <td>
+                  {notempty name="$vo.manager_id"}
+                    {switch $vo.status }
+                        {case 1}
+                        {if($vo.despeakTime>time())}
+                        <a href="javascript:cancel({$vo.despeak_id});">取消预约</a>
+                        {/if}
+                        {/case}
+                    {/switch}
+                    
+                  {/notempty}
+                </td>
+            </tr>
+            {/volist}   
+            {else/}
+            <tr>
+              <td class="td_center" colspan="14">无就诊数据</td>
+            </tr>
+            {/notempty}         
+        </table>
+        
+	    {$page|raw}
+    </div>
+</div>
+<script type="text/javascript">
+function search(){
+  var stime = $("input[name='stime']").val();
+  var etime = $("input[name='etime']").val();
+  var day = (Date.parse(etime)-Date.parse(stime))/1000/3600/24;
+  // if(day>365){
+  //   alert("查询时间不能超过一年");
+  //   return false;
+  // }
+  $("form").submit();
+}
+function getData(){
+	if(confirm("确认导出数据？")){		
+	    $.post('{:url("admin/appointment/getExcel")}',
+	        $("form").serialize(),
+	        function(data){
+	            if(data.success==1){
+	             location.href = data.msg;
+	            }else{
+                alert(data.msg);
+              }
+	        },'json')
+	}
+}
+function cancel(id){
+    if(confirm("确认取消预约？")){
+        $.post('{:url("admin/appointment/cancel")}',
+            {'id':id},
+            function(data){
+                location.reload();
+                alert(data.msg);
+            },'json')
+    }
+}
+</script>
+{/block}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+    <link rel="stylesheet" href="__STATIC__/admin/css/login.css">
+    <script type="text/javascript" src="__STATIC__/admin/js/jquery.min.js"></script>
+	<title>中科易达智能预约排队管理平台 IRQS-5000</title>
+</head>
+
+<body>
+	<div id="login_top">
+		<div id="welcome">
+			欢迎使用中科易达Q5预约排队管理平台
+		</div>
+		<div id="back">
+			<!--<a href="#">返回首页</a>&nbsp;&nbsp; | &nbsp;&nbsp;-->
+			<!-- <a href="#">帮助</a> -->
+		</div>
+	</div>
+	<div id="login_center">
+		<div id="login_area" >
+			<div id="login_form">
+				<form>
+					<div style="margin: 20px 0 10px 0;color: #3d96c9;font-weight: bold;">
+						<h3>生成激活号码</h3>
+					</div>
+					<div>
+						<input type="text" name="mac" class="username" placeholder="输入机器码" value="">
+					</div>
+					<div>
+						<input type="number" name="day" class="pwd" placeholder="输入激活天数" value="">
+					</div>
+					<div>
+						<input type="text" name="token" id="token" class="pwd" placeholder="激活码" readonly="">
+					</div>
+                    <div style="margin-top: 10px;">
+						<input type="button" name="submit" id="sub_btn" onclick="login()" value="生成号码">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div id="login_bottom">
+		福州中科易达计算机技术有限公司 版权所有
+	</div>
+<script type="text/javascript">
+function login() {
+	$.post('{:url("tool/token/makeToken")}',
+		$("form").serialize(), 
+		function(data){
+			if(data.code==200){
+				$("#token").val(data.data)
+			}else{
+				alert(data.msg);			
+			}
+		},'json')
+}	
+
+</script>
+</body>
+</html>

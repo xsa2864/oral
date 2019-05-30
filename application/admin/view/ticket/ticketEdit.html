@@ -1,0 +1,109 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="forms" class="mt10">
+    <div class="box">
+        <div class="box_border">
+            <div class="box_top">
+                <div style="float: left;">   
+                        <i class="fa fa-add fa-file-powerpoint-o"></i>
+                    </div>
+                <b>号票编辑</b>
+            </div>
+            <div class="box_center">
+                <form class="jqtransform">
+                <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  	<td class="td_right">票号：</td>
+                    <td class=""> 
+	                    {$list.code}
+	                </td>
+                </tr>
+	            <tr >
+	                <td class="td_right">优先级：</td>
+	                <td class="">
+	                    <select name="sort" class="select"> 
+	                    	<option value="0" {if condition="$vo.status==0"}selected{/if}>0级</option> 
+	                    	<option value="1" {if condition="$vo.status==1"}selected{/if}>1级</option> 
+                            <option value="2" {if condition="$vo.status==2"}selected{/if}>2级</option> 
+                            <option value="3" {if condition="$vo.status==3"}selected{/if}>3级</option> 
+                            <option value="4" {if condition="$vo.status==4"}selected{/if}>4级</option> 
+                            <option value="5" {if condition="$vo.status==5"}selected{/if}>5级</option> 
+	                    </select> 
+                        <em style="color:red;">值越大越优先</em>
+	                </td>
+                </tr>
+                <tr>
+                  	<td class="td_right">选择状态：</td>
+                  	<td class="">
+                        <select name="status" class="select">
+                            <option value="0" {if condition="$vo.status==0"}selected{/if}>过号</option>
+                            <option value="1" {if condition="$vo.status==1"}selected{/if}>等候</option>
+                            <option value="2" {if condition="$vo.status==2"}selected{/if}>叫号</option>
+                            <option value="5" {if condition="$vo.status==5"}selected{/if}>完成</option>
+                        </select>
+                  	</td>
+                </tr>
+                <tr>
+                    <td class="td_right">&nbsp;</td>
+                    <td class="">
+                    	<input type="hidden" name="id" value="{$list.id}">
+	                    <input type="button" name="button" class="btn btn82 btn_save2" onclick="articleSave()" value="保存"> 
+	                    <input type="button" name="button" onclick="reGo()" class="btn btn82 btn_res" value="返回"> 
+                    </td>
+                </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+// 上传头像
+function imgupload(){
+    var imgdata = new FormData();
+    var file = $("input[name='image']")[0].files[0];
+    if(file==''||file==null){
+        alert("请选择图片");
+        return false;
+    }
+    imgdata.append("height",250);
+    imgdata.append("width",250);
+    imgdata.append("image",file);
+    $.ajax({
+        'url':'/admin/ads/upload',
+        'type':'post',
+        'cache': false,
+        'data': imgdata,
+        'dataType':'json',
+        'processData': false,
+        'contentType': false,
+        success:function(data){
+            if(data.success==1){
+                var str = '';
+                var img = data.msg;          
+                $("#head_img").val(data.msg);
+                $("#show_img").attr("src",img);
+            }else{
+                alert(data.msg);
+            }
+        }
+    })
+}
+
+// 保存文章
+function articleSave() {
+	$.post('{:url("admin/ticket/ticketSave")}',
+		$("form").serialize(),
+		function(data){
+            if(data.success==1){
+                history.go(-1);
+            }
+            alert(data.msg)
+		},'json')
+}
+function reGo(){
+    history.go(-1);
+}
+</script>
+{/block}

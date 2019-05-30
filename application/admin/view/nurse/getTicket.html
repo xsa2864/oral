@@ -1,0 +1,132 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<!-- 专用用于取号按钮STAR -->
+<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/demo.css" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/style2.css" />
+<!-- 专用用于取号按钮OVER -->
+<div class="container" style="font-size:14px;font-family:'Microsoft YaHei','微软雅黑','sans-serif';">
+    <div class="main_top">
+        <div class="main_left span10">
+			<div class="box pr5">
+                <div class="box_border">
+                    <form id="form1" class="jqtransform" method="post">
+                        <div class="box_top"><b class="pl15">预约取号</b></div>
+                        <div class="box_center pt1 pb1" id="txtHint">
+                        	<table class="form_table" border="0" cellpadding="0" cellspacing="0">
+							    <tr>
+							        <td>请输入手机号或者身份证：
+							        	<input type="text"  id="idcard" name="idcard" value="" class="input-text lh25" style="size:10px;">
+							        </td>
+							        <td>  
+							        	<input type="button" name="button1" class="btn btn82 btn_save2" value="确定" onclick="makeSure()"> 
+							        </td>
+							    </tr>
+							</table>
+							<div class="tip" style="color: red;text-align: center;"></div>
+                        </div>	
+            		</form>	
+                </div>
+                <div class="box_border"  style="margin:12px 0px 0px 0px;" >
+	                <div class="box_top">
+	                	<b class="pl15">预约信息：</b>
+	                </div>
+	                <form id="form2">	                    	
+	                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table">
+	                    <tr>
+	                    	<th width="40" style="text-align: center !important;">选择</th>
+	                        <th width="80" style="text-align: center !important;">队列</th>
+	                        <th width="80" style="text-align: center !important;">医生</th>
+	                        <th width="80" style="text-align: center !important;">姓名</th>
+	                        <th width="120" style="text-align: center !important;">预约手机号</th>
+	                        <th width="30%" style="text-align: center !important;">时间</th>
+	                        <th width="100" style="text-align: center !important;">说明</th>
+	                    </tr>
+	                    <tbody id="detail"></tbody>
+	                </table>
+	                </form>
+                </div>
+            </div>
+        </div>
+    </div>   
+</div> 
+<div class="printInfo" style="display: none;">
+	<div>排队号票</div>
+	<div>队列名称：<label id="title"></label></div>
+	<div>姓 名 ：<label id="name"></label></div>
+	<div>排队号码：<label id="code"></label></div>
+	<div>当前等候：<label id="num">0</label>人</div>
+	<div>取号时间：<label id="time"></label></div>
+</div>
+<style type="text/css">
+.a-btn{
+	width: 80px;
+}
+</style>
+<script src='http://{$ip}:8000/CLodopfuncs.js'></script>
+<script type="text/javascript">
+function makeSure() {
+	var idcard = $("input[name='idcard']").val();
+	if(idcard==''||idcard==null){
+		alert("手机号或者身份证不能为空");
+		return false;
+	}
+	  	$.post('{:url("admin/nurse/makeSure")}',
+	  		{'online_idcard':idcard},
+	  		function(data){
+	  			if(data.code==200){
+	  				var da = data.data;
+	  				var html = '';
+	  				for(x in da){
+	  					html += '<tr>';
+	  					if(da[x].item.success==1){
+							html += '  <td class="td_center"><input type="checkbox" checked name="ticket_id[]"  value="'+da[x].despeak_id+'" lay-skin="primary"></td>';
+	  					}else{
+	  						html += '<td> </td>';
+	  					}
+						html += '<td>'+(da[x].queName?da[x].queName:'')+'</td>';
+						html += '<td>'+da[x].d_name+'</td>';
+						html += '<td>'+(da[x].name?da[x].name:'')+'</td>';
+						html += '<td>'+da[x].mobile+'</td>';
+						html += '<td>'+da[x].despeakDate+' '+da[x].time_Part_S+'~'+da[x].time_Part_O+'</td>';
+						html += '<td>'+da[x].item.msg+'</td>';
+						html += '</tr>';
+	  				}
+	  				html += '<tr><td colspan="5" align="center"><a class="layui-btn layui-btn-sm layui-btn-danger" onclick="mkTicket()">打印票号</a></td></tr>';
+	  				$("#detail").html(html);
+	  				$(".layui-table").show();
+	  			}else{
+	  				alert(data.msg)
+	  			}
+	  		},'json')
+}
+// 获取票号
+function mkTicket(){
+	var idcard = $("input[name='idcard']").val();
+	$.post('{:url("admin/nurse/produceTicket")}',
+		$("#form2").serialize(),
+		function (res) {
+			if(res.code==200){
+				var da = res.data;
+				console.log(da)
+				
+				$(".printInfo").html(da);
+				demoPrint();
+				location.reload();
+			}
+			alert(res.msg)
+	},'json')
+}
+
+function demoPrint(toPreview){
+        var strHTML=$(".printInfo").html();
+        LODOP.PRINT_INITA(10,20,810,610,"测试打印");
+        LODOP.SET_PRINT_PAGESIZE(0,0,0,"测试打印");
+        LODOP.ADD_PRINT_HTM(20,10,"90%","95%",strHTML);
+        if (toPreview)
+            LODOP.PREVIEW();
+        else
+            LODOP.PRINT();
+}
+</script>
+{/block}

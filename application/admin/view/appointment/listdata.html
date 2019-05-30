@@ -1,0 +1,155 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<script type="text/javascript">
+    $(function () {
+        // 查询数据
+        $("#but_ajax").on('click',function (){
+            $.ajax({ 
+                url: "{:url('admin/appointment/getdata')}", 
+                type:'post',
+                dataType:'json',
+                data:$("#form1").serialize(), 
+                success: function(data){
+                    var str = '<tr><th width="5%">序号</th><th width="10%">预约科室</th><th width="10%">预约医生</th><th width="10%">患者身份证</th><th width="10%">患者手机号</th><th width="10%">就诊日期</th><th width="15%">就诊时间</th><th width="" title="每小时预约量">预约时间</th></tr>';
+                    $(".ajaxdiv").html('');
+                    if(data.success==1){
+                        var arr = data.msg;
+                        for (n in arr) {
+                            str += '<tr class="tr">';
+                            str += '    <td class="td_center">'+(n+1)+'</td>';
+                            str += '    <td>'+arr[n].HallName+'</td>';
+                            str += '    <td>'+arr[n].QueName+'</td>';
+                            str += '    <td>'+arr[n].idcard+'</td>';
+                            str += '    <td>'+arr[n].mobile+'</td>';
+                            str += '    <td>'+arr[n].despeakDate+'</td>';
+                            str += '    <td>'+arr[n].time_Part_S+'-'+arr[n].time_Part_O+'</td>';
+                            str += '    <td>'+arr[n].inTime+'</td>';
+                            str += '</tr>';
+                        }
+                        $(".ajaxdiv").append(str);
+                    }else{
+                        str += '<tr class="tr"><td class="td_center" colspan="8">'+data.msg+'</td></tr>'
+                        $(".ajaxdiv").append(str);
+                    }
+                }   
+            });           
+        })
+       
+        $("#dispname").focus(function () {  //给预约单位予相同的值
+            if ($("#dispname").val().length === 0) {
+                $("#dispname").val($("#hallname").val());
+            }
+        });
+
+        $("#yc").click(function () {
+            $("#table1").toggle(1000);
+        });
+    });
+    function getData(){
+        if(confirm("确认导出数据？")){            
+            $.post('{:url("admin/appointment/getExcel")}',
+                $("#form1").serialize(),
+                function(data){
+                    if(data.success==1){
+                        location.href = data.msg;
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json')
+        }
+    }
+    
+</script>
+       
+    <div class="container">
+        <div class="main_top">
+            <div class="main_left fl span10">
+                <div class="box pr0">
+                    <div class="box_border">
+                        <div class="box_top">
+                            <div class="box_top_l fl">
+                                <div class="box_top_l fl">
+                                    <div style="float: left;">   
+                                    <i class="fa fa-share-alt-square" style="font-size: 24px;color:#81BEF7;margin: 5px;"></i>
+                                </div>
+                                   <b>预约查询</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="table" class="mt10" id="editdiv">
+                <div class="box span10 oh">
+                    <form name="form1" id="form1" class="jqtransform">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" id="table1">
+                            <tr>
+                                <td class="td_center" width="10%">身份证号：</td>
+                                <td class="" width="40%">
+                                    <input type="text" name="idcards" id="idcards" style="margin-left: 10px;" class="input-text lh30" maxlength="18" size="40%" placeholder="输入全部或者部份身份证号！" >
+                                </td>
+                                <td class="td_center" width="10%">手机号码：</td>
+                                <td class="" width="40%">
+                                    <input type="text" name="bodnums" id="bodnums" class="input-text lh30" size="40%" maxlength="11" style="margin-left: 10px;" placeholder="输入全部或者部份手机号码！" >
+                                    </td>
+                                </tr>
+                         <tr>
+                            <td class="td_center">科室名称：</td>
+                            <td class="">
+                                <input type="text" name="hallname" id="hallname" class="input-text lh30" size="40%" maxlength="11" style="margin-left: 10px;" placeholder="请输入科室名称。" >
+                            </td>
+                            <td class="td_center">医生名称：</td>
+                            <td class="">
+                                <input type="text" name="quename" id="quename" class="input-text lh30" size="40%"  maxlength="11" style="margin-left: 10px;" placeholder="请输入医生姓名。" >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_center">开始日期：</td>
+                            <td class="">
+                                <input type="date" name="stime" id="stime" class="input-text lh30" size="40%" maxlength="11" style="margin-left: 10px;">
+                            </td>
+                            <td class="td_center">结束日期：</td>
+                            <td class="">
+                                <input type="date" name="etime" id="etime" class="input-text lh30" size="40%" maxlength="11" style="margin-left: 10px;">
+                            </td>
+                        </tr>
+                        <!-- <tr>
+                            <td class="td_center">模糊查询：</td>
+                            <td class="" colspan="3">
+                                 <input type="text" name="vagues" id="vagues" class="input-text lh30" size="40%" maxlength="11" style="margin-left: 10px;" placeholder="输入模糊查询关键字" >
+                            </td>
+                        </tr> -->
+                        <tr class="td_center">
+                            <td colspan="4">
+                                <div class="box_top">
+                                    <input type="button" name="button" id="but_ajax" class="btn btn82 btn_config"  value="查询" > 
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="reset" name="button" class="btn btn82 btn_del" value="重输">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="button" name="button" class="btn btn82 btn_count" onclick="getData()" value="导出">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+            </div>
+
+            <div id="forms" class="mt0">
+                <div class="box">
+                    <div class="box_border">
+                        <div class="box_top" style="background: #0166a5;">
+                            <b class="pl15" style="color:#FFFFFF">查询结果：</b>
+                        </div>
+                        <div class="box_center">
+                            <div class="mt0" id="ajaxdiv">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table ajaxdiv">
+                                
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

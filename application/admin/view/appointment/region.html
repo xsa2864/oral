@@ -1,0 +1,360 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div class="box_top_l fl">
+                            <div style="float: left;">   
+                                <i class="fa fa-add fa-globe"></i>
+                            </div>
+                            <b>预约单位管理</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">                
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                           class="list_table" id="table1" style="font-size: 1rem;">
+                        <tr>
+                            <th width="5%">选择</th>
+                            <th width="22%">单位全称</th>
+                            <th width="22%">网约名称</th>
+                            <th width="8%">启用？</th> 
+                            <th width="10%">接口编码</th>
+                            <th>录入时间</th>
+                        </tr>
+                        {notempty name="list"}
+                            {volist name="list" id="vo"}
+                                <tr class="tr td_center">
+                                    <td>
+                                        <input type="radio" name="unitid" onclick="regionList({$vo.UnitId})">
+                                    </td>
+                                    <td>{$vo.unitname}</td>
+                                    <td>{$vo.dispname}</td>
+                                    <td>
+                                        {if $vo.EnableFlag==1}
+                                        启用
+                                        {else /}
+                                        <font color='red' class='font'>暂停</font>
+                                        {/if}                                
+                                    </td>
+                                    <td>{$vo.api_code}</td>
+                                    <td>{$vo.InTime}</td>
+                                </tr>
+                            {/volist}
+                        {else /}
+                            <tr class="tr">
+                                <td class="td_center" colspan="5">您还没有配置预约的单位，请找单位管理员进行配置，谢谢！</td>
+                            </tr>
+                        {/notempty}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 区域列表 -->
+    <div id="table" class="mt10 show_region" style="display: none;">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">   
+                    <div class="box_top">
+                        <div class="box_top_l fl" >
+                            <div style="float: left;">   
+                                <i class="fa fa-add fa-globe"></i>
+                            </div>
+                            <b><span id="unit_title"></span> > 区域列表</b>
+                        </div>
+                        <input type="button" name="submit1" class="btn btn82 btn_add" onclick="showRegion()" value="新增" style="float: right; margin-right: 20px;"> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box span10 oh">
+                <form action="" name="form1" class="jqtransform" method="get"  >
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table">
+                        <tr>
+                            <th width="5%">选择</th>  
+                            <th width="15%">区域名称</th>
+                            <th width="15%">区域编码</th>
+                            <th>区域备注</th>
+                            <th>操作</th>
+                        </tr>
+                        <tbody id="region_list">
+                            <tr>
+                                <td colspan="4" class="td_center">还没有数据</td>
+                            </tr>
+                        </tbody>                        
+                    </table> 
+                </form>
+        </div>
+    </div> 
+    <!-- 区域列表 end -->
+
+    <!-- 增加区域 -->
+    <div class="box_border add_border" style="display: none;">
+        <div class="box_top">
+            <div style="float: left;">   
+                <i class="fa fa-add fa-globe"></i>
+            </div>
+            <b>单位修改</b> 
+            <a href="javascript:add_border_hide();" style="float: right;margin-right: 20px;">隐藏</a></div>
+        <div class="box_center">
+            <form  name="form1" class="jqtransform" >
+                <table class="form_table pt15 pb15" style="width: 100%">
+                    <tr>
+                        <td class="td_right">区域名称：</td>
+                        <td>
+                            <input type="text" name="region_name" id="region_name" class="input-text lh30 " size="30" value="">[必填]
+                        </td>
+                        <td class="td_right">区域编码：</td>
+                        <td>
+                            <input type="text" name="region_code" id="region_code" class="input-text lh30" size="30" value="">[必填]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td_right">备注：</td>
+                        <td><input type="text" name="region_note" id="region_note" class="input-text lh30" size="30" value="">
+                        </td>
+                    </tr>
+                </table> 
+                <div class="box_top" style="text-align: center;">
+                    <input type="hidden" name="unit_id" id="unit_id">
+                    <input type="hidden" name="region_id" id="region_id">
+                    <input type="button" name="button" class="btn btn82 btn_save2" onclick="regionSave()" value="保存"> 
+                </div>
+            </form>
+        </div>      <!-- box_center -->
+    </div>      <!-- box_border -->
+    <!-- 增加区域 end -->
+
+    <!-- 科室列表 -->
+    <div class="main_top show_hall" style="display: none;">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div class="box_top_l fl">
+                            <div style="float: left;">   
+                                <i class="fa fa-add fa-globe"></i>
+                            </div>
+                            <b> <span id="hall_title"></span> > 科室列表</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">                
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                           class="list_table" id="table1" style="font-size: 1rem;">
+                        <tr>
+                            <th width="5%">选择</th>
+                            <th width="22%">科室名称</th>
+                            <th width="22%">预约名称</th>
+                            <th width="10%">接口编码</th>
+                            <th width="8%">状态</th>
+                            <th>录入时间</th>
+                        </tr>
+                        <tbody id="hall_list"></tbody>
+                    </table>
+                        <div class="box_top" style="text-align: center;">
+                            <input type="button" name="button" class="btn btn82 btn_save2" onclick="regionAllot()" value="保存"> 
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 科室列表 end -->        
+</div>
+<script type="text/javascript">
+function save(){
+    $.post('{:url("admin/appointment/saveUnit")}',
+        $("form").serialize(), 
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }else{
+                alert(data.msg);
+            }
+    },'json')
+
+}
+// 跳转编辑
+function goto(id){
+    // location.href = '/index.php/admin/appointment/editUnit/id/'+id;
+    location.href = '{:url("admin/hall/listdata")}?id='+id;
+}
+// 增 删 改 相应操作
+function Operation(str,id) {
+    if(str=='add'){
+        location.href = '{:url("admin/appointment/editUnit")}';
+    }else{      
+        if(id==''||id==null){
+            alert("请选择相应的数据");
+        }else{      
+            if(str=='edit'){
+                location.href = '{:url("admin/appointment/editUnit")}?id='+id;
+            }else if(str=='del'){
+                if(confirm("确认删除！")){
+                    $.post('{:url("admin/appointment/unitDel")}',
+                        {'id':id},
+                        function(data){
+                            if(data.success==1){
+                                location.reload();
+                            }
+                            alert(data.msg)
+                    },'json')
+                }
+            }
+        }
+    }
+}
+// 获取单位区域
+function regionList(unit_id){
+    $(".show_region").show();
+    $(".show_hall").hide();
+    $(".add_border").hide();
+    $("#unit_id").val(unit_id);
+    $.post('{:url("admin/appointment/getRegion")}',
+        {'unit_id':unit_id},
+        function(data){
+            if(data.success==1){
+                var da = data.data;
+                var html = '';
+                for(d in da){
+                    html += '<tr class="tr td_center">';
+                    html += '<td><input type="radio" name="region_id" onclick="getHallList('+da[d].id+')"></td>';
+                    html += '<td>'+da[d].region_name+'</td>';
+                    html += '<td>'+da[d].region_code+'</td>';
+                    html += '<td>'+da[d].region_note+'</td>';
+                    html += '<td><a href="javascript:getRegionInfo('+da[d].id+');">修改</a> | ';
+                    html += '<a href="javascript:;" onclick="regionDel('+da[d].id+',this)">删除</a></td>';
+                    html += '</tr>';
+                }
+                $("#region_list").html(html);
+            }else{
+                $("#region_list").html('<tr><td colspan="5" class="td_center">还没有数据</td></tr>');
+            }
+            $("#unit_title").html(data.title);
+        },'json')
+}
+// 获取科室列表
+function getHallList(id){
+    $(".show_hall").show();
+    $(".add_border").hide();
+    $("#region_id").val(id);
+    $.post('{:url("admin/appointment/getHallList")}',
+        {'id':id},
+        function(data){
+            if(data.success==1){
+                var da = data.data;    
+                var html = '';
+                for(d in da){
+                    var checked = da[d].region_id==id?'checked':'';
+                    var ena = da[d].EnableFlag==1?"开启":"关闭";
+                    html += '<tr class="tr td_center">';
+                    html += '<td><input type="checkbox" name="hall_id" '+checked+' value="'+da[d].HallNo+'"></td>';
+                    html += '<td>'+da[d].HallName+'</td>';
+                    html += '<td>'+da[d].DispName+'</td>';
+                    html += '<td>'+da[d].SerInterface+'</td>';
+                    html += '<td>'+ena+'</td>';
+                    html += '<td>'+da[d].InTime+'</td>';
+                    html += '</tr>';
+                }
+                $("#hall_list").html(html);
+            }else{
+                $("#hall_list").html('<tr><td colspan="6" class="td_center">还没有数据</td></tr>');
+            }
+            $("#hall_title").html(data.title);
+        },'json')
+}
+// 获取单位区域详情
+function getRegionInfo(id){
+    $(".add_border").show();
+    $("#region_id").val(id);
+    $.post('{:url("admin/appointment/getRegionInfo")}',
+        {'id':id},
+        function(data){
+            if(data.success==1){
+                var da = data.data;    
+                $("#region_name").val(da.region_name)
+                $("#region_code").val(da.region_code)
+                $("#region_note").val(da.region_note)
+            }
+        },'json')
+}
+
+// 添加单位区域
+function regionSave(){
+    var unit_id     = $("#unit_id").val();
+    var region_id   = $("#region_id").val();
+    if(unit_id==''||unit_id==null){
+        alert("请选择单位");
+        return false;
+    }
+    var region_name = $("#region_name").val();
+    var region_code = $("#region_code").val();
+    var region_note = $("#region_note").val();
+    $.post('{:url("admin/appointment/regionSave")}',
+        {'id':region_id,'unit_id':unit_id,'region_name':region_name,'region_code':region_code,'region_note':region_note},
+        function(data){
+            if(data.success==1){
+                regionList(unit_id)
+            }
+            alert(data.msg)
+        },'json')
+}
+// 删除单位区域
+function regionDel(id,str){
+    if(confirm("确定删除？")){
+        $.post('{:url("admin/appointment/regionDel")}'
+            ,{'id':id}
+            ,function(data){
+                if(data.success==1){
+                    $(str).parent().parent().remove() 
+                    $(".show_hall").hide();
+                }   
+                alert(data.msg)
+            },'json')
+    }
+}
+// 区域分配
+function regionAllot(){
+    var id = '';
+    $("input[type='checkbox']:checked").each(function(n,e){    
+        if(id!=''){
+            id += ',';
+        }
+        id += $(e).val();
+    })
+    if(id==''){
+        alert("请选择科室"); 
+        return false;
+    }
+    var region_id = $("#region_id").val();
+    $.post('{:url("admin/appointment/regionAllot")}',
+        {'hall_id':id,'region_id':region_id},
+        function(data){
+            alert(data.msg)
+        },'json')
+}
+
+// 显示/隐藏
+function showRegion(){
+    $("#region_id").val(0);
+    $("#region_name").val('')
+    $("#region_code").val('')
+    $("#region_note").val('')
+    $(".add_border").show();
+}
+function add_border_hide(){
+    $(".add_border").hide();
+}
+</script>
+{/block}

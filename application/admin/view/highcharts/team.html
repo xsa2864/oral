@@ -1,0 +1,235 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="search_bar" class="mt10">
+    <div class="box">
+        <div class="box_border">
+            <form>
+            <div class="box_top">
+                <div style="float: left;">   
+                    <i class="fa fa-add fa-line-chart"></i>
+                </div>
+                <b>统计条件</b>
+            </div>
+            <div class="box_center pt10 pb10">
+              <table class="form_table" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>单位名称:</td>
+                  <td>
+                    <select name="unit_id" class="select">
+                      {volist name="unit" id="vo"}
+                      <option value="{$vo.UnitId}">{$vo.unitname}</option>
+                      {/volist}
+                    </select>
+                  </td>        
+                  <td>预约状态:</td>
+                  <td>
+                    <select name="type" class="select">
+                      <option value="1">按组统计</option>
+                      <option value="2">按人统计</option>
+                    </select>
+                  </td>        
+                </tr>
+                <tr>
+                  <td>开始时间:</td>
+                  <td><input type="date" name="stime" class="input-text lh25" size="10" value="{$wh['stime']|default=date('Y-m-01',time())}"></td>
+                  <td>结束时间:</td>
+                  <td><input type="date" name="etime" class="input-text lh25" size="10" value="{$wh['etime']|default=date('Y-m-d',time())}"></td>
+                 </tr>
+              </table>
+            </div>
+            <div class="box_bottom pb5 pt5 pr10" style="border-top:1px solid #dadada;">
+              <div class="search_bar_btn" style="text-align:right;">
+                 <input type="button" value="统计" onclick="search()" class="ext_btn ext_btn_submit">
+                 <input type="button" class="ext_btn ext_btn_success" onclick="getData()" value="导出">
+              </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div>
+
+<div id="table" class="mt10" id="editdiv">
+    <div class="box span10 oh">                
+            <table width="80%" border="0" cellpadding="0" cellspacing="0"
+                   class="list_table" style="font-size: 1rem;margin-bottom: 40px;">
+                <tr>
+                    <th width="30%">单位</th>
+                    <th>名称/用户名</th>
+                    <th>数量</th>
+                </tr>
+                <tbody id="table1"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script language="JavaScript">
+$(document).ready(function(){
+    // Radialize the colors
+    Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function (color) {
+      return {
+         radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+         stops: [
+            [0, color],
+            [1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+         ]
+      };
+    });
+    search()
+})
+
+function search(){
+    $.post('{:url("admin/highcharts/getDataTeam")}',
+        $("form").serialize(),
+        function(data){
+            console.log(data)
+            if(data.type==1){
+              showInfo(data.data,data.title)
+            }else{
+              colum(data,data.title)
+            }
+            
+            var str = '';
+            if(data.success==1){
+                var da = data.data;
+                for(x in da){
+                    str += '<tr class="tr td_center"><td>'+data.title+'</td><td>'+da[x].DispName+'</td><td>'+da[x].num+'</td></tr>'
+                }
+                $("#table1").html(str)
+            }
+        },'json')
+}
+// 饼图
+function showInfo(list,title) {  
+    var chart = {
+       plotBackgroundColor: null,
+       plotBorderWidth: null,
+       plotShadow: false
+    };
+    var title = {
+      text: title   
+    };      
+    var tooltip = {
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    };
+    var plotOptions = {
+      pie: {
+         allowPointSelect: true,
+         cursor: 'pointer',
+         dataLabels: {
+            enabled: true,
+            format: '<b>{point.name}%</b>: {point.percentage:.1f} %',
+            style: {
+               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+            }
+         }
+      }
+    }; 
+
+    var list_data = new Array();
+    if(list!='' || list != null){        
+        for(l in list){
+            list_data[l] = [list[l].DispName,parseInt(list[l].num)];
+        } 
+    }else{
+        list_data = []
+    }
+
+    var series= [{
+      type: 'pie',
+      name: '占总数的',
+      data: list_data
+    }];
+
+    var credits = {
+        enabled:false
+    }
+      
+    var json = {};   
+    json.chart = chart; 
+    json.credits = credits; 
+    json.title = title;     
+    json.tooltip = tooltip;  
+    json.series = series;
+    json.plotOptions = plotOptions;
+    $('#container').highcharts(json);  
+}
+
+// 柱状图
+function colum(list,title){
+  var chart = {
+      type: 'column'
+   };
+   var title = {
+      text: title   
+   };
+   var subtitle = {
+      text: ''  
+   };
+   var xAxis = {
+      categories: [list.time],
+      crosshair: true
+   };
+   var yAxis = {
+      min: 0,
+      title: {
+         text: '预约数量 (个)'         
+      }      
+   };
+   var tooltip = {
+      headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+      pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + '<td style="padding:0"><b>{point.y:1f} 人</b></td></tr>',
+      footerFormat: '</table>',
+      shared: true,
+      useHTML: true
+   };
+   var plotOptions = {
+      column: {
+         pointPadding: 0.2,
+         borderWidth: 0
+      }
+   };  
+   var credits = {
+      enabled: false
+   };
+   var da = list.data;
+   var con = new Array();
+   for(d in da){
+      var list_con = {};
+      list_con.name = da[d].DispName;
+      list_con.data = [da[d].num];
+      con.push(list_con);
+   }
+   var series= con;     
+      
+   var json = {};   
+   json.chart = chart; 
+   json.title = title;   
+   json.subtitle = subtitle; 
+   json.tooltip = tooltip;
+   json.xAxis = xAxis;
+   json.yAxis = yAxis;  
+   json.series = series;
+   json.plotOptions = plotOptions;  
+   json.credits = credits;
+   $('#container').highcharts(json);
+}
+function getData(){
+  if(confirm("确认导出数据？")){   
+      $.post('{:url("admin/highcharts/getExcel")}',
+          $("form").serialize(),
+          function(data){
+              if(data.success==1){
+               location.href = data.msg;
+              }else{
+                alert(data.msg);
+              }
+          },'json')
+  }
+}
+</script>
+{/block}

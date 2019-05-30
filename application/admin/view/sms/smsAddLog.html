@@ -1,0 +1,72 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div id="search_bar" class="mt10">
+    <div class="box">
+    <form>
+        <div class="box_border">
+            <div class="box_top">
+                <div style="float: left;">   
+                    <i class="fa fa-add fa-newspaper-o"></i>
+                </div>
+                <b>短信配额记录</b>
+            </div>
+            <div class="box_center pt10 pb10">
+                <table class="form_table" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>单 位 :</td>
+                    <td>
+                        <select name="unitid" class="select"> 
+                            <option value="">请选择单位</option> 
+                            {volist name="unit" id="vo"}
+                            <option value="{$vo.UnitId}" {if condition="$vo.UnitId==$wh.unitid"}selected{/if}>{$vo.unitname}</option> 
+                            {/volist}
+                        </select> 
+                    </td>                  
+                </tr>
+                <tr>
+                  <td>开始时间:</td>
+                  <td><input type="date" name="stime" class="input-text lh25" size="10" value="{$wh['stime']}"></td>
+                  <td>结束时间:</td>
+                  <td><input type="date" name="etime" class="input-text lh25" size="10" value="{$wh['etime']}"></td>
+                  <td>内 容 :</td>
+                    <td><input type="text" name="content" class="input-text lh25" size="20" value="{$wh.content}"></td>
+                 </tr>
+                </table>
+            </div>
+            <div class="box_bottom pb5 pt5 pr10" style="border-top:1px solid #dadada;">
+                <div class="search_bar_btn" style="text-align:right;">
+                    <input type="submit" value="查询" class="ext_btn ext_btn_submit">
+                </div>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+<div id="table" class="mt10">
+    <div class="box span10 oh">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size: 1rem;">
+            <tr>
+               <th width="50">ID</th>
+               <th width="22%">单位名称</th>
+               <th width="10%">短信数量</th>
+               <th width="30%">内容</th> 
+               <th width="15%">操作员</th>          
+               <th width="15%">日期</th>
+            </tr>
+            {volist name="list" id="vo"}
+            <tr class="tr td_center">
+               <td>{$vo.id}</td>
+               <td>{$vo.unitname|default="无"}</td>
+               <td>{$vo.number}</td>
+               <td>{$vo.note}</td>
+               <td>{$vo.FullName}</td>
+               <td>{:date("Y-m-d H:i",$vo.add_time)}</td>
+            </tr>
+            {/volist}
+        </table>
+        {$page|raw}
+    </div>
+</div>
+
+{/block}

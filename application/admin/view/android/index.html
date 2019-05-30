@@ -1,0 +1,346 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div id="forms" class="mt0">
+            <div class="box">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div style="float: left;">   
+                            <i class="fa fa-add fa-file-sound-o"></i>
+                        </div>
+                        <b>显示模板管理</b>
+                    </div>
+                    <div class="box_center">
+                        <form  name="form1" class="jqtransform" >
+                            <table class="form_table pt15 pb15" style="width: 100%">
+                                {if($user_id==1)}
+                                <tr>
+                                    <td class="td_right">选择单位:</td>
+                                    <td>
+                                    <select name="unit_id" class="select" style="width: 260px;" onchange="getHall($(this).val())">
+                                        <option value="">请选择单位</option>
+                                        {volist name="unit" id="vos"}
+                                        <option value="{$vos.UnitId}">{$vos.unitname}</option>
+                                        {/volist}
+                                    </select>
+                                    </td>
+                                </tr>
+                                {/if}
+                                <tr>
+                                    <td class="td_right">选择区域:</td>
+                                    <td>
+                                    <select name="hall_id" class="select" style="width: 260px;">
+                                        <option value="">请选择区域</option>
+                                        {volist name="hall" id="vo"}
+                                        <option value="{$vo.HallNo}">{$vo.HallName}</option>
+                                        {/volist}
+                                    </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">显示屏类型:</td>
+                                    <td>
+                                    <select name="screen_type" class="select" style="width: 260px;">
+                                        <option value="">请选择类型</option>
+                                        <option value="0">诊室液晶屏</option>
+                                        <option value="1">综合液晶屏</option>
+                                        <option value="2">诊室LED屏</option>
+                                        <option value="3">综合LED屏</option>
+                                    </select>
+                                    </td>
+                                </tr>
+                                <tr style="display: none;">
+                                    <td class="td_right">选择队列:</td>
+                                    <td>
+                                    <select name="que_id"  class="select">
+                                        <option value="">请选择队列</option>
+                                    </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">名 称 :</td>
+                                    <td><input type="text" name="title" id="title" class="input-text lh30" size="30" value=""></td>
+                                </tr>
+                                <!-- <tr>
+                                    <td class="td_right">IP/地址:</td>
+                                    <td><input type="text" name="addr" id="addr" class="input-text lh30" size="30" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">设备编号:</td>
+                                    <td><input type="text" name="code" id="code" class="input-text lh30" size="30" value=""></td>
+                                </tr> -->
+                                <tr>
+                                    <td class="td_right">显示条数:</td>
+                                    <td><input type="number" name="number" id="number" class="input-text lh30" value="3"></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">模板内容:</td>
+                                    <td>
+                                        <textarea name="rule" id="rule" cols="30" rows="10" class="textarea"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="td_right">添加变量:</td>
+                                    <td>
+                                        <input type="button" name="temp_hall" class="ext_btn ext_btn_success" value="科室">
+                                        <input type="button" name="temp_que" class="ext_btn ext_btn_success" value="诊室">
+                                        <input type="button" name="temp_doctor" class="ext_btn ext_btn_success" value="医生">
+                                        <input type="button" name="temp_code" class="ext_btn ext_btn_success" value="号码">
+                                        <input type="button" name="temp_num" class="ext_btn ext_btn_success" value="窗口">
+                                        <input type="button" name="temp_name" class="ext_btn ext_btn_success" value="姓名">
+                                        <input type="button" name="temp_status" class="ext_btn ext_btn_success" value="状态">
+                                        <input type="button" name="temp_note" class="ext_btn ext_btn_success" value="备注">
+                                        <input type="button" name="blank" class="ext_btn ext_btn_success" value="空格">
+                                    </td>
+                                </tr>
+                                </table> 
+                                <input type="hidden" name="type" value="0">
+                                <div class="box_top" style="text-align: center;">
+                                    <input type="hidden" name="id" id="id" class="input-text lh30" size="4" value="">
+                                    <input type="button" name="button" class="btn btn82 btn_save2" onclick="save()" value="保存" style="margin-right: 20px;"> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>               
+                </form>
+
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">
+                <form name="form1" class="jqtransform" >
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                           class="list_table" id="table1">
+                        <tr>
+                            <th width="10%">所属区域</th>
+                            <th width="10%">显示屏类型</th>
+                            <th width="10%">标题名称</th><!-- 
+                            <th width="10%">IP/地址</th>
+                            <th width="100">设备编码</th> -->
+                            <th width="70">显示条数</th>
+                            <th>内容</th>
+                            <th width="10%">添加时间</th>
+                            <th width="8%">录入人</th>
+                            <th width="10%">操作</th>
+                        </tr>
+                        {empty name="list"}
+                        <tr class="tr">
+                            <td class="td_center" colspan="12">您还没有配置预约的单位，请找单位管理员进行配置，谢谢！</td>
+                        </tr>
+                        {else /}
+                        {volist name="list" id="vo"}
+                        <tr class="tr td_center">
+                            <td>{$vo.HallName}</td>
+                            <td>
+                                {if($vo.screen_type==1)}
+                                综合液晶屏
+                                {elseif($vo.screen_type==2) /}
+                                诊室LED屏
+                                {elseif($vo.screen_type==3) /}
+                                综合LED屏
+                                {else /}                                
+                                诊室液晶屏
+                                {/if}
+                            </td>
+                            <td>{$vo.title}</td>
+                            <!--  <td>{$vo.addr}</td>
+                            <td>{$vo.code}</td> -->
+                            <td>{$vo.number}</td>
+                            <td>{$vo['rule']}</td>
+                            <td>{$vo.add_time|date="Y-m-d"}</td>
+                            <td>{$vo['FullName']}</td>
+                            <td>
+                                <a href="javascript:Operation('edit',{$vo['id']});">修改</a> 
+                                    |
+                                <a href="javascript:Operation('del',{$vo['id']});">删除</a>
+                            </td>
+                        </tr>
+                        {/volist}
+                        {/empty}
+                    </table>
+                    </form>
+                    <!-- 分页开始 -->
+                    <div class="page mt10">
+                        {$page|raw}         
+                    </div>
+                    <!-- 分页结束 -->
+                </div>
+            </div>
+        </div>
+
+            </div>
+        </div>
+<script type="text/javascript">
+// 更新数据
+function save(){
+    $.post('{:url("admin/voice/voiceTemSave")}',
+        $("form").serialize(), 
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }
+            alert(data.msg);
+    },'json')
+
+}
+
+function Operation(str,id){
+    if(str=='edit'){
+        $.post('{:url("admin/voice/getTempInfo")}',
+            {'id':id},
+            function(data){
+                if(data.success==1){
+                    var da = data.data;
+                    $("#id").val(da.id)
+                    $("#title").val(da.title)
+                    $("#rule").val(da.rule)
+                    $("#number").val(da.number)
+                    $("#code").val(da.code)
+                    $("#addr").val(da.addr)
+                    console.log(da)
+                    checkUnit(da.unit_id)
+                    checkArea(da.hall_id,da.que_id)
+                    checkScreen(da.screen_type)
+                    // $("select[name='que_id']>option").each(function(n,e){
+                    //     if($(e).val()==da.que_id){
+                    //         $(e).prop("selected",true)
+                    //     }
+                    // })
+                }else{
+                    alert(data.msg)
+                }
+            },'json')
+    }else if(str == 'del'){
+        if(confirm("确认删除?")){
+            $.post('{:url("admin/voice/delVoice")}',
+                {'id':id},
+                function(data){
+                    if(data.success==1){
+                        location.reload();
+                    }
+                    alert(data.msg)
+                },'json')
+        }
+    }
+        
+}
+$(function(){
+    getSerque() 
+})
+function getSerque(id,que_id) {
+    var id = id?id:$("select[name='hall_id']").val();
+    $.post('{:url("admin/voice/getSerque")}',{'id':id},
+        function (data) {
+            if(data.success==1){
+                var da = data.data;
+                var str = '<option value="">请选择队列</option>';
+                for(x in da){
+                    var sel = '';
+                    if(da[x].QueId==que_id){
+                        sel = 'selected';
+                    }
+                    str += '<option value="'+da[x].QueId+'" '+sel+'>'+da[x].QueName+'</option>';
+                }
+                $("select[name='que_id']").html(str)
+            }
+        },'json')
+}
+function checkUnit(unit_id){
+    $("select[name='unit_id']>option").each(function(n,e){
+        if($(e).val()==unit_id){
+            $(e).prop("selected","true")
+        }
+    })
+}
+function checkArea(id,que_id){
+    $("select[name='hall_id']>option").each(function(n,e){
+        if($(e).val()==id){
+            $(e).prop("selected","true")
+            getSerque(id,que_id)
+        }
+    })
+}
+function checkScreen(id){
+    $("select[name='screen_type']>option").each(function(n,e){
+        if($(e).val()==id){
+            $(e).prop("selected","true")
+        }
+    })
+}
+
+function getHall(unit_id) {
+    $.post('{:url("admin/android/getHall")}',{'unit_id':unit_id},
+        function (data) {
+            if(data.success==1){
+                var da = data.data;
+                var str = '<option value="">请选择区域</option>';
+                for(x in da){
+                    var sel = '';
+                    str += '<option value="'+da[x].HallNo+'" '+sel+'>'+da[x].HallName+'</option>';
+                }
+                $("select[name='hall_id']").html(str)
+            }
+        },'json')
+}
+
+$("input[name='temp_name']").on('click',function(){
+    // var html = $("#rule").val()+"[name]";
+    // $("#rule").val(html)
+    insertAtCursor("[name]")
+})
+$("input[name='temp_hall']").on('click',function(){
+    insertAtCursor("[hall]")
+})
+$("input[name='temp_que']").on('click',function(){
+    insertAtCursor("[queue]")
+})
+$("input[name='temp_num']").on('click',function(){
+    insertAtCursor("[num]")
+})
+$("input[name='temp_doctor']").on('click',function(){
+    insertAtCursor("[doctor]")
+})
+$("input[name='temp_code']").on('click',function(){
+    insertAtCursor("[code]")
+})
+$("input[name='temp_note']").on('click',function(){
+    insertAtCursor("[note]")
+})
+$("input[name='blank']").on('click',function(){
+    insertAtCursor("&nbsp;")
+})
+$("input[name='temp_status']").on('click',function(){
+    insertAtCursor("[status]")
+})
+
+function insertAtCursor(myValue) { 
+    var myField = document.getElementById('rule');
+     //IE 浏览器
+     if (document.selection) {
+         myField.focus();
+         sel = document.selection.createRange();
+         sel.text = myValue;
+         sel.select();
+     } 
+     //FireFox、Chrome等
+     else if (myField.selectionStart || myField.selectionStart == '0') {
+         var startPos = myField.selectionStart;
+         var endPos = myField.selectionEnd; 
+         // 保存滚动条
+         var restoreTop = myField.scrollTop;
+         myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);         
+         if (restoreTop > 0) {
+            myField.scrollTop = restoreTop;
+         }         
+         myField.focus();
+         myField.selectionStart = startPos + myValue.length;
+         myField.selectionEnd = startPos + myValue.length;
+     } else {
+         myField.value += myValue;
+         myField.focus();
+     }
+}
+
+</script>
+{/block}

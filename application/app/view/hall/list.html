@@ -1,0 +1,74 @@
+{extend name="common/public" /}
+{block name="title"}就诊科室{/block}
+{block name="content"}
+<div class="page__bd">
+  <div class="weui-panel weui-panel_access">
+    <div class="weui-panel__bd" id="list">
+      {volist name="list" id="vo"}
+      <a href="{$vo.url}" class="weui-media-box weui-media-box_appmsg">
+        <div class="weui-media-box__hd">
+          <img class="weui-media-box__thumb" src="__APP__/images/icon_nav_panel.png" alt="">
+        </div>
+        <div class="weui-media-box__bd">
+          <h4 class="weui-media-box__title">{$vo.HallName}</h4>
+          <p class="weui-media-box__desc">{$vo.AlternateField1}</p>
+        </div>
+      </a>
+      {/volist}
+    </div>
+    <div class="weui-loadmore">
+      {if condition="$more==1"}
+      <i class="weui-loading"></i>
+      <span class="weui-loadmore__tips">正在加载</span>
+      {else /}
+      {$more}
+      {/if}
+    </div>
+  </div>     
+</div>
+{/block}
+{block name="js2"}
+<script type="text/javascript">
+var loading = false;
+var page = 2;
+
+$(document.body).infinite().on("infinite", function() {
+  if(loading) return;
+  loading = true;
+  setTimeout(function() {
+    more_list()
+    loading = false;
+  }, 1500);
+});
+function more_list(){
+  $.post('{:url("app/hall/more_list")}',
+    {'page':page},
+    function(data){
+      if(data.success==1){
+        var da = data.msg;
+        var str = '';
+        for(x in da){
+          str += '<a href="'+da[x].url+'" class="weui-media-box weui-media-box_appmsg">';
+          str += '  <div class="weui-media-box__hd">';
+          str += '    <img class="weui-media-box__thumb" src="__APP__/images/icon_nav_panel.png" alt="">';
+          str += '  </div>';
+          str += '  <div class="weui-media-box__bd">';
+          str += '    <h4 class="weui-media-box__title">'+da[x].HallName+'</h4>';
+          str += '    <p class="weui-media-box__desc">'+da[x].AlternateField1+'</p>';
+          str += '  </div>';
+          str += '</a>';
+        }
+        $("#list").append(str);
+        page = data.page;
+        if(page==0){
+          loading = true;
+          $(".weui-loadmore").html('没有更多数据了');
+        }
+      }else{
+        loading = true;
+        $(".weui-loadmore").html(data.msg);
+      }
+    },'json')
+}
+</script>
+{/block}

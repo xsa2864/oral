@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>预约信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+    <style type="text/css">
+        body{
+            margin: 0px;
+        }
+        .layui-fluid{
+            padding:0;
+            overflow: hidden;
+        }        
+        .header{
+            position: fixed;
+            line-height: 40px;
+            font-size: 15px;
+            text-align: center;
+            background-color: #5a87cc;
+            z-index: 99;
+        }
+        .header .layui-icon-prev{
+            position: absolute;
+            left: 0;
+            padding: 0 15px;
+            color: #FFFFFF;
+        }
+        .header .layui-icon-home{
+            position: absolute;
+            font-size: 18px;
+            right: 0;
+            padding: 0 15px;
+            color: #FFFFFF;
+        }
+        #demo{
+            margin-top: 40px;
+        }
+        ul li {
+            line-height: 40px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;            
+            cursor: pointer;
+        }
+        ul li a .layui-icon{
+            font-size: 35px;
+            float: left;
+            width: 50px;
+            height: 50px;
+            padding-right: 5px;
+        }
+        ul li h3{
+            white-space: nowrap;
+        }
+        ul li i{
+            color: #5a87cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header">
+                <a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-prev"></i></a>
+                <label style="color:#fff;">{{ title }}</label>
+                <a href="{:url('app/index/indexs')}"><i class="layui-icon layui-icon-home"></i></a>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" id="demo">
+                <ul>
+                    <li v-for="item in list">
+                        <a v-bind:href="item.url">
+                            <i class="layui-icon layui-icon-home"></i>
+                            <h3>{{ item.name }}</h3>
+                        </a>
+                    </li>
+                </ul>
+            </div>        
+        </div>
+    </div>  
+</body>
+<script>
+layui.use('flow', function(){
+    var $ = layui.jquery; //不用额外加载jQuery，flow模块本身是有依赖jQuery的，直接用即可。
+    var flow = layui.flow;
+    flow.load({
+        elem: '#demo' //指定列表容器
+        ,done: function(page, next){ //到达临界点（默认滚动触发），触发下一页
+            var lis = [],res = [];
+            vm.selectList(page,next)
+        }
+    });
+});
+
+var vm = new Vue({
+    el: '.layui-fluid',
+    data:{
+    	list:[],
+        title:'',        
+    }
+    ,methods:{
+        selectList:function(page,next){
+            var vm = this
+            let unitid = this.getUrlKey("unitid")
+            axios
+                .get('{:url("/api/a1/Hall/selectList")}',{params:{'page':page,'unitid':unitid}})
+                .then(function(res){
+                    vm.title = res.data.title
+                    for(item in res.data.list){
+                        vm.list.push(res.data.list[item])
+                    }               
+                    next('', page < res.data.pages); 
+                })
+        },
+        gohead:function(url){
+            location.href = url
+        }
+        ,getUrlKey: function (name) {
+            var reg = new RegExp("[?/&]"+name+"[/=]([a-zA-Z0-9]*)"); 
+            var str = document.location.href.match(reg);
+            if(str){
+                return str[1]
+            }
+            return ''
+        }
+    }
+    ,created:function(){ 
+    }
+})
+</script>
+</html>

@@ -1,0 +1,180 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div id="table" class="mt10" id="editdiv">
+            <div class="main_left fl span10">
+                <div class="box pr0">
+                    <div class="box_border">
+                        <div class="box_top">
+                            <div class="box_top_l fl" >
+                                <div style="float: left;">   
+                                    <i class="fa fa-add fa-plus-square"></i>
+                                </div>
+                                <b>医生配置</b>
+                            </div>
+                            <div class="search_bar_btn" style="text-align:right;padding: 0px 20px;">
+                                <input type="file" name="info" style="width: 178px;">
+                                 <input type="button" value="导入医生" onclick="inputs()" class="ext_btn ext_btn_submit">
+                                <a href="__STATIC__/../excel/temp/doctor.xlsx">下载模板</a>
+                            </div>
+                        </div>
+                        <form id="form2">
+                        <div class="box_center pt10 pb10">
+                          <table class="form_table">
+                            <tr>                  
+                              <td align="right">查询条件:</td>
+                              <td><input type="text" name="query" class="input-text lh25" value="{$wh['query']}"></td>
+                              <td><input type="button" value="搜索" onclick="search()" class="ext_btn ext_btn_submit">
+                              </td>                  
+                            </tr>                
+                          </table>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <form name="form1" class="jqtransform">
+                <div class="mt10" id="ajaxdiv">
+                    <div class="box_border">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size:0.9rem">
+                            <tr>    
+                                <th><input type="checkbox" id="selAll"> 选择</th>
+                                <th>工号</th>
+                                <th>医生名字</th>
+                                <th>就诊队列</th>
+                                <th>前置字符</th>
+                                <th>起始号码</th>
+                                <th>启用</th>
+                                <th title="每小时预约量">医师资格</th>                                
+                                <th>操作</th>
+                            </tr>
+                            {notempty name="lists"}
+                            {volist name="lists" id="list"}
+                            <tr class="tr td_center">    
+                                <td><input type="checkbox" value="{$list.id}"></td>  
+                                <td>{$list.staff_code}</td>                  
+                                <td>{$list.QueName}</td>
+                                <td>{$list.quename}</td>
+                                <td>{$list.NoChar}</td>
+                                <td>{$list.StarNo}</td>
+                                <td>{$list.status==1?'是':'否'}</td>
+                                <td>{$list.type==1?'专家':'医师'}</td>
+                                <td>
+                                    <a href="javascript:Operation('edit',{$list.id});">修改</a> 
+                                    |
+                                    <a href="javascript:Operation('del',{$list.id});">删除</a>
+                                </td>
+                            </tr>
+                            {/volist}
+                			{else /}
+                            <tr class="tr">
+                                <td class="td_center" colspan="11">您还没有配置医生，请进行配置，谢谢！</td>
+                            </tr>
+                            {/notempty}
+                        </table>
+                    </div>
+                </div>
+            </form>
+
+            <div class="box_top">
+                <input type="button" name="addbut" id='addbut' onclick="Operation('add')" class="ext_btn ext_btn_submit"  value="新增"> 
+                <input type="button" onclick="delAll()" class="ext_btn ext_btn_default"  value="批量删除"> 
+            </div>
+
+            <!-- 分页开始 -->
+            {$page|raw}
+            <!-- 分页结束 -->            
+        </div>
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">                     
+
+            </div>
+        </div> 
+
+    </div>
+</div> 
+
+<script type="text/javascript">
+// 增 删 改 相应操作
+function Operation(str,id) {
+    if(str=='add'){
+        location.href = '{:url("admin/doctor/editDoctors")}';
+    }else{      
+        if(id==''||id==null){
+            alert("请选择相应的数据");
+        }else{      
+            if(str=='edit'){
+                location.href = '{:url("admin/doctor/editDoctors")}?id='+id;
+            }else if(str=='del'){
+                if(confirm("确认删除！")){
+                    $.post('{:url("admin/doctor/doctorDels")}',
+                        {'id':id},
+                        function(data){
+                            if(data.success==1){
+                                location.reload();
+                            }
+                            alert(data.msg)
+                    },'json')
+                }
+            }
+        }
+    }
+}
+$("#selAll").on("click",function () {
+    var flag = $(this).is(':checked')?true:false;
+    $("input[type='checkbox']").prop("checked",flag)    
+})
+
+function delAll() {
+     var list = '';
+    $("input[type='checkbox']:checked").each(function(n,e){
+        if(list!=''){
+            list += ',';
+        }
+        list += $(e).val();
+    })
+    if(list == ''){
+        alert("请选择要删除的");
+        return false;
+    }
+    if(confirm("确定删除？")){        
+        $.post('{:url("admin/doctor/delAll")}',{'list':list},
+            function(data){
+                if(data.success==1){
+                    location.reload();
+                }
+                alert(data.msg)
+            },'json')
+    }
+}
+function inputs() {
+    var data = new FormData();    
+    var file = $("input[name='info']")[0].files[0];
+    if(file=='' || file==null){
+        alert("请选择要导入的文件");
+        return false;
+    }
+    data.append("info",file);
+     $.ajax({
+        url: "{:url('admin/doctor/importInfo')}",
+        data: data,
+        dataType: 'json',
+        type: 'post',
+        contentType: false,
+        processData: false,
+        success: function(res){
+            if(res.success==1){
+                location.reload();
+            }
+            alert(res.msg)
+        }
+    });
+}
+
+function search(){
+  $("#form2").submit();
+}
+</script>
+{/block}

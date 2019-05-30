@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>测试</title>
+	<script src='https://cdn.bootcss.com/socket.io/2.0.3/socket.io.js'></script>
+	<script type="text/javascript" src="__HUI__/lib/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript">
+	function send() {
+		$.post('{:url("api/index/send")}',
+			$("form").serialize(),
+			function (data) {
+				console.log(data)
+				$("#td").html(data)
+			},'json')
+	}	
+	</script>
+</head>
+<body>
+<form>
+<table>
+	<tr>
+		<td>类型</td>
+		<td><input type="text" name="type" value="publish"></td>
+	</tr>
+	<tr>
+		<td>推送id</td>
+		<td><input type="text" name="to" value="uid1"></td>
+	</tr>
+	<tr>
+		<td>内容</td>
+		<td><input type="text" name="content" value="测试推送"></td>
+	</tr>
+	<tr>
+		<td><input type="button" name="but" id="but" onclick="send()" value="提交"></td>
+		<td style="color: red;" id="td"></td>
+	</tr>
+</table>
+</form>
+</body>
+</html>

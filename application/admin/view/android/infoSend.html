@@ -1,0 +1,261 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<style type="text/css">
+.layui-form-checkbox[lay-skin=primary] {
+    height: 0px !important;
+}
+
+.layui-tab-title{
+    display: block !important;
+}
+</style>
+<div class="box_top">
+    <div class="box_top_l fl" >
+        <img src="__STATIC__/admin/images/icons/5.png" width="30" height="30" style="margin: 5px;">
+        <b>信息发布管理&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    </div>
+</div>
+<div class="layui-tab">
+    <ul class="layui-tab-title">
+        <li class="layui-this">推送数据</li>
+        <!-- <li>历史数据</li> -->
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+
+    <div class="layui-row layui-col-space15">       
+        <div class="layui-form layui-form-pane" action="">  
+            <fieldset class="layui-elem-field site-demo-button">
+                <legend>选择要推送的显示屏</legend>  
+                <br>
+                <input type="checkbox" name="devices_ip[]" title="全选" id="checkboxs_all" lay-filter="checkboxs_all" class="layui-unselect layui-form-checkbox" lay-skin="primary" value="0">
+                <div class="layui-form-item">
+                    {volist name="list" id="vo"}
+                        {if $key!=0}
+                            <input type="checkbox" name="devices_ip[]" title="{$key}-{$vo.room_name?$vo.room_name:''}
+                            {notempty  name='vo.devices_width'}
+                            {if $vo.devices_width<$vo.devices_height}
+                                (竖)
+                            {else/}
+                                (横)
+                            {/if}
+                            {/notempty}" lay-skin="primary"  lay-filter="checkboxs" value="{$key}" >
+                        {/if}               
+                    {/volist}
+                </div>
+            </fieldset>
+
+            <fieldset class="layui-elem-field site-demo-button">
+                <legend>选择广告位显示</legend> 
+                <br>   
+                <div class="layui-form-item">
+                    <label class="layui-form-label">选择广告位</label>
+                    <div class="layui-input-block">
+                      <select name="devices_ads_id">
+                        <option value=""></option>
+                        {volist name="img_list" id="vo"}
+                        <option value="{$vo.id}">{$vo.title}</option>
+                        {/volist}
+                      </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">视频</label>
+                    <div class="layui-input-block">
+                      <input type="text" name="devices_video" required  placeholder="视频名称或者链接" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- <fieldset class="layui-elem-field site-demo-button">
+                <legend>选择背景图片</legend> 
+                <br>                
+                <input type="checkbox" name="check_image" title="不选" id="check_image" lay-filter="check_image" class="layui-unselect layui-form-checkbox" lay-skin="primary" value="">
+                <div class="layui-form-item">
+                    {volist name="img_list" id="io"}
+                        <input type="checkbox" name="check_image" title="{$io.title?$io.title:''}" lay-skin="primary"  lay-filter="check_image" value="{$io.attr}" >
+                    {/volist}
+                    <input type="hidden" name="devices_image" id="devices_image" value="">
+                </div>
+            </fieldset> -->
+            <!-- <fieldset class="layui-elem-field site-demo-button">
+                <legend>颜色设置</legend>   
+                <br> 
+                <div class="">
+                    <label class="" style="margin-left: 30px;">字体颜色</label>
+                    <div id="devices_font_color"></div>
+            
+        
+                    <label class="" style="margin-left: 30px;">背景颜色</label>
+                    <div id="devices_background_color"></div>
+                </div>
+                <input type="hidden" name="devices_font_color">
+                <input type="hidden" name="devices_background_color">
+                <br>                
+            </fieldset>  -->
+
+            <!-- <fieldset class="layui-elem-field site-demo-button" style="padding: 8px 8px 18px 8px;">
+                <legend>字体大小</legend>
+                <div id="devices_font_size" class="demo-slider"></div>
+                <input type="hidden" name="devices_font_size">
+            </fieldset> -->
+
+            <!-- <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">推送内容</label>
+                <div class="layui-input-block">
+                  <textarea name="devices_content" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div> -->
+          <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即推送</button>
+            </div>
+          </div>
+        </div>
+    </div>  
+
+        </div>
+        <div class="layui-tab-item">
+<div class="layui-collapse">
+    {volist name="clist" id="co" key="k"}
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">{$co.devices_code}-{$co.devices_name?$co.devices_name:''} 推送时间 {:isset($co.devices_send_time)?date('Y-m-d H:i',$co.devices_send_time):''} </h2>
+        <div class="layui-colla-content {if $k == 1} layui-show{/if}" onclick="sendAgain('{$key}')" 
+        {if isset($co.devices_image)}
+            {notempty name="co.devices_image"}
+                style="background-image:url(__IMG__{$co.devices_image});background-size:100% 100%;text-align: center;color:{$co.devices_font_color|default='#FFFFFF'}">
+            {/notempty}
+        {else/}
+            {if isset($co.devices_background_color)}
+                style="background-color:{$co.devices_background_color};color:{$co.devices_font_color|default='#FFFFFF'}">
+            {/if}
+        {/if}
+            {$co.devices_content?$co.devices_content:''} 
+        </div>
+    </div>
+    {/volist}    
+</div>
+        </div>
+    </div>
+</div>
+
+ <!-- 1920 290 -->
+<script>
+var push_flag = true;
+layui.use(['slider','layer','colorpicker','element','form'], function(){
+    var $ = layui.$
+    ,element = layui.element
+    ,form = layui.form
+    ,colorpicker = layui.colorpicker
+    ,slider = layui.slider;
+    //默认滑块
+    slider.render({
+        elem: '#devices_font_size'
+        ,input: true //输入框
+        ,max: 500
+        ,change: function(value){
+            $("input[name='devices_font_size']").val(value);
+        }
+    });
+    //常规使用
+    colorpicker.render({
+        elem: '#devices_font_color' //绑定元素
+        ,color: '#FFFFFF' //设置默认色
+        ,done: function(color){ //颜色改变的回调
+          $("input[name='devices_font_color']").val(color);
+        }
+    });
+   
+    //初始色值
+    colorpicker.render({
+        elem: '#devices_background_color'
+        ,color: '#0000ff' //设置默认色
+        ,done: function(color){
+          $("input[name='devices_background_color']").val(color);
+        }
+    });
+
+    // 全选
+    form.on('checkbox(checkboxs_all)', function(data){
+        var flag = data.elem.checked;
+        if(flag == true){
+            $("input[name='devices_ip[]']").prop("checked", true);
+            form.render('checkbox');
+        }else{
+            $("input[name='devices_ip[]']").prop("checked", false);
+            form.render('checkbox');
+        }
+    });
+
+    // 单选
+    form.on('checkbox(checkboxs)', function(data){
+        var item = $("input[name='devices_ip[]']");
+        for(var i=0;i<item.length;i++){
+            if(item[i].checked == false){
+                $("#checkboxs_all").prop("checked", false);
+                form.render('checkbox');
+            }
+        }
+    }); 
+
+
+    // 单选图片背景
+    form.on('checkbox(check_image)', function(data){  
+        var img = '';
+        if(data.value){         
+            var str = eval(data.value);  
+            var url = '__IMG__'+str[0].img;
+            var img_html = '<div style="text-align: center;padding: 2px; background-color: #a0a0a0; color: #fff; width:220px;height:260px;line-height: 260px;"><img src="'+url+'" style="max-width:220px;max-height:260px;"></div>';
+            layer.open({
+                type: 1 
+                ,title: false //不显示标题栏
+                ,shade: 0.8
+                ,btnAlign: 'c'
+                ,content: img_html
+                ,success: function(layero,index){
+                }
+            }); 
+            img = str[0].img;
+        }       
+        $("input[name='devices_image']").val(img);
+        $("input[name='check_image']").prop("checked", false);
+        $(this).prop("checked", true);  
+        form.render('checkbox');            
+        
+    }); 
+    //监听立即推送
+    form.on('submit(formDemo)', function(data){   
+        if(!push_flag){
+            return false;
+        }       
+        if(confirm("确定推送?")){   
+            push_flag = false;
+            $.post('{:url("admin/android/publish")}',
+                data.field,
+                function(res){
+                    push_flag = true;
+                    if(res.code == 200){
+                        layer.msg(res.msg, {offset: '15px',icon: 1,time: 1000});
+                    }else{
+                        layer.msg(res.msg, {offset: '15px',icon: 2,time: 1000});
+                    }
+                },'json')
+        }
+    });    
+});
+function sendAgain(key){
+    if(confirm("确定推送？")){       
+        layui.$.post('{:url("admin/android/sendAgain")}',
+            {'key':key},
+            function(data){
+                if(data.code==200){
+                    layer.msg(data.msg, {offset: '15px',icon: 1,time: 1000});
+                }else{              
+                    layer.msg(data.msg, {offset: '15px',icon: 2,time: 1000});
+                }
+            },'json')
+    }
+}
+</script>
+{/block}

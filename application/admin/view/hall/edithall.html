@@ -1,0 +1,188 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div id="forms" class="mt0">
+            <div class="box">
+                <div class="box_border">
+                    <div class="box_top">
+                        <div style="float: left;">   
+                            <i class="fa fa-add fa-share-alt-square"></i>
+                        </div>
+                        <b>编辑区域</b>
+                    </div>
+                    <div class="box_center">
+                    <form  name="form1" class="jqtransform">
+                        <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td class="td_right">
+                                    区域名称：
+                                </td>
+                                <td>
+                                    <input type="text" name="hallname" id="hallname" class="input-text lh30" lay-verify="required" size="30" value="{$list['HallName']}">[必填]
+                                </td>                                
+                            </tr>
+                            <tr>
+                                <td class="td_right">介绍说明：</td>
+                                <td colspan="3"> <input type="text" name="synopsis" id="synopsis" class="input-text lh30" size="100%" value="{$list['AlternateField1']}"></td>  
+
+                            </tr>
+                            <tr>
+                                <td class="td_right">启用/暂停：</td>
+                                <td class="">          
+                                    <input type="radio" name="EnableFlag" title="启用" value="1" checked> 启用  &nbsp;    
+                                    <input type="radio" name="EnableFlag" title="暂停" value="0" {if $list.EnableFlag==0}checked{/if}>  暂停
+                                </td>
+                                <td class="td_right">所属單位：</td>
+                                <td class=""> 
+                                    <span class="fl">
+                                        <div class="select_border"> 
+                                            <div class="select_containers "> 
+                                                <select name="UnitId" class="select"  style="width: 200px;"> 
+                                                <option value="0">请选择</option>      
+                                                {volist name="unit" id="un"} 
+                                                {$unitid=$m_unitid}
+                                                {notempty name="list"}{$unitid=$list.UnitId}{/notempty}          
+                                                <option value="{$un.UnitId}" {if $un.UnitId==$unitid}selected
+                                                    {/if}>{$un.unitname}</option>
+                                                {/volist}
+                                                </select> 
+                                            </div> 
+                                        </div> 
+                                    </span>
+                                </td>
+                            </tr>
+                        <tr>
+                        <td class="td_right">上午起始：</td>
+                        <td>   
+                            <input type="time" name="stime1" class="select" value="{notempty name='list'}{$list.WorkTime1}{else /}09:00{/notempty}">[时-分，必填]
+                        </td>
+                        <td class="td_right">上午结束：</td>
+                        <td>
+                            <input type="time" name="etime1" class="select" value="{notempty name='list'}{$list.WorkTime2}{else /}12:00{/notempty}">[时-分，必填]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td_right">下午起始：</td>
+                        <td>
+                            <input type="time" name="stime2" class="select" value="{notempty name='list'}{$list.WorkTime3}{else /}14:00{/notempty}">[时-分，必填]
+                        </td>
+                        <td class="td_right">下午结束：</td>
+                        <td>
+                            <input type="time" name="etime2" class="select" value="{notempty name='list'}{$list.WorkTime4}{else /}18:00{/notempty}">[时-分，必填]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td_right">唯一编码：</td>
+                        <td>                                               
+                            <input type="number" name="h_code" class="input-text lh30" value="{$list.h_code}" placeholder="填写4个字符">
+                        </td>   
+                        <td class="td_right">接口标识：</td>
+                        <td> 
+                            <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list['SerInterface']}">
+                            <b style="color: red;font-size: 0.2em;">对应服务器 其它设置》区域编码</b>
+                        </td>  
+                    </tr>                    
+                    <tr>
+                        <td>取号机配置</td>
+                        <td colspan="3"><hr></td>
+                    </tr>
+                    <tr>       
+                        <td class="td_right" rowspan="5">上传照片：</td>
+                        <td rowspan="5">
+                            <img src="__IMG__/{$list.pic}" id="pic" style="display: block;width:95px;height: 120px;"> 格式：jpg,png 3M以内
+                            <br>
+                            <input type="file" name="image" /> 
+                            <input type="button" onclick="imgupload()" value="上传" style="padding: 3px 11px;border-radius: 5px;"/> 
+                            <input type="hidden" name="pic" value="{$list.pic}">
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td class="td_right">标题名称：</td>
+                        <td>                                               
+                            <input type="text" name="title" class="input-text lh30" value="{$list.title}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td_right">是否取预约号：</td>
+                        <td class="">          
+                            <input type="radio" name="status" title="启用" value="1" checked> 是  &nbsp;    
+                            <input type="radio" name="status" title="暂停" value="0" {if $list.status==0}checked{/if}>  否
+                        </td> 
+                    </tr>
+                    <tr>   
+                        <td class="td_right">是否刷卡：</td>
+                        <td class="">          
+                            <input type="radio" name="card" title="启用" value="1" checked> 是  &nbsp;    
+                            <input type="radio" name="card" title="暂停" value="0" {if $list.card==0}checked{/if}>  否
+                        </td>  
+                    </tr>
+                    <tr>   
+                        <td class="td_right">是否预约到医生：</td>
+                        <td class="">          
+                            <input type="radio" name="is_doctor" title="启用" value="1" checked> 是  &nbsp;    
+                            <input type="radio" name="is_doctor" title="暂停" value="0" {if $list.is_doctor==0}checked{/if}>  否
+                        </td>  
+                    </tr>
+                </table>
+                    <div class="box_top" style="text-align: center;">
+                        <input type="hidden" name="hallno" value="{$list['HallNo']?$list['HallNo']:0}">
+                        <input type="button" name="button" class="btn btn82 btn_save2" value="保存" lay-submit lay-filter="formDemo" style="margin-right: 20px;"> 		
+                        <input type="button" name="button" class="btn btn82 btn_nochecked" onclick="history.back(-1);" value="取消"> 
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+layui.use('form', function(){
+  var form = layui.form;
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    $.post('{:url("admin/hall/saveHall")}',
+        $("form").serialize(),
+        function(data){
+            if(data.success==1){
+                location.reload();
+            }else if(data.success==2){
+                history.go(-1)
+            }
+            alert(data.msg)
+        },'json')
+  });
+});
+
+// 上传头像
+function imgupload(){
+    var imgdata = new FormData();
+    var file = $("input[name='image']")[0].files[0];
+    if(file==''||file==null){
+        alert("请选择图片");
+        return false;
+    }
+    imgdata.append("image",file);
+    $.ajax({
+        'url':'{:url("admin/doctor/upload")}',
+        'type':'post',
+        'cache': false,
+        'data': imgdata,
+        'dataType':'json',
+        'processData': false,
+        'contentType': false,
+        success:function(data){
+            if(data.success==1){
+                $("input[name='pic']").val(data.msg);
+                $("#pic").attr("src",'__IMG__/'+data.msg)
+            }else{
+                alert(data.msg);
+            }
+        }
+    })
+}
+</script>
+{/block}

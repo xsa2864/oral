@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{block name="title"}中科易达{/block}</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1, user-scalable=no">
+
+<meta name="description" content="福州中科易达计算机技术有限公司成立于2008年，注册资金801万，是一家集计算机相关软、硬件产品研发、销售与服务为一体的科技创新型企业。几年以来，公司本着“诚信为本、科技创新、以质为本”的企业宗旨，经过全体员工的不懈努力，与广大客户的大力支持下，公司的产品与服务在全国范围得到了广泛的应用于发展，赢得了业界的一致好评与信任！">
+
+<link rel="stylesheet" href="__APP__/lib/weui.min.css">
+<link rel="stylesheet" href="__APP__/css/jquery-weui.css">
+<link rel="stylesheet" href="__APP__/css/demos.css">
+<script src="__APP__/lib/jquery-2.1.4.js"></script>
+<script src="__APP__/lib/fastclick.js"></script>
+<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+
+<style type="text/css">
+.weui-search-bar{
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 99;
+}
+.b_content{
+	position: absolute;
+    width: 100%;
+    top: 41px;
+}
+iframe{
+	display: none !important;
+}
+
+
+.layui-fluid button i{
+	font-size: 1.8rem !important;
+}
+.layui-fluid button{
+	border:2px solid #FFF !important;
+	height: 80px !important;
+	width: 300px;
+	font-size: 2rem !important;
+	margin: 10px;
+}
+
+.layui-btn-container button{
+	width: 50px;
+	font-size: 15px;
+	background-color: #015486;
+}
+</style>
+</head>
+
+<body ontouchstart>
+
+<div class="b_content" style="top: 0px;">	
+<script type="text/javascript">
+layui.use(['layer', 'form'], function(){
+  var layer = layui.layer
+  ,$=layui.$
+  ,form = layui.form,c='',i='';
+
+  	$(function () {
+  		$(".layui-btn-container button").on('click',function () {
+  			var num = $(this).val();
+  			var keyboard = $("#keyboard").val();
+  				insertAtCursor(num,keyboard)
+  			// if(num!="" && num!=null){
+  			// }else{
+  			// 	$("#"+keyboard).val("")
+  			// }
+  		})
+  	})
+  	form.on('submit(mobile)',function(data){
+	  	setID('mobile')
+	})
+  	form.on('submit(idcard)',function(data){
+	  	setID('idcard')
+	})
+	function setID(str){
+		$("#keyboard").val(str)
+	  	layer.open({
+	  		offset: '150px',
+	  		title:'数字键盘',
+	  		closeBtn: 0,
+	  		shade: 0,
+			type: 1,
+			area:'300px',
+			content: $('#line_idcard')
+		});  	
+	}
+})
+function insertAtCursor(myValue,id) { 
+    var myField = document.getElementById(id);
+     //IE 浏览器
+     if (document.selection) {
+         myField.focus();
+         sel = document.selection.createRange();
+         sel.text = myValue;
+         sel.select();
+     } 
+     //FireFox、Chrome等
+     else if (myField.selectionStart || myField.selectionStart == '0') {
+         var startPos = myField.selectionStart;
+         var endPos = myField.selectionEnd; 
+         // 保存滚动条
+         var restoreTop = myField.scrollTop;
+         if(myValue==""){
+         	myField.value = myField.value.substring(0, startPos-1) + myField.value.substring(endPos, myField.value.length);     
+         }else{         	
+         	myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);         
+         }
+         if (restoreTop > 0) {
+            myField.scrollTop = restoreTop;
+         }         
+        myField.focus();
+        if(myValue==""){
+        	myField.selectionStart = startPos -1;
+	        myField.selectionEnd = startPos -1;
+        }else{     
+	        myField.selectionStart = startPos + myValue.length;
+	        myField.selectionEnd = startPos + myValue.length;
+        }
+     } else {
+         myField.value += myValue;
+         myField.focus();
+     }
+}
+// 关闭弹窗
+function pageClose(){
+  	layer.closeAll('page')
+}
+// 获取上班时间点
+function gettime(ndata) {
+	var date = $("#mktime").val();
+	if(date == '0'){
+		$("#checktime").html('');
+		return false;
+	}
+	var doctor_id = '{$list.doctor_id}';
+	var que_id = '{$list.que_id}';
+	$.post('{:url("pavilion/schedule/getCheckTime")}',
+		{'ndata':ndata,'doctor_id':doctor_id,'que_id':que_id},
+		function(data){
+			if(data.success==1){
+				var da = data.msg;
+				var time = da.time;
+				var str = '';
+				for(x in time){
+					var full_color = '';
+					if(da.number[x] == da.HourSum){
+						full_color = 'full_color';
+					}
+					str += '<label class="weui-cell weui-check__label '+full_color+'" for="x'+x+'">';
+			      	str += '  <div class="weui-cell__bd">';
+			      	str += '    <p>'+time[x]+' &nbsp;&nbsp;'+da.number[x]+'/'+da.HourSum+'</p>';
+			      	str += '  </div>';
+			      	str += '  <div class="weui-cell__ft">';
+			      	if(da.number[x]!=da.HourSum){			      		
+			      	str += '    <input type="radio" class="weui-check" name="radio1" id="x'+x+'" value="'+time[x]+'">';
+			      	}else{
+			      	str += '已满';
+			      	}
+			      	str += '    <span class="weui-icon-checked"></span>';
+			      	str += '  </div>';
+			      	str += '</label>';
+				}
+				$("#checktime").html(str);
+			}else{
+				$("#checktime").html('<div class="weui-form-preview"><div class="weui-form-preview__ft"><a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:;">没有查询到数据</a></div></div>');
+			}
+		},'json')
+}
+// 保存预约内容
+function markSave(){	
+	$.post('{:url("pavilion/schedule/adddespeak")}',
+		$("form").serialize(),
+		function(data){		
+			if(data.success==1){
+				$.toast(data.msg, function() {
+					parent.pageClose();
+				});				
+			}else{
+				$.toptip(data.msg);
+			}			
+		},'json')
+}
+</script>
+
+<style type="text/css">
+.full_color{
+	background-color: #eee;
+}
+</style>
+    <form>
+    <div class="weui-cells__title">{$list.QueName}》{$list.name}</div>
+    <div class="weui-cells weui-cells_form">
+    	
+        <div class="weui-cell">
+          <div class="weui-cell__hd"><label class="weui-label">身份证号：</label></div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" type="text" name="idcard" id="idcard" placeholder="请输入身份证号" value="" lay-submit="" lay-filter="idcard">
+          </div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__hd"><label class="weui-label">手机号：</label></div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" type="tel" name="mobile" id="mobile" placeholder="请输入手机号" value="" lay-submit="" lay-filter="mobile">
+          </div>
+        </div>
+      	<div class="weui-cell weui-cell_select weui-cell_select-after">
+      	  	<div class="weui-cell__hd">
+      	  	  <label for="" class="weui-label">预约日期</label>
+      	  	</div>
+      	  	<div class="weui-cell__bd">
+      	  	  <select class="weui-select" name="mktime" id="mktime" onchange="gettime($(this).val())">
+      	  	    <option value="0">请选择日期</option>
+      	  	    {volist name="data.data" id="da"}
+      	  	    <option value="{$da}">{$da} 星期{$data.date_week[$key]}</option>
+      	  	    {/volist}
+      	  	  </select>
+      	  	</div>
+      	</div>
+    </div>
+    <div class="weui-cells__title">选择时间段</div>
+    <div class="weui-cells weui-cells_radio" id="checktime"></div>
+    <div class="weui-cells__title"></div>
+    	{:token()}
+    	<input type="hidden" name="class_id" value="{$id}">
+    </form>
+    <div class="weui-cells__title">友情题示：请填入您真实的预约信息数据，进行预约排队！</div>
+    <div class="weui-btn-area">
+      	<a class="weui-btn weui-btn_primary" href="javascript:markSave();" id="showTooltips">确定</a>
+    </div>
+</div>
+
+<!-- 身份证取预约号 -->
+<div id="line_idcard" style="display: none;">
+	<form class="layui-form layui-form-pane" style="padding: 20px;max-height: 430px;">		
+	  <div class="layui-form-item">
+	    <div class="layui-input-block" style="margin: 1px;">
+	      	<div class="layui-btn-container" style="text-align: center;">
+			  <button type="button" class="layui-btn" value="1">1</button>
+			  <button type="button" class="layui-btn" value="2">2</button>
+			  <button type="button" class="layui-btn" value="3">3</button>
+			  <button type="button" class="layui-btn" value="4">4</button>
+			  <button type="button" class="layui-btn" value="5">5</button>
+			  <button type="button" class="layui-btn" value="6">6</button>
+			  <button type="button" class="layui-btn" value="7">7</button>
+			  <button type="button" class="layui-btn" value="8">8</button>
+			  <button type="button" class="layui-btn" value="9">9</button>
+			  <button type="button" class="layui-btn" value="0">0</button>
+			  <button type="button" class="layui-btn" value="X">X</button>
+			  <button type="button" class="layui-btn" value="" style="padding: 0px;">删除</button>
+			</div>			
+	    </div>
+	  </div>	  
+	  <div class="layui-form-item" style="text-align: center;">
+	  	<input type="hidden" name="keyboard" id="keyboard" value="">
+	    <button class="layui-btn" type="button" onclick="pageClose()" style="background-color: #015486;"> 关 闭 </button>
+	  </div>
+	</form>
+</div>
+
+<script>
+$(function() {
+  	FastClick.attach(document.body);
+});
+</script>
+<script src="__APP__/js/jquery-weui.js"></script>
+</body>
+</html>
+  

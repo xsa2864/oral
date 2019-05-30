@@ -1,0 +1,126 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">   
+                    <div class="box_top">
+                        <div class="box_top_l fl" >
+                            <div style="float: left;">   
+                                <i class="fa fa-add fa-plus-square"></i>
+                            </div>
+                            <b>管理人员配置</b>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">
+                <form name="form1" class="jqtransform" method="get"  >
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size: 1rem;">
+                        <tr>
+                            <th width="3%">选择</th>
+                            <th width="8%">用户名</th>
+                            <th width="8%">姓名</th>
+                            <th width="5%">性别</th>
+                            <th width="10%">电话</th>
+                            <th width="10%">角色</th>
+                            <th width="20%">所属单位</th>
+                            <th width="20%">所属区域</th>
+                            <th>操作</th>
+                        </tr>
+                        {volist name="manage" id="vo"}
+                        <tr class="tr td_center">
+                            <td>
+                                <input type="checkbox" id="checkid" name="checkid[]"  value="{$vo.UserId}" >
+                            </td>						  
+                            <td>{$vo.UserName}</td>
+                            <td>{$vo.FullName}</td>
+                            <td>{$vo.Sex}</td>
+                            <td>{$vo.BodNo}</td>
+                            <td>{$vo.title}</td>
+                            <td>
+                            {if $vo.unitname==''}
+                            <font color=blue>暂未指定</font>
+                            {else /}
+                            {$vo.unitname}
+                            {/if}                                    
+                            </td>
+                            <td class="td_center">
+                            {if $vo.HallName==''}
+                            <font color=blue>暂未指定</font>
+                            {else /}
+                            {$vo.HallName}
+                            {/if}
+                            </td>
+                            <td>
+                                <a href="javascript:add({$vo.UserId});">修改</a> |
+                                <a href="javascript:del({$vo.UserId});">删除</a>
+                            </td>
+                        </tr>
+                        {/volist}
+                    </table> 
+                </form>
+                
+                <div class="box_top">
+                    <input type="submit" name="submit1" class="btn btn82 btn_add" onclick="add(0)"  value="新增"> 
+                </div>
+
+                <!-- 分页开始 -->
+                {$page|raw}      
+                <!-- 分页结束 -->
+                
+            </div>
+            <br/><br/>
+        </div> 
+    </div>
+</div> 
+<script type="text/javascript">
+function add(id) {
+	if(id>0){
+		location.href = '{:url("admin/appointment/manageAdd")}?id='+id;		
+	}else{
+        location.href = '{:url("admin/appointment/manageAdd")}';
+    }
+}
+function del(id){
+    if(confirm("确定删除？")){        
+        // var id = '';
+        // $("input[type='checkbox']").each(function(n,e){
+        //     if($(e).is(':checked')==true){
+        //         if(id!=''){
+        //             id +=',';
+        //         }
+        //         id += $(e).val();
+        //     }
+        // });
+        if(id!=''){
+            $.post('{:url("admin/appointment/manageDel")}',
+                {'id':id},
+                function(data){
+                    if(data.success==1){
+                        location.reload();
+                    }
+                    alert(data.msg);
+            },'json')        
+        }
+    }
+}
+
+
+// $.ajax({
+//     url:'http://test.www.hdzxpg.cn/api/User/CityDistrictInfo',
+//     type:'post',
+//     data:{userid:'10000',CityDistrictName:'福州'},
+//     dataType:'json',
+//     success:function(data){
+//         console.log(data)
+//     }
+// })
+</script>
+{/block}

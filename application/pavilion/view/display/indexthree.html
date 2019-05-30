@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{block name="title"}中科易达{/block}</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1, user-scalable=no">
+
+<meta name="description" content="福州中科易达计算机技术有限公司成立于2008年，注册资金801万，是一家集计算机相关软、硬件产品研发、销售与服务为一体的科技创新型企业。几年以来，公司本着“诚信为本、科技创新、以质为本”的企业宗旨，经过全体员工的不懈努力，与广大客户的大力支持下，公司的产品与服务在全国范围得到了广泛的应用于发展，赢得了业界的一致好评与信任！">
+
+<link rel="stylesheet" href="__APP__/lib/weui.min.css">
+<link rel="stylesheet" href="__APP__/css/jquery-weui.css">
+<link rel="stylesheet" href="__APP__/css/demos.css">
+<link rel="stylesheet" href="__APP__/hospital/index.css">
+<script src="__APP__/lib/jquery-2.1.4.js"></script>
+<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+
+</head>
+
+<body ontouchstart>
+	<div class="weui-flex" onclick="show()" style="height: 6%;display: block;">
+		{notempty name="$ads_img"}
+		<img src="__IMG__{$ads_img}" style="height: 100%;width: 100%;">
+		{/notempty}
+		<span class="time" id="time"></span>
+		<span class="show_ip">{$devices_ip}</span>
+    </div>
+    <div class="weui-flex" style="height: 8%;display: block;">
+      	<div class="weui-flex__item">
+      		<div class="placeholder" id="room_name">{$doctor.devices_name}</div>
+      	</div>
+    </div>
+    <div class="weui-flex" style="height: 17%;display: block;">
+	    <div class="weui-flex__item3">
+	      	<img src="__APP__/images/pic_article.png" id="head_pic">
+	    </div>
+
+	    <div class="weui-flex__item doctor_info">
+	    	<div>医师：<span id="staff_name">{$doctor.devices_user_name}</span></div>
+	    	<div>简介：<span id="staff_brief">{$doctor.devices_user_brief}</span></div>
+	    </div>
+    </div>
+    <div class="weui-flex wait_info"  style="height: 7%;display: block;">
+	   	<div class="weui-flex__item">
+	      	<div class="placeholder" style="color: #4ef54e;">
+	      		当前检查：<span  id="now_check"></span>
+	    	</div>
+	    </div>
+    </div>
+    <div class="weui-flex wait_info"  style="height: 7%;display: block;">
+	    <div class="weui-flex__item">
+	      	<div class="placeholder">
+	      		当前等候： <span  id="wait_num" style="color:red;">0</span>	人在等候
+	      	</div>
+	    </div>
+    </div>
+    <!-- 等待列表信息 -->
+    <div id="wait_list" class="wait_info"  style="height: 23%;display: block;">
+    </div>
+    <!-- 广告位轮播 -->
+    <div  class="weui-flex" style="height: 27%;display: block;">
+	    <video autoplay controls loop playsinline style="height: 100%;width: 100%;display: none;background-color: #000;">
+		您的浏览器不支持 video 标签。
+		</video>
+	    <div class="layui-carousel" id="test1" style="display: none;">
+		  <div carousel-item id="swiper-wrapper">
+		  	{empty name="img_list"}
+			    <div><img src="__APP__/images/pic_article.png" style="width: 100%;height: 100%;" /></div>
+			{else/}
+			    {volist name="img_list" id="vo"}
+			    	<div><img src="__IMG__{$vo.img}" style="width: 100%;height: 100%;" /></div>
+			    {/volist}
+			{/empty}
+		  </div>
+		</div>	 
+    </div>
+
+    <div class="weui-flex" style="width: 100%;position: fixed;padding-bottom: 2vw;width: 100%;bottom: 0px;">
+      	<div class="weui-flex__item footer">友情提示：<span id="tips">{$doctor.devices_tips|default="请保持现场秩序与安静，耐心等候叫号！"}</span></div>
+	    <input type="hidden" name="devices_ip" id="devices_ip" value="" style="width: 84px; height: 11px;">
+    </div>
+
+<style type="text/css">
+.time{
+	color: #FFFFFF;
+	position: absolute;
+    top: 10px;
+    right: 0px;
+}
+.show_ip{
+	position: absolute;
+    right: 0px;
+    top: 0px;
+    font-size: 0.3rem;
+    opacity: 0.3;
+    color: white;
+}
+</style>
+<script src="__APP__/lib/fastclick.js"></script>
+<script src="__APP__/js/swiper.js"></script>
+<script>
+var ins = "",carousel = "";
+layui.use('carousel', function(){
+	carousel = layui.carousel;
+	//建造实例
+	ins = carousel.render({
+	    elem: '#test1'
+	    ,width: '100%' //设置容器宽度
+	    ,height: '100%' //设置容器宽度
+	    ,arrow: 'none' //始终显示箭头
+	    ,indicator: 'none'
+	});
+});
+$(function() {
+	"{if $devices_video==''}"
+		$("#test1").show();		
+	"{else/}"
+		$("video").show();
+		cacheVideo('{$devices_video}');
+	"{/if}"
+  	FastClick.attach(document.body);
+  	connectSocket();
+});
+
+
+$("#but").on('click',function(){
+	$.post('{:url("hospital/staff/index")}',
+		{"devices_code":$("#room_code").val()},
+		function(data){
+			if(data){
+				location.reload();
+			}
+		})
+})
+
+var ws = ""
+,i = ''
+,data = ''
+,s = '';
+
+function connectSocket()
+{
+	data = '{"type":"login","devices_ip":"{$devices_ip}"}';
+	ws = new WebSocket('ws://'+document.domain+':23452');
+	ws.onopen = function(){
+		// console.log(data)
+	    i = setInterval(heartbeat,40000);
+	    ws.send(data);
+	    clearInterval(s);
+	    console.log("连接成功");  
+	};
+
+	ws.onmessage = function(e){
+		var obj = eval('(' + e.data + ')');	
+		var str = '';
+		console.log(obj);
+		if(obj.ping){
+			console.log(obj.ping);
+		}else if(obj.reload){
+			location.reload();
+		}else if(obj.devices_type=='admin'){
+			if(obj.devices_video){
+				$("video").attr("src",obj.devices_video).show();
+				$("#test1").hide();
+				cacheVideo(obj.devices_video);
+			}else if(obj.devices_image){
+				$("video").attr("src","").hide();
+				$("#test1").show();
+				changeImg(obj.devices_image);
+			}
+		}else if(obj.stop){
+			$("#now_check").html("停诊");
+		}else{
+			$("#room_name").html(obj.devices_name);
+			if(obj.wait_list){
+				var list = obj.wait_list;
+				var n = 1;
+				var html_str = "{$rule.rule}";
+				var html_rstr = '';
+				for(li in list){
+					var dname = list[li].name;
+					//2个字的姓名
+					if(dname.length<3){
+		                temp=dname.split('');
+		                temp.splice(1,0,"");//空格的个数
+		                temp=temp.join("&ensp;");
+		                list[li].name=temp;
+		            }else{
+		            	list[li].name=dname.substring(0,3);
+		            }
+
+					if(html_str){
+						html_rstr = html_str.replace("[code]",list[li].prefix+list[li].code);
+						html_rstr = html_rstr.replace("[name]",list[li].name);
+					}else{
+						html_rstr = list[li].prefix+list[li].code+' '+list[li].name;
+					}
+					if(list[li].status==2){
+						var show_c = list[li].prefix+list[li].code+"  "+list[li].name;
+						$("#now_check").html(show_c);
+						// $("#now_check").html(list[li].prefix+list[li].code+"  "+list[li].name);
+					}else if(n<={$rule.number|default=2}){
+						var mark = "";
+						if(list[li].order==1){
+							mark = "<span class='mark'>(预约)</span>";
+						}
+						// str += '<div class="weui-flex">';
+					 //    str += ' <div class="weui-flex__item">';
+					 //    str += '  <div class="placeholder">'+html_rstr+" "+mark+'</div>';				    
+					 //    str += ' </div>';
+			   //  		str += '</div>';
+			   			str += '  <div >'+html_rstr+" "+mark+'</div>';	//class="placeholder"
+			    		n++;
+					}
+				}
+			}	
+			if(obj.staff_info){
+				var staff = obj.staff_info;
+				$("#head_pic").attr('src','__IMG__/'+staff.pic);
+				$("#staff_name").html(staff.QueName);
+				$("#staff_brief").html(staff.AlternateField1);
+			}
+			$("#wait_num").html(obj.wait_number);
+			$("#wait_list").html(str);
+		}
+	};
+	//关闭重连
+	ws.onclose = function (event) {
+		s = setTimeout(conSend,5000);
+		clearInterval(i);
+	}
+}
+// 心跳
+function heartbeat(){
+	ws.send('{"type":"ping"}');
+}
+//重连
+function conSend(){
+	console.log("断线重连中...");
+	connectSocket();
+}
+
+function show(){
+	$(".demos-content-padded").toggle();
+}
+// 缓存视频
+function cacheVideo(url){
+	const req = new XMLHttpRequest();
+    req.open('GET', url, true);
+    req.responseType = 'blob';
+    req.onload = function () {
+      // Onload is triggered even on 404
+      // so we need to check the status code
+      if (this.status === 200) {
+        const videoBlob = this.response;
+        const blobSrc = URL.createObjectURL(videoBlob); // IE10+
+        $("video").attr("src",blobSrc);
+  		$("video")[0].play();
+        // Video is now downloaded
+        // and we can set it as source on the video element
+        // video.src = blobSrc ;        
+      }
+    };
+    req.onerror = function () {
+    	console.log("error")
+      // Error
+    };
+    req.send();
+}
+// 录播图片
+function changeImg(data){	
+	var obj = eval('(' + data + ')');	
+	var html = '';
+	if(obj){		
+		for(n in obj){
+			html += '<div><img src="__IMG__'+obj[n].img+'" style="width: 100%;height: 100%;" /></div>';
+		}
+		$("#swiper-wrapper").html(html);
+		//重置轮播
+		ins.reload();	
+	}
+}
+function showTime(){
+	var dt = new Date(); // 得到当前时间
+	var y = dt.getFullYear(); // 当前年份
+	var m = dt.getMonth() + 1; // 当前月份，getMonth 返回值是 0-11 对应 1-12月，因此全部加1
+	var d = dt.getDate();
+ 
+	var h = dt.getHours();
+	if(h<10) h='0' + h;
+	var i = dt.getMinutes();
+	if(i<10) i='0' + i;
+	var s = dt.getSeconds();
+	if(s<10) s='0' + s;
+ 
+	var str = m + '月' + d + '日 ' + h + '时' + i + '分' + s + '秒';
+	$("#time").html(str); // 将格式化后的内容装载到容器中
+}
+showTime();
+setInterval(showTime,1000)
+</script>
+<script src="__APP__/js/jquery-weui.js"></script>
+</body>
+</html>

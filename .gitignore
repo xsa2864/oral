@@ -1,0 +1,12 @@
+/.idea
+/.vscode
+/vendor
+*.log
+thinkphp
+.env
+/uploads
+*.doc
+/runtime
+/image
+*.bat
+*.sql

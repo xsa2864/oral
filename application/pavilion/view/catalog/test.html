@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  	<title>测试页面</title>
+	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+	<script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+	<script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+</head>
+<body style="background-color: #f2f2f2;">
+<div class="layui-container" id="app">  
+	<div class="layui-row">
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="padding-left: 4px;height: 60px;border: 1px solid #fff;display: block;" v-bind:title="url">
+	  	  {{ url }}
+	  	</div>
+	  	<div class="layui-col-xs9 layui-col-sm9 layui-col-md9">
+	  	  	<input type="text" placeholder="请输入地址" v-model="url" class="layui-input">
+	  	</div>
+	  	<div class="layui-col-xs3 layui-col-sm3 layui-col-md3" style="text-align: center;">
+	  	  	<button class="layui-btn" lay-submit="" @click="send">立即提交</button>
+	  	</div>
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+	  		<table class="layui-table">
+				<colgroup>
+				    <col width="60">
+				    <col width="200">
+				    <col>
+				</colgroup>
+				<thead>
+				    <tr>
+				      	<th>选择</th>
+				      	<th>key</th>
+				      	<th> value 
+				      		<button class="layui-btn layui-btn-sm" v-on:click="copy" style="float: right;">添加参数</button>
+				      	</th>
+				    </tr> 
+				</thead>
+				<tbody>
+					<tr v-for="item in params">
+						<td>
+					      	<input type="checkbox" checked>
+					    </td>
+					    <td>
+					    	<input type="text" name="key[]" placeholder="key" class="layui-input" v-bind:value="item.key">
+					    </td>
+					    <td>
+					    	<input type="text" name="cvalue" placeholder="value" class="layui-input" v-bind:value="item.cvalue">
+					    </td>
+					</tr>
+				</tbody>
+			</table>
+	  	</div>
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+	  		<textarea name="desc" placeholder="请输出内容" class="layui-textarea">{{ result }}</textarea>
+	  	</div>
+	</div>
+</div>
+
+<script>
+//Demo
+layui.use(['form','jquery'], function(){
+  var form = layui.form,$ = layui.$;
+  
+  //监听提交
+  form.on('submit(formDemo)', function(data){
+    layer.msg(JSON.stringify(data.field));
+    return false;
+  });
+});
+
+var vm = new Vue({
+	el:'#app',
+	data:{
+		url:'http://192.168.0.239/oral/public/index.php/api/v2/call/operCall',
+		result:'',
+		checkedKey: '',
+		checkedValue: [],
+		checked:true,
+		params:[
+			{'key':'staff_code','cvalue':'1002'},
+			{'key':'interface_code','cvalue':'100'},
+			{'key':'ip','cvalue':'192.168.0.239'},
+			{'key':'list','cvalue':'[{"prefix":"w","code":"1002","name":"\u6797\u5c0f\u5170","status":"2","order":"0","title":"\u5916\u79d1"},{"prefix":"w","code":"1003","name":"\u9648\u519b","status":"1","order":"0","title":"\u5916\u79d1"},{"prefix":"w","code":"1004","name":"\u674e\u56db","status":"1","order":"0","title":"\u5916\u79d1"}]'},
+		],
+	}
+	,methods:{
+		send:function(){
+			var vm = this		
+			this.make();
+			axios
+				.get(vm.url)
+				.then(function(res){
+					vm.result = res.data
+				})
+				.catch(function(error){
+					vm.result = error
+				})
+		}
+		,copy:function () {
+			var str = layui.$("table tbody tr:last-child")[0].innerHTML;
+			var html = '<tr>'+str+'</tr>';
+			layui.$("table tbody").append(html);
+		}
+		,make:function(){
+			var vm = this
+			let url = '',key='',value='',ch='';
+			url = vm.url
+			layui.$("input[name='key[]']").each(function(obj,fn){
+				ch = layui.$(layui.$(fn).parent().parent()[0].firstChild).find("input")[0].checked
+				key = layui.$(fn).val()
+				value = layui.$(layui.$(fn).parent().parent()[0].lastChild).find("input").val()
+				if(key!='' && ch){
+					if(url.indexOf("?") == '-1'){
+						url = url+'?';
+					}else{
+						url = url+'&';
+					}
+					url += key+'='+value
+				}
+			})
+			if(url.indexOf("http://")=='-1'){
+				url = "http://"+url
+			}
+			vm.url = url
+		}
+	}
+})
+
+
+</script>
+</body>
+</html>

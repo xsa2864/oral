@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>填写预约信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+    <script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+    <style type="text/css">
+        html,body{
+            height: 100%;
+            margin: 0px;
+        }
+        .layui-fluid{
+            height: 100%;
+            padding:0;
+            overflow: hidden;
+        }        
+        .header{
+            position: fixed;
+            line-height: 40px;
+            font-size: 15px;
+            text-align: center;
+            background-color: #5a87cc;
+            z-index: 99;
+        }
+        .header .layui-icon-prev{
+            position: absolute;
+            left: 0;
+            padding: 0 15px;
+            color:#ffffff;
+        }
+        .header .layui-icon-home{
+            position: absolute;
+            font-size: 18px;
+            right: 0;
+            padding: 0 15px;
+            color:#ffffff;
+        }
+        #demo{
+            margin-top: 40px;
+            padding: 10px 2px;
+        }   
+        #demo .layui-breadcrumb{
+            visibility: visible;            
+        }     
+        .layui-form-label{
+            background-color: #5a87cc !important;    
+            color: #FFFFFF;       
+        }
+        .check-time{
+            padding-left: 27px;
+            color: #aaa;
+        }
+        .layui-form-radio{
+            width: 100%;
+        }
+        .ctime{
+            border: 1px solid #eee;
+            border-width: 0 0 1px 0px;
+            padding: 5px 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header">
+                <a href="javascript:history.go(-1);"><i class="layui-icon layui-icon-prev"></i></a>
+                <label style="color:#fff;">{{ title }}&nbsp;</label>
+                <a href="{:url('app/index/indexs')}"><i class="layui-icon layui-icon-home"></i></a>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" id="demo">
+                <p>
+                <span class="layui-breadcrumb">
+                    <a href="javascript:;">{{ path.hname }}</a>
+                    <a href="javascript:;">{{ path.qname }}</a>
+                    <a><cite>{{ path.dname }}</cite></a>   
+                </span>
+                </p>
+            </div>
+            <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                <form class="layui-form  layui-form-pane" action="" lay-filter="example">
+                    <div class="layui-form-item" v-if="if_name">
+                        <label class="layui-form-label">姓 名</label>
+                        <div class="layui-input-block">
+                          <input type="text" placeholder="姓 名" class="layui-input" v-model="params.name">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">身份证号</label>
+                        <div class="layui-input-block">
+                          <input type="text" placeholder="身份证号" class="layui-input" v-model="params.idcard">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">手机号码</label>
+                        <div class="layui-input-block">
+                          <input type="text" placeholder="手机号码" class="layui-input"  v-model="params.mobile">
+                        </div>
+                    </div>
+                      
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">选择日期</label>
+                        <div class="layui-input-block">
+                          <select lay-filter="select">
+                            <option value=""></option>
+                            <template v-for="(item,index) in list.data">
+                                <option v-bind:value="item">{{ item }} 周{{ list.date_week[index] }}</option>
+                            </template>
+                          </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item check-time">
+                        <label>选择时间</label>
+                        <!-- <label class="layui-form-label">选择时间</label> -->
+                        <!-- <div class="layui-input-block"> -->
+                            <!-- <select lay-filter="selectTime">
+                                <option value=""></option>
+                                <template v-for="(item,index) in obj.time">
+                                    <option v-bind:value="item" v-bind:disabled="show(obj.number[index],obj.HourSum)">{{ item }} {{ obj.number[index] }}/{{ obj.HourSum }}</option>
+                                </template>
+                            </select> -->
+                        <!-- </div> -->
+                    </div>
+                    <div class="layui-col-md12 ctime"  v-for="(item,index) in obj.time">
+                        <input type="radio" name="check" lay-filter="selectTime"
+                                    v-bind:value="item" 
+                                    v-bind:title="item + '   ' + obj.number[index] +'/'+ obj.HourSum"
+                                    v-bind:disabled="show(obj.number[index],obj.HourSum)">
+                    </div>
+
+
+                    <div class="layui-form-item" style="text-align: center;padding-top: 10px;">
+                        <a href="javascript:;" class="layui-btn" @click="makeOrder" style="background-color:#5a87cc">立即提交</a>
+                    </div>
+                </form>
+            </div>        
+        </div>
+    </div>  
+</body>
+<script>
+layui.use(['form', 'layedit', 'laydate','element'], function(){
+  var form = layui.form
+  ,layer = layui.layer
+  ,laydate = layui.laydate;  
+
+    form.on('select(select)', function(data){
+        if(data.value){
+            vm.getTime(data.value)
+            vm.params.date = data.value
+            setTimeout(function(){
+                layui.form.render(); 
+            },200)
+        }
+    });       
+ 
+    form.on('select(selectTime)', function(data){
+        if(data.value){
+            vm.params.time = data.value            
+        }
+    });    
+    form.on('radio(selectTime)', function(data){
+        if(data.value){
+            vm.params.time = data.value            
+        }
+    });    
+
+});
+var vm = new Vue({
+    el: '.layui-fluid',
+    data:{
+    	list:[],
+        obj:[],
+        if_name:false,
+        path:{},
+        title:'填写预约信息',     
+        params:{
+            hall_id:0,
+            que_id:0,
+            qname:'',
+            doctor_id:0,
+            dname:'',
+            hname:'',
+            name:'**',
+            idcard:'',
+            mobile:'',
+            date:'',
+            time:'',   
+        }
+    }
+    ,methods:{
+        getDate:function(){
+            var vm = this
+            let doctor_id = this.getUrlKey("doctor_id")
+            let que_id = this.getUrlKey("que_id")
+            axios
+                .get('{:url("/api/a1/Order/getDate")}',{params:{'doctor_id':doctor_id,'que_id':que_id}})
+                .then(function(res){
+                    vm.list = res.data.list
+                    vm.path = res.data.path
+                    vm.if_name = res.data.if_name
+                    if(res.data.path){
+                        vm.params.hall_id   = res.data.path.hall_id
+                        vm.params.que_id    = que_id
+                        vm.params.qname     = res.data.path.qname
+                        vm.params.doctor_id = doctor_id
+                        vm.params.dname     = res.data.path.dname
+                        vm.params.hname     = res.data.path.hname
+                    }
+                    setTimeout(function(){
+                        layui.form.render('select');
+                    },200)
+                })
+        }
+        ,getTime:function(ndata){
+            var vm = this
+            let doctor_id   = this.getUrlKey("doctor_id")
+            let que_id      = this.getUrlKey("que_id")
+            axios
+                .get('{:url("/api/a1/Order/getTime")}',{params:{'doctor_id':doctor_id,'que_id':que_id,'ndata':ndata}})
+                .then(function(res){
+                    vm.obj = res.data
+                })
+        }
+        ,makeOrder:function(){
+            var vm = this
+            axios
+                .post('{:url("/api/a1/Order/makeOrder")}',vm.params)
+                .then(function(res){  
+                    layer.open({
+                        content: res.data.msg
+                        ,end:function(){
+                            if(res.data.code==200){
+                                location.href = res.data.url
+                            }
+                        }
+                    });
+                    
+                })
+        }
+        ,getUrlKey: function (name) {
+            var reg = new RegExp("[?/&]"+name+"[/=]([a-zA-Z0-9]*)"); 
+            var str = document.location.href.match(reg);
+            if(str){
+                return str[1]
+            }
+            return ''
+        }
+        ,show:function(n,m){
+            return n<m ? false:true
+        }
+        ,setCookie:function(idcard,mobile){
+            var exdate = new Date(); //获取时间
+            let exdays = 365
+            exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
+                //字符串拼接cookie
+            window.document.cookie = "idcard" + "=" + idcard + ";path=/;expires=" + exdate.toGMTString();
+            window.document.cookie = "mobile" + "=" + mobile + ";path=/;expires=" + exdate.toGMTString();
+        }
+        ,getCookie:function(){
+            if (document.cookie.length > 0) {
+                var arr = document.cookie.split('; '); //这里显示的格式需要切割一下自己可输出看下
+                for (var i = 0; i < arr.length; i++) {
+                    var arr2 = arr[i].split('='); //再次切割
+                    //判断查找相对应的值
+                    if (arr2[0] == 'idcard') {
+                        this.params.idcard = arr2[1]; //保存到保存数据的地方
+                    } else if (arr2[0] == 'mobile') {
+                        this.params.mobile = arr2[1];
+
+                    }
+                }
+            }
+        }
+    }
+    ,created:function(){
+        this.getDate()
+        this.getCookie()
+    }
+})
+</script>
+</html>

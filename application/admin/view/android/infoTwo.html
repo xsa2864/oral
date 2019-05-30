@@ -1,0 +1,228 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">   
+                    <div class="box_top" style="background: url;">
+                        <div class="box_top_l fl">
+                            <div  style="float: left;">                                
+                                <i class="fa fa-add fa-telegram"></i>
+                            </div>
+                            <b>显示屏在线信息</b>
+                        </div>
+                            <a href="javascript:deviceDel(0,1);" style="float: right;margin-right: 20px;">批量删除</a>
+                            <a href="javascript:deviceUp(0,1);" style="float: right;margin-right: 20px;">刷新页面</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">
+                <form name="form1" class="jqtransform" method="get"  >
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size: 1rem;">
+                        <tr>
+                            <th> <input type="checkbox" name="all"> 选择</th>
+                            <th>区域名称</th>
+                            <th>显示屏IP</th>
+                            <!-- <th width="10%">显示屏编号</th> -->
+                            <!-- <th width="10%">名称</th> -->
+                            <th>类型</th>
+                            <th>显示屏名称</th>
+                            <!-- <th>设备编号</th> -->
+                            <th>状态</th>
+                            <th>第一次登录时间</th>
+                            <th>登录时间</th>
+                            <th>离线时间</th>
+                            <th>操作</th>
+                            <!-- <th>内容显示</th> -->
+                        </tr>  
+                        <tbody id="list_project"></tbody>       
+
+                    </table> 
+                </form>
+            </div>
+        </div> 
+    </div>
+</div> 
+<style type="text/css">
+tr input{
+    border: 1px solid #636262;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+    showInfo()
+})
+
+function showInfo() {
+  $.post('{:url("admin/android/showInfo")}',
+    function(data){
+        var str = '';
+
+        if(data){                     
+            for(da in data){
+                var status = data[da].devices_status==1?"在线":"离线";
+                var f_time = data[da].devices_first_time?new Date(data[da].devices_first_time*1000).toLocaleString():'';
+                var s_time = data[da].devices_start_time?new Date(data[da].devices_start_time*1000).toLocaleString():'';
+                var e_time = data[da].devices_end_time?new Date(data[da].devices_end_time*1000).toLocaleString():'';
+                
+                var width_height = (data[da].devices_width?data[da].devices_width:'')+"*"+(data[da].devices_height?data[da].devices_height:'');
+                var style = '';
+                style = "style=color:"+data[da].devices_font_color+";";    
+                if(data[da].devices_image){
+                    style += "background-image:url('__IMG__"+data[da].devices_image+"');background-size:100% 100%;";
+                }else{
+                    style += "background-color:"+data[da].devices_background_color;
+                }
+
+                str += '<tr class="tr td_center">';
+                str += '    <td><input type="checkbox" value="'+data[da].devices_ip+'"></td>';
+                str += '    <td>'+data[da].devices_area_name+'</td>';
+                str += '    <td>'+data[da].devices_ip+'</td>';
+                // str += '    <td>'+data[da].devices_code+'</td>';
+                // str += '    <td>'+(da==0?'全部':data[da].devices_name)+'</td>';
+                str += '    <td>'+(data[da].devices_type==1?'综合显示屏':'诊室显示屏')+'</td>';
+                str += '    <td>'+data[da].devices_name+'</td>';
+                str += '    <td>'+status+'</td>';
+                str += '    <td>'+f_time+'</td>';
+                str += '    <td>'+s_time+'</td>';
+                str += '    <td>'+e_time+'</td>';
+                // str += '    <td '+style+'>'+data[da].devices_content+'</td>';
+                str += '    <td><a href="{:url("admin/android/editInfo")}?ip='+data[da].devices_ip+'">编辑</a> | ';
+                str += '<a href="javascript:deviceDel(\''+data[da].devices_ip+'\',0);">删除</a></td>';
+                str += '</tr>';
+                
+            }
+            $("#list_project").html(str);
+            $("input[type=radio]").on('click',function(e){
+                var strs  = $(e).attr("currentTarget");
+                var code = $(strs).parent().find("#code").val();
+                var url  = $(strs).parent().find("#url").val();
+                var type = $(strs).val();
+                if(type==1){
+                    url = $(strs).parent().find("#ad_id").val();
+                }
+                change(code,url,type);
+                $("input[name='text_str']").on('mousedown',function(){
+                    clearInterval(i)
+                })
+            })
+            stopChange()
+        }
+    },'json')
+  // console.log(new Date().getMilliseconds())
+}
+var i = setInterval(showInfo,10000);
+
+var stopChange = function(){    
+    $("input[name='text_str']").on('mousedown', function(){
+        clearInterval(i)
+    })
+}
+
+//切换显示
+function change(code,url,type){
+    if(confirm("确定切换显示？")){
+        $.post('{:url("admin/android/change")}',
+            {'code':code,'url':url,'type':type},
+            function(data){
+                if(data.code!=200){                    
+                    alert(data.msg)
+                }
+            },'json')
+    }
+}
+function changeInput(e,n){
+    var code = $(e).parent().parent().find("#code").val();
+    var text_str = $(e).val();
+
+    if(text_str!=''||text_str==null){        
+        $.post('{:url("admin/android/changeTwo")}',
+            {'code':code,'text':text_str,'type':n},
+            function(data){
+                if(data.code!=200){                    
+                    console.log(data.msg)
+                }
+            },'json')
+    }
+    i = setInterval(showInfo,10000);
+}
+// 添加名称
+function addTitle(e) {
+    var code = $(e).parent().find("#code").val();
+    var title_name = $(e).val();
+    if(title_name!=''||title_name==null){        
+        $.post('{:url("admin/android/addTitle")}',
+            {'code':code,'title_name':title_name},
+            function(data){})
+    }
+}
+function deviceDel(code,type) {
+    var list = '';
+    $("input[type='checkbox']:checked").each(function(n,e){
+        if(list!=''){
+            list += ',';
+        }
+        list += $(e).val();
+    })
+    if(type==1){
+        if(list == ''){
+            alert("请选择要删除的");
+            return false;
+        }
+    }
+    if(confirm("确定删除信息？")){
+        $.post('{:url("admin/android/deviceDel")}',
+            {'code':code,'type':type,'list':list},
+            function(data){
+                if(data){
+                    location.reload();
+                }
+            })
+    }
+}
+// 刷新页面
+function deviceUp(code,type) {
+    var list = '';
+    $("input[type='checkbox']:checked").each(function(n,e){
+        if(list!=''){
+            list += ',';
+        }
+        list += $(e).val();
+    })
+    if(type==1){
+        if(code != ''){
+            if(list != ''){
+                list += ',';
+            }
+            list += code;
+        }
+        if(list == ''){
+            alert("请选择要刷新的页面");
+            return false;
+        }
+    }
+    if(confirm("确定刷新页面信息？")){
+        $.post('{:url("admin/android/deviceUp")}',
+            {'type':type,'list':list},
+            function(data){
+                if(data){
+                    location.reload();
+                }
+            })
+    }
+}
+
+$("input[name='all']").click(function(){
+　　if($(this).is(":checked")){
+　　　 $("input[type='checkbox']").attr("checked","checked");
+　　}else{　　　　　　        
+      $("input[type='checkbox']").removeAttr("checked","checked");　　
+　　}
+})
+</script>
+{/block}

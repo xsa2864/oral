@@ -1,0 +1,224 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<style type="text/css">
+table  tr td div{
+    float: left;
+    margin-right: 20px;
+}
+#table .even {
+  background-color:#fffcea;
+}
+</style>
+<div id="search_bar" class="mt10">
+    <div class="box">
+        <div class="box_border">
+        	<form>
+            <div class="box_top">
+                <div style="float: left;">   
+                    <i class="fa fa-add fa-calendar-check-o"></i>
+                </div>
+                <b>排班管理</b>
+            </div>
+            <div class="box_center pt10 pb10">
+              <table class="form_table">
+                <tr>     
+                    <td align="right">姓 名 :</td>
+                    <td>
+                        <select name="id" class="select">
+                            <option value="">请选择</option>
+                            {volist name="dlist" id="vo"}
+                            <option value="{$vo.id}" {if $vo.id==$wh.id}selected{/if}>{$vo.QueName}</option>
+                            {/volist}
+                        </select>
+                    </td>             
+                    <td align="right">队 列 :</td>
+                    <td>
+                        <select name="QueId" class="select">
+                            <option value="">请选择</option>
+                            {volist name="qlist" id="vo"}
+                            <option value="{$vo.QueId}" {if $vo.QueId==$wh.QueId}selected{/if}>{$vo.QueName}</option>
+                            {/volist}
+                        </select>
+                    </td>             
+                  <td align="right">搜索条件 :</td>
+                  <td><input type="text" name="name" class="input-text lh25" value="{$wh['name']}"></td>
+                  <td><input type="button" value="搜索" onclick="search()" class="ext_btn ext_btn_submit">
+                  </td>                  
+                </tr>
+                <!-- <tr>
+                  <td>
+                    <a href="{:url('admin/doctor/classEdit',array('id'=>1))}"  class="ext_btn">排班设置</a>
+                  </td>
+                </tr> -->
+              </table>
+            </div>
+            <div class="box_bottom pb5 pt5 pr10" style="border-top:1px solid #dadada;">
+              <div class="search_bar_btn" style="text-align:right;">
+                 <input type="reset" value="重置" class="ext_btn" style="display: none;">
+              </div>
+            </div>
+        	</form>
+        </div>
+    </div>
+</div>
+
+<div id="table" class="mt10">
+    <div class="box span10 oh">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table">
+        	<tr>
+	        <th width="3%">序号</th>
+            <th width="8%">区域</th>
+	        <th width="8%">队列</th>
+            <th width="8%">工号</th>
+	        <th width="6%">医生</th>
+            <th width="7%">操作</th>
+        	</tr>  
+          {notempty name="lists"}
+        	{volist name="lists" id="vo"}          
+            <tr class="{if($key%2==0)}even{/if} td_center">
+               <td rowspan="2">{$key+1}</td>
+               <td>{$vo.HallName}</td>
+               <td>{$vo.qname}</td>
+               <td>{$vo.staff_code}</td>
+               <td>{$vo.QueName}</td>
+                <td rowspan="2">
+                  <!-- <a href="{:url('admin/doctor/editClass',['id'=>$vo.id])}">修改</a> -->
+                  <a href="javascript:;" onclick="edit(this,'{$vo.id}')" id="edit">修改</a>
+                  <a href="javascript:;" id="all" onclick="selAll(this,'{$vo.id}')" style="display: none;">全选</a>
+                  <a href="javascript:;" onclick="save(this,'{$vo.id}')" id="save" style="display: none;">保存</a>
+                  <a href="javascript:;" onclick="cancle(this,'{$vo.id}')" id="cancle" style="display: none;">取消</a>
+                </td>
+            </tr>
+            <tr class="{if($key%2==0)}even{/if}">
+                <td colspan="4" id="ch{$vo.id}">
+            <div>                
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_1_{$key}" value="0" {if condition="$vo.date[0]==1"}checked="checked"{/if} title="周一上午" lay-skin="primary"> <label for="class_1_{$key}">周一上午</label>
+                <br>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_2_{$key}" value="1" {if condition="$vo.date[1]==1"}checked="checked"{/if} title="周一下午" lay-skin="primary"> <label for="class_2_{$key}">周一下午</label>
+            </div>
+
+            <div>                
+                <input type="checkbox" disabled="false" name="ClassesTime[]"  id="class_3_{$key}" value="2" {if condition="$vo.date[2]==1"}checked="checked"{/if} title="周二上午" lay-skin="primary"> <label for="class_3_{$key}">周二上午</label>
+                <br>
+                <input type="checkbox" disabled="false" name="ClassesTime[]"  id="class_4_{$key}" value="3" {if condition="$vo.date[3]==1"}checked="checked"{/if} title="周二下午" lay-skin="primary"> <label for="class_4_{$key}">周二下午</label>
+            </div>
+
+            <div>
+                <input type="checkbox" disabled="false" name="ClassesTime[]"  id="class_5_{$key}" value="4" {if condition="$vo.date[4]==1"}checked="checked"{/if} title="周三上午" lay-skin="primary"> <label for="class_5_{$key}">周三上午</label>
+                <br>
+                <input type="checkbox" disabled="false" name="ClassesTime[]"  id="class_6_{$key}" value="5" {if condition="$vo.date[5]==1"}checked="checked"{/if} title="周三下午" lay-skin="primary"> <label for="class_6_{$key}">周三下午</label>                
+            </div>
+            <div>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_7_{$key}" value="6" {if condition="$vo.date[6]==1"}checked="checked"{/if} title="周四上午" lay-skin="primary"> <label for="class_7_{$key}">周四上午</label>
+                <br>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_8_{$key}" value="7" {if condition="$vo.date[7]==1"}checked="checked"{/if} title="周四下午" lay-skin="primary"> <label for="class_8_{$key}">周四下午</label>
+            </div>
+            <div>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_9_{$key}" value="8" {if condition="$vo.date[8]==1"}checked="checked"{/if} title="周五上午" lay-skin="primary"> <label for="class_9_{$key}">周五上午</label>
+                <br>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_10_{$key}" value="9" {if condition="$vo.date[9]==1"}checked="checked"{/if} title="周五下午" lay-skin="primary"> <label for="class_10_{$key}">周五下午</label>
+            </div>
+            <div>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_11_{$key}" value="10" {if condition="$vo.date[10]==1"}checked="checked"{/if} title="周六上午" lay-skin="primary"> <label for="class_11_{$key}">周六上午</label>
+                <br>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_12_{$key}" value="11" {if condition="$vo.date[11]==1"}checked="checked"{/if} title="周六下午" lay-skin="primary"> <label for="class_12_{$key}">周六下午</label>
+            </div>
+            <div>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_13_{$key}" value="12" {if condition="$vo.date[12]==1"}checked="checked"{/if} title="周日上午" lay-skin="primary"> <label for="class_13_{$key}">周日上午</label>
+                <br>
+                <input type="checkbox" disabled="false" name="ClassesTime[]" id="class_14_{$key}" value="13" {if condition="$vo.date[13]==1"}checked="checked"{/if} title="周日下午" lay-skin="primary"> <label for="class_14_{$key}">周日下午</label>
+            </div>
+                </td>
+            </tr>
+            {/volist}   
+            {else/}
+            <tr>
+              <td class="td_center" colspan="14">无就诊数据</td>
+            </tr>
+            {/notempty}         
+        </table>
+        
+	    {$page|raw}
+    </div>
+</div>
+<script type="text/javascript">
+function search(){
+  var stime = $("input[name='stime']").val();
+  var etime = $("input[name='etime']").val();
+  var day = (Date.parse(etime)-Date.parse(stime))/1000/3600/24;
+  // if(day>365){
+  //   alert("查询时间不能超过一年");
+  //   return false;
+  // }
+  $("form").submit();
+}
+function getData(){
+	if(confirm("确认导出数据？")){		
+	    $.post('{:url("admin/appointment/getExcel")}',
+	        $("form").serialize(),
+	        function(data){
+	            if(data.success==1){
+	             location.href = data.msg;
+	            }else{
+                alert(data.msg);
+              }
+	        },'json')
+	}
+}
+function cancel(id){
+    if(confirm("确认取消预约？")){
+        $.post('{:url("admin/appointment/cancel")}',
+            {'id':id},
+            function(data){
+                location.reload();
+                alert(data.msg);
+            },'json')
+    }
+}
+function edit(str,id){
+    $(str).hide();
+    $(str).parent().find("#save").show();
+    $(str).parent().find("#all").show();
+    $(str).parent().find("#cancle").show();
+    $("#ch"+id+"  div input").attr("disabled",false)
+}
+function selAll(str,id){
+    var flag = false;
+    $("#ch"+id+"  div input").each(function(n,e){
+        if(!$(e).is(':checked')){
+            flag = true;
+        }
+    })
+    $("#ch"+id+"  div input").prop("checked",flag)
+}
+function cancle(str,id) {
+    $(str).hide();
+    $(str).parent().find("#save").hide();
+    $(str).parent().find("#all").hide();
+    $(str).parent().find("#edit").show();
+    $("#ch"+id+"  div input").attr("disabled",true)
+}
+function save(str,id){    
+    var strs = '';
+    $("#ch"+id+"  div input:checked").each(function (n,e) {
+        if(strs!=''){
+            strs += ',';
+        }
+        strs += $(e).val();
+    })
+    $.post('{:url("admin/doctor/updateClass")}',
+        {'id':id,'str':strs},
+        function (data) {
+            if(data.success==1){
+                $(str).hide();
+                $(str).parent().find("#edit").show();
+                $(str).parent().find("#all").hide();
+                $(str).parent().find("#cancle").hide();
+                $("#ch"+id+"  div input").attr("disabled",true)
+            }
+            alert(data.msg)
+    },'json')
+}
+</script>
+{/block}

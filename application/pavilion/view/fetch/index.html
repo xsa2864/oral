@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>开始取号</title>
+  <meta http-equiv="refresh" content="1800">
+  <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+  <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+</head>
+<body> 
+<div class="site-title" style="padding: 15px 0 15px 0;height: 20%;">
+{notempty name="$hall.title"}
+    <fieldset style="border: none;padding: 0;border-top: 1px solid #eee;">
+    	<legend style="margin-left: 20px;padding: 0 10px;font-size: 4vw;font-weight: 300;text-align: center;">
+    		<a name="switch">{$hall.title}&nbsp;</a>
+    	</legend>
+    </fieldset>
+{/notempty}
+</div>
+
+<!-- <form class="layui-form" action=""> -->
+{if($hall.card)}
+  <div class="layui-form-item">
+    <label class="layui-form-label" style="font-size: 1.5rem;width: 100px; margin-left: 75px;
+    color: #ef1b14;">请刷卡：</label>
+    <div class="layui-input-inline">
+      <input type="text" name="idcard" id="idcard" required lay-verify="required" placeholder="请输入卡号" autocomplete="off" class="layui-input" onchange="getInfo()" style="background-color: #015486;">
+      <input type="hidden" name="idcards" id="idcards" value="">
+    </div>
+    <div class="layui-form-mid layui-word-aux" id="result"></div>
+  </div>
+ {/if}
+<!-- </form> -->
+
+<div class="layui-fluid">
+	<div class="layui-row que-btn" style="text-align: center;">
+	 	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+		{volist name="queue" id="vo"}
+			<button class="layui-btn  layui-btn-radius layui-btn-disabled" lay-submit lay-filter="" value="{$vo.QueId}" {if(mb_strlen($vo.QueName)>7)}style="font-size: 1.5rem !important;"{/if}><i class="layui-icon layui-icon-add-circle"></i>{$vo.QueName}</button>
+		{/volist}
+	    </div>    
+	</div>
+	<div class="layui-row" style="text-align: center;" >
+	    {if($hall.status)}
+	    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+	    	<button class="layui-btn layui-btn-radius" style="background-color: #015486 !important;" lay-submit lay-filter="line_idcard"><i class="layui-icon layui-icon-add-circle"></i>预约取号</button>
+	    </div>
+	    {/if}
+	</div>
+</div>     
+<!-- 打印票号 -->
+<div class="printInfo" style="padding: 20px;display: none;">
+	<div style="width: 200px;line-height: 26px;padding: 10px;border: 1px solid #e6e6e6;">
+		<div style="font-size: 2rem;text-align: center;margin-bottom: 10px;">排队号票</div>
+		<div>队列名称：<label id="title"></label></div>
+		<div>姓 名 ：<label id="name"></label></div>
+		<div>排队号码：<label id="code"></label></div>
+		<div>当前等候：<label id="num">0</label>人</div>
+		<div>取号时间：<label id="time"></label></div>
+	</div>
+</div>
+<!-- 身份证取预约号 -->
+<div id="line_idcard" style="display: none;">
+	<form class="layui-form layui-form-pane" style="padding: 20px;max-height: 430px;">
+		<div class="layui-form-item">
+	    	<labe>请输入您的预约手机号/身份证号码：</label>
+	  	</div>
+		<div class="layui-form-item">
+		    <label class="layui-form-label" id="line_tilte" style="width: 145px;">手机号/身份证号</label>
+		    <div class="layui-input-block" style="margin:0 0 0 145px;">
+		      <input type="text" name="online_idcard" id="online_idcard" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+		    </div>
+		</div>
+
+	  <div class="layui-form-item">
+	    <div class="layui-input-block" style="margin: 1px;">
+	      	<div class="layui-btn-container" style="text-align: center;">
+			  <button type="button" class="layui-btn" value="1">1</button>
+			  <button type="button" class="layui-btn" value="2">2</button>
+			  <button type="button" class="layui-btn" value="3">3</button>
+			  <button type="button" class="layui-btn" value="4">4</button>
+			  <button type="button" class="layui-btn" value="5">5</button>
+			  <button type="button" class="layui-btn" value="6">6</button>
+			  <button type="button" class="layui-btn" value="7">7</button>
+			  <button type="button" class="layui-btn" value="8">8</button>
+			  <button type="button" class="layui-btn" value="9">9</button>
+			  <button type="button" class="layui-btn" value="0">0</button>
+			  <button type="button" class="layui-btn" value="X">X</button>
+			  <button type="button" class="layui-btn" style="font-size: 1rem;">删除</button>
+			</div>
+			  <div class="layui-form-item" style="text-align: center;">
+			    <button class="layui-btn" lay-submit="" lay-filter="makeSure" id="makeSure" style="font-size: 1rem;background-color: #015486;">获取预约</button>
+			    <button class="layui-btn" type="button" onclick="pageClose()" style="font-size: 1rem;background-color: #015486;"> 关 闭 </button>
+			  </div>
+			<table class="layui-table" style="display: none;">
+			  <colgroup>
+			    <col width="60">
+			    <col>
+			  </colgroup>
+			  <thead>
+			    <tr>
+			      <th style="text-align: center;">选择</th>
+			      <th style="text-align: center;">预约详情</th>
+			    </tr> 
+			  </thead>
+			  <tbody id="detail"></tbody>
+			</table>
+	    </div>
+	  </div>
+	  
+	</form>
+</div>
+<!-- 验证码 -->
+<div id="line_pwd" style="display: none;">
+	<form class="layui-form layui-form-pane" style="padding: 10px 20px 0 20px;">
+		<div class="layui-form-item">
+		    <label class="layui-form-label" id="line_tilte">验证码</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="pwd" id="pwd" lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+		    </div>
+		</div>
+	 	<div class="layui-form-item">
+	    <div class="layui-input-block" style="margin: 1px;">
+	      	<div class="layui-btn-container" style="text-align: center;">
+			  <button type="button" class="layui-btn" value="1">1</button>
+			  <button type="button" class="layui-btn" value="2">2</button>
+			  <button type="button" class="layui-btn" value="3">3</button>
+			  <button type="button" class="layui-btn" value="4">4</button>
+			  <button type="button" class="layui-btn" value="5">5</button>
+			  <button type="button" class="layui-btn" value="6">6</button>
+			  <button type="button" class="layui-btn" value="7">7</button>
+			  <button type="button" class="layui-btn" value="8">8</button>
+			  <button type="button" class="layui-btn" value="9">9</button>
+			  <button type="button" class="layui-btn" value="0">0</button>
+			  <button type="button" class="layui-btn" value="X">X</button>
+			  <button type="button" class="layui-btn" style="font-size: 1rem;">删除</button>
+			</div>
+	    </div>
+	  	</div>	  
+	  <div class="layui-form-item" style="text-align: center;">
+	    <button class="layui-btn" lay-submit="" lay-filter="makeHall" id="makeHall" style="font-size: 1rem;background-color: #015486;"> 确 认 </button>
+	    <button class="layui-btn" type="button" onclick="pageClose()" style="font-size: 1rem;background-color: #015486;"> 关 闭 </button>
+	  </div>
+	</form>
+</div>
+<input type="hidden" name="keyboard" id="keyboard" value="">
+<!-- 区域配置 -->
+<div style="display: block;width: 50px;height: 50px;position: fixed;top: 0px;" ondblclick="change()">
+</div>
+<div {notempty name="$hall_id"}style="display:none;"{/notempty} id="changeHall">
+	<fieldset style="border: none;padding: 0;border-top: 1px solid #eee;">
+    	<legend style="margin-left: 20px;padding: 0 10px;font-size: 4vw;font-weight: 300;text-align: center;">
+    		<a name="switch">区域配置</a>
+    	</legend>
+    </fieldset>
+	<form class="layui-form" action="">
+		<div class="layui-form-item" style="text-align: center;">
+		    <div class="layui-input-inline" style="float:none;">
+		      <select name="hall_id" lay-verify="required">
+		        <option value="">选择区域</option>
+		        {volist name="list" id="vo"}
+		        <option value="{$vo.HallNo}" {if($vo.HallNo==$hall_id)}selected{/if}>{$vo.HallName}</option>
+		        {/volist}
+		      </select>
+		    </div>
+	  	</div>
+	  	<div class="layui-form-item" style="text-align: center;">
+		    <div class="layui-input-inline" style="float:none;">
+		      <button class="layui-btn" lay-submit lay-filter="LAY-save-submit">保存</button>
+		    </div>
+		</div>
+  	</form>
+</div>
+
+<!-- 你的HTML代码 -->
+<style type="text/css">
+html{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+body{
+	height: 100%;
+	background-image:url('__IMG__/{$hall.pic}'); 
+    background-repeat:no-repeat;
+    background-size: 100% 100%;
+}
+/*这里是关键*/
+
+.layui-fluid button i{
+	font-size: 1.8rem !important;
+}
+.layui-fluid button{
+	border:2px solid #FFF !important;
+	height: 80px !important;
+	width: 300px;
+	font-size: 2rem !important;
+	margin: 10px;
+}
+.vbut{
+	background-color: #2c90e1 !important;	
+	color: #ffffff !important;
+}
+#changeHall{
+	position: absolute;
+    top: 100px;
+    width: 100%;
+    background-color: #9ac832;
+}
+.layui-btn-container button{
+	margin-left: 5px !important;
+	margin-right: 5px !important;
+	width: 67px;
+	font-size: 1.2rem;
+	background-color: #015486;
+}
+</style>
+<script src='http://{$ip}:8000/CLodopfuncs.js'></script>
+<script>
+//一般直接写在一个js文件中
+layui.use(['layer', 'form'], function(){
+  var layer = layui.layer
+  ,$=layui.$
+  ,form = layui.form,c='',i='';
+
+  function foc(argument) {
+  	$("#idcard").focus();
+  }
+  form.on('submit(save)',function (data) {  
+  	data.field.que_id = data.elem.value;
+  	data.field.idcard = $("#idcards").val();
+  	data.field.hall_id = '{$hall.HallNo}';
+  	$.post('{:url("pavilion/fetch/makeTicket")}',
+  		data.field,
+  		function (res) {
+  			console.log(res)
+  			if(res.code==200){
+				var da = res.data;
+				if(da==null || da==''){
+					alert("打印布局还没配置")
+				}else{
+					$(".printInfo").html(da);
+					demoPrint(false);
+					layui.$("#idcards").val('')
+					layer.msg(res.msg)
+				}
+			}else{
+				layer.msg(res.msg)
+			}
+			dbtn()
+			layui.$("#result").html('')
+  		},'json')
+	return false;
+  })
+  	form.on('submit(makeHall)',function(data){
+	  	if(data.field.pwd=='9999'){
+			layui.$("#changeHall").show()
+			layer.closeAll('page');
+	  	}else{
+	  		layer.msg("验证码错误")
+	  	}
+	  	return false;
+	})
+  	form.on('submit(LAY-save-submit)', function(data){
+	  	//请求登入接口
+	  	$.post('{:url("pavilion/fetch/setHall")}',
+	  		data.field,
+	  		function(res){
+	  			if(res){
+	  				layer.msg('配置成功', {
+			          offset: '15px'
+			          ,icon: 1
+			          ,time: 1000
+			        });
+			        location.reload();
+	  			}else{
+	  				layer.msg("配置出错", {
+			          offset: '15px'
+			          ,icon: 2
+			          ,time: 1000
+			        });
+	  			}
+	  		})
+	});
+  	/*---预约取号---*/
+	form.on('submit(line_idcard)',function(data){
+	  	layer.open({
+	  		offset: '100px',
+	  		title:'预约取号',
+	  		closeBtn: 0,
+			type: 1,
+			area:'550px',
+			content: $('#line_idcard')
+		});  	
+		$("#keyboard").val("online_idcard")
+		clearInterval(i)
+		clearInterval(c)
+		c = setTimeout(pageClose,30000)
+	})
+	
+	form.on('submit(makeSure)',function(data){
+	  	$.post('{:url("pavilion/fetch/makeSure")}',
+	  		data.field,
+	  		function(data){
+	  			if(data.code==200){
+	  				var da = data.data;
+	  				var html = '';
+	  				for(x in da){
+	  					html += '<tr>';
+	  					if(da[x].item.success==1){
+							html += '  <td><input type="checkbox" checked name="ticket_id[]"  value="'+da[x].despeak_id+'" lay-skin="primary"></td>';
+	  					}else{
+	  						html += '<td> </td>';
+	  					}
+						html += '  <td>'+(da[x].hallName?da[x].hallName:'')+' '+da[x].queName+' '+(da[x].d_name?da[x].d_name:'')+' '+da[x].despeakDate+' '+da[x].time_Part_S+'~'+da[x].time_Part_O+'</td>';
+						html += '</tr>';
+	  				}
+	  				html += '<tr><td colspan="2" align="center"><button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit lay-filter="print">打印票号</button></td></tr>';
+	  				$("#detail").html(html);
+	  				$(".layui-table").show();
+	  				form.render()
+	  			}else{
+	  				layer.msg(data.msg)
+	  			}
+	  		},'json')
+	  	return false;
+	})
+
+	form.on("submit(print)",function (data) {
+		clearInterval(c)
+		c = setTimeout(pageClose,30000)
+		data.field.id = data.elem.value
+		$.post('{:url("pavilion/fetch/produceTicket")}',data.field,
+			function (res) {
+				if(res.code==200){
+					var da = res.data;
+					if(da==null || da==''){
+						alert("打印布局还没配置")
+					}else{
+						$(".printInfo").html(da);
+						demoPrint(false);
+					}
+					layui.$("#idcards").val('')
+				}
+				layer.msg(res.msg)
+		},'json')
+		return false;
+	})
+  	
+  $(function () {
+  	i = setInterval(foc,3000);
+	// 输入身份证
+	layui.$(".layui-btn-container button").on('click',function(){
+		var str = layui.$(this).val();
+		var keyboard = $("#keyboard").val();
+		insertAtCursor(str,keyboard);
+		// if(str == '' || str == null){
+		// 	layui.$("#pwd").val("");
+		// 	layui.$("#online_idcard").val("");
+		// }else{
+		// 	var n = layui.$("#online_idcard").val()+str;
+		// 	layui.$("#online_idcard").val(n);
+		// 	layui.$("#pwd").val(n);
+		// }		
+  		clearInterval(c)
+		c = setTimeout(pageClose,30000)
+	})
+  	{if($hall.card==0)}
+  	vbtn()
+  	$(".layui-row").removeClass("que-btn");
+  	{/if}
+  })
+});
+// 数字键盘
+function insertAtCursor(myValue,id) { 
+    var myField = document.getElementById(id);
+     //IE 浏览器
+     if (document.selection) {
+         myField.focus();
+         sel = document.selection.createRange();
+         sel.text = myValue;
+         sel.select();
+     } 
+     //FireFox、Chrome等
+     else if (myField.selectionStart || myField.selectionStart == '0') {
+         var startPos = myField.selectionStart;
+         var endPos = myField.selectionEnd; 
+         // 保存滚动条
+         var restoreTop = myField.scrollTop;
+         if(myValue==""){
+         	myField.value = myField.value.substring(0, startPos-1) + myField.value.substring(endPos, myField.value.length);     
+         }else{         	
+         	myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);         
+         }
+         if (restoreTop > 0) {
+            myField.scrollTop = restoreTop;
+         }         
+        myField.focus();
+        if(myValue==""){
+        	myField.selectionStart = startPos -1;
+	        myField.selectionEnd = startPos -1;
+        }else{     
+	        myField.selectionStart = startPos + myValue.length;
+	        myField.selectionEnd = startPos + myValue.length;
+        }
+     } else {
+         myField.value += myValue;
+         myField.focus();
+     }
+}
+
+/// 获取用户信息
+function getInfo() {
+	var idcard = layui.$("#idcard").val();
+	layui.$.post('{:url("pavilion/fetch/getInfo")}',
+		{'idcard':idcard},
+		function(data) {
+			if(data.code==200){
+				var da = data.data;
+				layui.$("#result").html(da.CardId+' '+da.Name+' '+da.money+' '+da.Sex+' '+da.Origin+' '+da.Role)
+				layui.$("#idcards").val(da.CardId)
+				vbtn()
+			}else{
+				dbtn()
+				layui.$("#result").html('')
+				layer.msg(data.msg)
+			}
+			layui.$("#idcard").val('')
+		},'json')
+}
+// 启用
+function vbtn(){
+	layui.$(".que-btn button").removeClass("layui-btn-disabled")
+	layui.$(".que-btn button").addClass("vbut")
+	layui.$(".que-btn button").attr("lay-filter","save")
+}
+// 禁止
+function dbtn(){
+	layui.$(".que-btn button").addClass("layui-btn-disabled")
+	layui.$(".que-btn button").removeClass("vbut")
+	layui.$(".que-btn button").attr("lay-filter","")
+}
+function demoPrint(toPreview){
+	if(typeof(getCLodop) == "function"){
+        var strHTML=layui.$(".printInfo").html();
+        LODOP.PRINT_INITA(0,0,300,300,"测试打印");
+        LODOP.SET_PRINT_PAGESIZE(1,100,100,"测试打印");
+        LODOP.ADD_PRINT_HTM(20,10,"90%","95%",strHTML);
+        if (toPreview)
+            LODOP.PREVIEW();
+        else
+            LODOP.PRINT();
+    }
+}
+// 切换区域
+function change(){
+	layer.open({
+	 	title:'验证码验证',
+		type: 1,
+		content: layui.$('#line_pwd')
+	});  	
+	layui.$("#keyboard").val("pwd")
+	c = setTimeout(pageClose,30000)
+}
+// 关闭弹窗
+function pageClose(){
+	layui.$("#pwd").val('');
+	layui.$("#online_idcard").val('');
+	layui.$("#detail").html('');
+	layui.$(".layui-table").hide();
+  	layer.closeAll('page')
+}
+
+
+</script> 
+</body>
+</html>
