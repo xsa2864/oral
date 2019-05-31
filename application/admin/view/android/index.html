@@ -15,27 +15,22 @@
                     <div class="box_center">
                         <form  name="form1" class="jqtransform" >
                             <table class="form_table pt15 pb15" style="width: 100%">
-                                {if($user_id==1)}
                                 <tr>
                                     <td class="td_right">选择单位:</td>
                                     <td>
                                     <select name="unit_id" class="select" style="width: 260px;" onchange="getHall($(this).val())">
-                                        <option value="">请选择单位</option>
+                                        <option value="">默认单位</option>
                                         {volist name="unit" id="vos"}
                                         <option value="{$vos.UnitId}">{$vos.unitname}</option>
                                         {/volist}
                                     </select>
                                     </td>
                                 </tr>
-                                {/if}
                                 <tr>
                                     <td class="td_right">选择区域:</td>
                                     <td>
                                     <select name="hall_id" class="select" style="width: 260px;">
-                                        <option value="">请选择区域</option>
-                                        {volist name="hall" id="vo"}
-                                        <option value="{$vo.HallNo}">{$vo.HallName}</option>
-                                        {/volist}
+                                        <option value="">默认区域</option>
                                     </select>
                                     </td>
                                 </tr>
@@ -198,15 +193,8 @@ function Operation(str,id){
                     $("#number").val(da.number)
                     $("#code").val(da.code)
                     $("#addr").val(da.addr)
-                    console.log(da)
-                    checkUnit(da.unit_id)
-                    checkArea(da.hall_id,da.que_id)
+                    checkArea(da.unit_id,da.hall_id)
                     checkScreen(da.screen_type)
-                    // $("select[name='que_id']>option").each(function(n,e){
-                    //     if($(e).val()==da.que_id){
-                    //         $(e).prop("selected",true)
-                    //     }
-                    // })
                 }else{
                     alert(data.msg)
                 }
@@ -226,7 +214,7 @@ function Operation(str,id){
         
 }
 $(function(){
-    getSerque() 
+    // getSerque() 
 })
 function getSerque(id,que_id) {
     var id = id?id:$("select[name='hall_id']").val();
@@ -246,18 +234,12 @@ function getSerque(id,que_id) {
             }
         },'json')
 }
-function checkUnit(unit_id){
+
+function checkArea(id,hallid){
     $("select[name='unit_id']>option").each(function(n,e){
-        if($(e).val()==unit_id){
-            $(e).prop("selected","true")
-        }
-    })
-}
-function checkArea(id,que_id){
-    $("select[name='hall_id']>option").each(function(n,e){
         if($(e).val()==id){
             $(e).prop("selected","true")
-            getSerque(id,que_id)
+            getHall(id,hallid)
         }
     })
 }
@@ -269,7 +251,7 @@ function checkScreen(id){
     })
 }
 
-function getHall(unit_id) {
+function getHall(unit_id,hall_id) {
     $.post('{:url("admin/android/getHall")}',{'unit_id':unit_id},
         function (data) {
             if(data.success==1){
@@ -277,6 +259,9 @@ function getHall(unit_id) {
                 var str = '<option value="">请选择区域</option>';
                 for(x in da){
                     var sel = '';
+                    if(da[x].HallNo==hall_id){
+                        sel = 'selected';
+                    }
                     str += '<option value="'+da[x].HallNo+'" '+sel+'>'+da[x].HallName+'</option>';
                 }
                 $("select[name='hall_id']").html(str)

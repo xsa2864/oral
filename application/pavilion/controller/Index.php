@@ -179,51 +179,47 @@ class Index extends Controller
         $que_id     = explode(',', cookie('queue_id'));
         $flag       = input("flag",0);  //1=呼叫  2=重呼
 
-        if($flag==2){            
-            $where = array();
-            $where[] = ['status','=',2];
-            $where[] = ['doctor_id','=',$doctor_id];
-            $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
-            $res = DB::name("z_ticket")->where($where)->find();
-            if(empty($res)){
-                if($flag==2){                    
-                    $re_msg['msg']  = "请先呼叫患者";  
-                    echo json_encode($re_msg);exit;
-                }
-            }
-        }
-
         $terminal = [];
         $ccd = new \app\api\model\CacheCode;
         $ip = $ccd->getCode();  
+
         $where = array();
         $where[] = ['que_id','in',$que_id];
         $where[] = ['status','>=',1];
         $where[] = ['status','<=',2];
         $where[] = ['doctor_id','in',[0,$doctor_id]];
         $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
-        $queue = DB::name("z_ticket")->where($where)->order("status desc,sort desc,pid asc")->find();
-
-        if($queue && $hall_id){
-            $queue_id = $queue['que_id'];
-            if($queue['status']!=2 && $flag==1){
+        $ticket = DB::name("z_ticket")->where($where)->order("status desc,sort desc,pid asc")->find();
+        if($ticket){
+            if($flag==2){         
+                if($ticket['status']!=2){                
+                    $re_msg['msg']  = "请先呼叫患者";  
+                    echo json_encode($re_msg);
+                    exit;            
+                }
+            }
+            if($ticket['status']!=2 && $flag==1){
                 // 呼叫的用户更新信息
                 $update = new \app\api\model\PushMsg;
-                $update->updateStatusM($doctor_id,$queue['id'],2); 
+                $update->updateStatusM($doctor_id,$ticket['id'],2); 
+                $ticket['status'] = 2;
+                $ticket['doctor_id'] = $doctor_id;
             }
+
             // 缓存信息
             $push = new \app\api\model\PushCache;
-            $terminal = $push->setCacheInfo('',$queue,$ip);   
+            $wait_num = $push->getWaitNum($ticket['que_id'],$doctor_id);  
 
             if($flag){                
+                $push->setCacheInfo('',$ticket,$ip);   
                 // 获取推送目标
                 $arr_ip = array();
                 $org = new \app\api\model\Organize;
                 $hall_ip = $org->getLargeIp($hall_id);
 
                 $arr_ip = $hall_ip;
-                if(isset($terminal['devices_ip'])){
-                    $arr_ip[] = $terminal['devices_ip']; 
+                if(isset($this->ter['devices_ip'])){
+                    $arr_ip[] = $this->ter['devices_ip']; 
                 }
                 $soc = new \app\api\model\Socket;
                 foreach ($arr_ip as $key => $value) {
@@ -231,13 +227,13 @@ class Index extends Controller
                 }        
             }
 
-            $data['title']  = $queue['title'];
-            $data['code']   = $queue['prefix'].$queue['code'];
-            $data['name']   = $queue['name']; 
-            $data['status']  = $flag==1?2:$queue['status'];
-            $data['number'] = isset($terminal['number'])?$terminal['number']:0; 
+            $data['title']  = $ticket['title'];
+            $data['code']   = $ticket['prefix'].$ticket['code'];
+            $data['name']   = $ticket['name']; 
+            $data['status'] = $ticket['status'];
+            $data['number'] = $wait_num; 
             $re_msg['code'] = 200;
-            $re_msg['msg'] = '执行成功';
+            $re_msg['msg']  = '执行成功';
             $re_msg['data'] = $data; 
         }else{
             $sent = new \app\api\model\PushCache;
@@ -397,7 +393,7 @@ class Index extends Controller
             $where[] = ['doctor_id','=',$doctor_id];
         }
         $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
-        $result = db("z_ticket")->field("id,prefix,code,name")->where($where)->order("over_time desc")->select();
+        $result = db("z_ticket")->field("id,prefix,code,name")->where($where)->order(["over_time"=>"desc","pid"=>"asc"])->select();
         if($result){
             $re_msg['code'] = 200;
             $re_msg['msg']  = "查询到数据";  

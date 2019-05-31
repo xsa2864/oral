@@ -30,11 +30,7 @@ class Fetch extends Controller
         
         $hall = Db::name("hall")->where('HallNo',$hall_id)->find();
         $list = Db::name("hall")->field("HallNo,HallName")->where('EnableFlag',"1")->select();
-        // $this->assign("hall_id",$hall_id);
-        // $this->assign("list",$list);
-        // $this->assign("hall",$hall);
-        // $this->assign("queue",$q_list);     
-        // $devices_ip = request()->ip();
+
         $ccd = new \app\api\model\CacheCode;
         $devices_ip = $ccd->getCode();  
         $data['ip']     = $devices_ip;

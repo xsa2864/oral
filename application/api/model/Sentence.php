@@ -2,6 +2,7 @@
 namespace app\api\model;
 
 use think\Model;
+use think\DB;
 use think\facade\Env;
 
 class Sentence extends Model
@@ -12,13 +13,12 @@ class Sentence extends Model
 	 */
 	public function houseString($result,$hall_id=0,$screen_type=0,$type=0)
 	{
-		$wh = array();
-        $wh[] = ['hall_id','=',$hall_id];
+        $wh[] = ['hall_id','in',[0,$hall_id]];
         $wh[] = ['type','=',$type];
         if($type==0){
         	$wh[] = ['screen_type','=',$screen_type];
         }
-        $voice = db("z_voice")->where($wh)->find();
+        $voice = DB::name("z_voice")->where($wh)->order("hall_id","desc")->find();
         $rule = $voice['rule'];
         if($voice){
         	$order = '';

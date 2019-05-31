@@ -12,10 +12,11 @@ class Voice extends Base
 	// 语音配置界面
 	public function setVoice()
 	{
+        $whu  = array();
         $wh  = array();
 		$where = array();
         if($this->userid!=1){
-            // $where[]    = ['s.unit_id','=',$this->unitid];
+            $whu[]      = ['UnitId','=',$this->unitid];
             if($this->hallid){
                 $wh[]       = ['HallNo','=',$this->hallid];
                 $where[]    = ['s.hall_id','=',$this->hallid];
@@ -36,6 +37,11 @@ class Voice extends Base
 
 		$hall  = db("hall")->where($wh)->select();
 		$this->assign("hall",$hall);
+
+        $unit  = db("unit")->where($whu)->select();
+        $this->assign("unit",$unit);
+
+        $this->assign("user_id",$this->userid);
 		return $this->fetch("setVoice");
 	}
     // 获取队列

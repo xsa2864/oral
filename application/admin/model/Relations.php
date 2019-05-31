@@ -296,7 +296,7 @@ class Relations extends Model
 	    		$data['prefix']  = $result['NoChar'];
 	    	}
 	    	$arr = $this->makeNumber($result,$QueId,0,$quick);
-	    	$data['name'] 	 = "*";
+	    	$data['name'] 	 = "";
 	    	$data['code']  	 = $arr['code'];
 	    	$data['pid']  	 = $arr['pid'];	    	
 	    	$data['que_id']  = $QueId;

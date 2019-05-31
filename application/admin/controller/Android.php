@@ -41,7 +41,6 @@ class Android extends Base
         
         $unit  = db("unit")->where($whu)->select();
         $this->assign("unit",$unit);
-        $this->assign("user_id",$this->userid);
 
     	return $this->fetch('index');
     }

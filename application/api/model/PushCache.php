@@ -14,8 +14,8 @@ class PushCache extends Model
 	 * terminal 呼叫器信息  ticket 票号信息
 	 */
 	public function setCacheInfo($terminal=[],$ticket=[],$ip=0)
-	{
-		$num = 0;		
+	{	
+		$num = 0;
 		if($ip){
 			$terminal = DB::name("z_terminal")->where("ip",$ip)->find();
 		}
@@ -26,7 +26,7 @@ class PushCache extends Model
 		$wait = array();
 	    $wait[] = ['que_id','=',$que_id];
 	    $wait[] = ['doctor_id','in',[0,$doctor_id]];
-	    $wait[] = ['status','>=',0];
+	    $wait[] = ['status','>=',1];
 	    $wait[] = ['status','<=',2];
 	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
 	    $wait_list = DB::name("z_ticket")->field("prefix,code,name,status,order,title")->order("status desc,sort desc,pid asc")->where($wait)->select();
@@ -37,7 +37,21 @@ class PushCache extends Model
         $this->setHallScreenInfo($hall_id,$doctor_info,$terminal,$wait_list);
         return $num;
 	}
+	/*
+	 * 获取等待列表
+	 */
+	public function getWaitNum($que_id=0,$doctor_id=0)
+	{
+		$wait = array();
+	    $wait[] = ['que_id','=',$que_id];
+	    $wait[] = ['doctor_id','in',[0,$doctor_id]];
+	    $wait[] = ['status','>=',1];
+	    $wait[] = ['status','<=',2];
+	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];	 
+	    $wait_list = DB::name("z_ticket")->field("count(*) as num")->order("status desc,sort desc,pid asc")->where($wait)->find();	
 
+	    return $wait_list['num'];
+	}
 	/*
 	 * 缓存诊室屏和综合屏信息
 	 * code=接口标识 terminal=呼叫器信息 hall_id=区域ID

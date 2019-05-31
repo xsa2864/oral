@@ -16,13 +16,21 @@
                         <form  name="form1" class="jqtransform" >
                             <table class="form_table pt15 pb15" width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
+                                    <td class="td_right">选择单位:</td>
+                                    <td>
+                                    <select name="unit_id" class="select" style="width: 260px;" onchange="getHall($(this).val())">
+                                        <option value="">请选择单位</option>
+                                        {volist name="unit" id="vos"}
+                                        <option value="{$vos.UnitId}">{$vos.unitname}</option>
+                                        {/volist}
+                                    </select>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td class="td_right">选择区域:</td>
                                     <td>
                                     <select name="hall_id" class="select" style="width: 260px;">
                                         <option value="">请选择区域</option>
-                                        {volist name="hall" id="vo"}
-                                        <option value="{$vo.HallNo}">{$vo.HallName}</option>
-                                        {/volist}
                                     </select>
                                     </td>
                                 </tr>
@@ -42,10 +50,10 @@
                                     <td class="td_right">IP/地址:</td>
                                     <td><input type="text" name="addr" id="addr" class="input-text lh30" size="30" value=""></td>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <td class="td_right">设备编号:</td>
                                     <td><input type="text" name="code" id="code" class="input-text lh30" size="30" value=""></td>
-                                </tr>
+                                </tr> -->
                                 <tr>
                                     <td class="td_right">音量大小:</td>
                                     <td><input type="number" name="number" id="number" class="input-text lh30" value="10"></td>
@@ -88,11 +96,10 @@
                            class="list_table" id="table1">
                         <tr>
                             <th width="10%">所属区域</th>
-                            <th width="15%">标题名称</th>
-                            <th width="10%">IP/地址</th>
-                            <th width="10%">设备编码</th>
-                            <th width="10%">音量大小</th>
-                            <th>内容</th>
+                            <th width="13%">标题名称</th>
+                            <th width="6%">IP/地址</th>
+                            <th width="6%">音量大小</th>
+                            <th width="22%">内容</th>
                             <th width="12%">添加时间</th>
                             <th width="8%">录入人</th>
                             <th width="12%">操作</th>
@@ -107,7 +114,6 @@
                             <td>{$vo.HallName}</td>
                             <td>{$vo.title}</td>
                             <td>{$vo.addr}</td>
-                            <td>{$vo.code}</td>
                             <td>{$vo.number}</td>
                             <td>{$vo['rule']}</td>
                             <td>{$vo.add_time|date="Y-m-d H:i"}</td>
@@ -160,7 +166,7 @@ function Operation(str,id){
                     $("#number").val(da.number)
                     $("#code").val(da.code)
                     $("#addr").val(da.addr)
-                    checkArea(da.hall_id,da.que_id)
+                    checkArea(da.unit_id,da.hall_id)
                     // $("select[name='que_id']>option").each(function(n,e){
                     //     if($(e).val()==da.que_id){
                     //         $(e).prop("selected",true)
@@ -185,7 +191,7 @@ function Operation(str,id){
         
 }
 $(function(){
-    getSerque() 
+    // getSerque() 
 })
 function getSerque(id,que_id) {
     var id = id?id:$("select[name='hall_id']").val();
@@ -205,13 +211,31 @@ function getSerque(id,que_id) {
             }
         },'json')
 }
-function checkArea(id,que_id){
-    $("select[name='hall_id']>option").each(function(n,e){
+function checkArea(id,hallid){
+    $("select[name='unit_id']>option").each(function(n,e){
         if($(e).val()==id){
             $(e).prop("selected","true")
-            getSerque(id,que_id)
+            getHall(id,hallid)
         }
     })
+}
+
+function getHall(unit_id,hall_id) {
+    $.post('{:url("admin/android/getHall")}',{'unit_id':unit_id},
+        function (data) {
+            if(data.success==1){
+                var da = data.data;
+                var str = '<option value="">请选择区域</option>';
+                for(x in da){
+                    var sel = '';
+                    if(da[x].HallNo==hall_id){
+                        sel = 'selected';
+                    }
+                    str += '<option value="'+da[x].HallNo+'" '+sel+'>'+da[x].HallName+'</option>';
+                }
+                $("select[name='hall_id']").html(str)
+            }
+        },'json')
 }
 
 $("input[name='temp_name']").on('click',function(){

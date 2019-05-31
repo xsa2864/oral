@@ -58,10 +58,10 @@ class Catalog extends Controller
                 ['show'=>1,'op'=>'','logo'=>'&#xe770;','title'=>'呼叫器','data'=>$ter],
                 ['show'=>1,'op'=>'','logo'=>'&#xe638;','title'=>'取票端','data'=>$fetch],
                 ['show'=>1,'op'=>'','logo'=>'&#xe663;','title'=>'排班情况','data'=>$class],
-                ['show'=>0,'op'=>'','logo'=>'&#xe653;','title'=>'生成激活码','data'=>$code],                
+                ['show'=>1,'op'=>'','logo'=>'&#xe653;','title'=>'生成激活码','data'=>$code],                
                 ['show'=>1,'op'=>'','logo'=>'&#xe601;','title'=>'下载','data'=>$download],
-                ['show'=>0,'op'=>'','logo'=>'&#xe63c;','title'=>'预约通道','data'=>$app],
-                ['show'=>0,'op'=>'','logo'=>'&#xe64c;','title'=>'api接口','data'=>$api],
+                ['show'=>1,'op'=>'','logo'=>'&#xe63c;','title'=>'预约通道','data'=>$app],
+                ['show'=>1,'op'=>'','logo'=>'&#xe64c;','title'=>'api接口','data'=>$api],
                 ['show'=>1,'op'=>'','logo'=>'&#xe628;','title'=>'启动通信','data'=>$socket],
             ];
 

@@ -9,6 +9,37 @@ use think\facade\Cookie;
 
 class Hall extends Common
 {
+    // 单位选择列表
+    public function selectList()
+    {
+        return $this->fetch("listVue");
+    }
+    // 队列选择列表
+    public function getQueues()
+    {
+        return $this->fetch("queueVue");
+    }
+     // 医生选择列表
+    public function getDoctors()
+    {
+        return $this->fetch("doctorVue");
+    }
+     // 预约页面
+    public function getOrder()
+    {
+        return $this->fetch("markVue");
+    }
+    // 详情页面
+    public function getOrderDetail()
+    {
+        return $this->fetch("resultVue");
+    }
+    // 查询页面
+    public function searchDetail()
+    {
+        return $this->fetch("selectVue");
+    }
+    
 	// 医院列表
     public function lists()
     {
@@ -473,34 +504,5 @@ class Hall extends Common
         }
         echo json_encode($re_msg);
     }
-    // 单位选择列表
-    public function selectList()
-    {
-        return $this->fetch("listVue");
-    }
-    // 队列选择列表
-    public function getQueues()
-    {
-        return $this->fetch("queueVue");
-    }
-     // 医生选择列表
-    public function getDoctors()
-    {
-        return $this->fetch("doctorVue");
-    }
-     // 预约页面
-    public function getOrder()
-    {
-        return $this->fetch("markVue");
-    }
-    // 详情页面
-    public function getOrderDetail()
-    {
-        return $this->fetch("resultVue");
-    }
-    // 查询页面
-    public function searchDetail()
-    {
-        return $this->fetch("selectVue");
-    }
+    
 }

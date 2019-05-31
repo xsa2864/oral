@@ -119,7 +119,7 @@ html,body{
 							&nbsp;
 						</template>
 						<template v-if="classObject(ls.wait)">
-							<div v-bind:class="'marqueemv'+index " v-html="ls.wait"></div>
+							<div v-bind:class="'marquee marqueemv'+index " v-html="ls.wait"></div>
 						</template>
 						<template v-else>
 							<marquee v-bind:class="'marqueemv'+index " v-html="ls.wait"></marquee>
