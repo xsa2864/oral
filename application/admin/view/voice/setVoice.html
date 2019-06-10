@@ -111,7 +111,7 @@
                         {else /}
                         {volist name="list" id="vo"}
                         <tr class="tr td_center">
-                            <td>{$vo.HallName}</td>
+                            <td>{$vo.HallName|default="默认数据"}</td>
                             <td>{$vo.title}</td>
                             <td>{$vo.addr}</td>
                             <td>{$vo.number}</td>

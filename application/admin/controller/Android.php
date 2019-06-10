@@ -261,8 +261,8 @@ class Android extends Base
 
 	    $content = json_encode($data);
 	    // 推送的url地址，使用自己的服务器地址
-	    $config = Config::get("app.socket_url");
-	    $push_api_url = "http://".$config['host'].":".$config['port'];
+	    $config = Config::get("app.socket_url");        
+	    $push_api_url = "http://127.0.0.1:".$config['port'];
 
 	    $post_datas = array(
 	       "type"       => $type,
@@ -299,7 +299,7 @@ class Android extends Base
         $content = json_encode($data);
         // 推送的url地址，使用自己的服务器地址
         $config = Config::get("app.socket_url");
-        $push_api_url = "http://".$config['host'].":".$config['port'];
+        $push_api_url = "http://127.0.0.1:".$config['port'];
 
         $post_datas = array(
            "type"       => $type,

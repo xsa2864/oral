@@ -76,7 +76,7 @@ class Base extends Controller
 
         $rel = new \app\admin\model\Relations();
         $larr = $rel->getOnLine($this->hallid,$this->userid); 
-        $ilist = '';
+        $ilist = array();
         if($arr){
             $keys = array_keys($larr);
             $lwh[] = ['d.id','in',$keys];

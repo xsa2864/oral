@@ -38,8 +38,9 @@
 	                        <th width="80" style="text-align: center !important;">队列</th>
 	                        <th width="80" style="text-align: center !important;">医生</th>
 	                        <th width="80" style="text-align: center !important;">姓名</th>
-	                        <th width="120" style="text-align: center !important;">预约手机号</th>
-	                        <th width="30%" style="text-align: center !important;">时间</th>
+	                        <th width="120" style="text-align: center !important;">手机号</th>
+	                        <th width="200" style="text-align: center !important;">身份证号</th>
+	                        <th width="25%" style="text-align: center !important;">时间</th>
 	                        <th width="100" style="text-align: center !important;">说明</th>
 	                    </tr>
 	                    <tbody id="detail"></tbody>
@@ -88,6 +89,7 @@ function makeSure() {
 						html += '<td>'+da[x].d_name+'</td>';
 						html += '<td>'+(da[x].name?da[x].name:'')+'</td>';
 						html += '<td>'+da[x].mobile+'</td>';
+						html += '<td>'+da[x].idcard+'</td>';
 						html += '<td>'+da[x].despeakDate+' '+da[x].time_Part_S+'~'+da[x].time_Part_O+'</td>';
 						html += '<td>'+da[x].item.msg+'</td>';
 						html += '</tr>';

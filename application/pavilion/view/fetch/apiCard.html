@@ -91,13 +91,7 @@
 	    <div class="layui-input-inline">
 	      	<input type="text" name="idcard" id="idcard" placeholder="请输入卡号" autocomplete="off" class="layui-input" @change="getUserInfo" style="background-color: #015486;" v-model="idcard">
 	    </div>
-	    <div class="layui-input-inline" style="display: none;">
-	      	<a href="javascript:;" class="layui-btn layui-btn-normal" @click="pointCard" style="background-color: #ea3232;">重复取号请点击</a>
-	    </div>
-	    <div class="layui-form-mid layui-word-aux" id="result">
-	      	<input type="text" id="results" style="width: 0px;opacity: 0.1;">
-	      	{{ userInfo }}
-	    </div>
+	    <div class="layui-form-mid layui-word-aux" id="result">{{ userInfo }}</div>
 	</div>
 <!-- </form> -->
 
@@ -297,7 +291,6 @@ var vm = new Vue({
 		,doctor_list:{}
 		,hall_id:''
 		,idcard:''
-		,s_idcard:''
 		,userInfo:''
 		,showVerify:false
 		,showChange:false	//是否显示区域配置
@@ -378,10 +371,6 @@ var vm = new Vue({
 		}
 		,getTicket:function(que_id,doctor_id){
 			var vm = this
-			if(!vm.btn_show){
-				return false;
-			}
-			vm.btn_show = 0
 			axios
 				.post('{:url("/api/v2/fetch/makeTicket")}',{'que_id':que_id,'idcard':vm.idcard,'doctor_id':doctor_id})
 				.then(function(res){
@@ -391,47 +380,30 @@ var vm = new Vue({
 						if(da==null || da==''){
 							alert("打印布局还没配置")
 						}else{
-							vm.s_idcard = vm.idcard
 							layui.$(".printInfo").html(da);
-							// layui.$("#result").focus()							
 							vm.demoPrint(false)
 							layer.msg(ress.msg)
 						}
+						if(vm.hall.card){
+							vm.btn_show = 0
+						}
+						vm.idcard 	= ''
+						vm.userInfo = ''
 						vm.pageClose();
 					}else{
 						layer.msg(ress.msg)
 					}
-					if(vm.hall.card){
-						vm.btn_show = 0
-					}
-					layui.$("#idcard").focus()
-					vm.userInfo = ''
-					vm.idcard 	= ''
 				})
 		}
-		,getUserInfo:function(){			
+		,getUserInfo:function(){
 			var vm = this
-			if( vm.s_idcard == vm.idcard){
-				layui.$("#idcard").val('')
-				vm.userInfo = ''
-				vm.btn_show = 0
-				return false;
-			}
-
 			axios
 				.get('{:url("/api/v2/fetch/getUserInfo")}',{'params':{'idcard':vm.idcard}})
 				.then(
 					function(res){
-						if(res.data!=null && res.data!=''){
-							vm.userInfo = res.data.CardId +' '+ res.data.Name +' '+ res.data.Sex
-							if(vm.hall.card){
-								vm.btn_show = 1
-							}
-							layui.$("#results").focus()
-						}else{
-							layui.$("#idcard").val('')
-							vm.userInfo = ''
-							vm.btn_show = 0
+						vm.userInfo = res.data.CardId +' '+ res.data.Name +' '+ res.data.Sex
+						if(vm.hall.card){
+							vm.btn_show = 1
 						}
 					}
 				)
@@ -456,12 +428,6 @@ var vm = new Vue({
 					}
 					
 				})
-		}
-		,pointCard:function(){
-			layui.$("#idcard").val('')
-			layui.$("#idcard").focus()
-			layui.$("#result").val('')
-			vm.s_idcard = ''
 		}
 		,print:function(){
 			var vm = this
@@ -600,12 +566,10 @@ var vm = new Vue({
 		}
 	}
 	,created:function(){
-		this.get()			
-		setTimeout(function(){
-			layui.$("#idcard").focus()
-		},300)
+		this.get()	
 	}
-	,mounted:function(){
+	,updated:function(){
+		layui.$("#idcard").focus()
 	}
 })
 

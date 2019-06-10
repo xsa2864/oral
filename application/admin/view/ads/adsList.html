@@ -32,7 +32,7 @@
             {volist name="list" id="vo"}
             <tr class="tr td_center">
                <td>{$vo.id}</td>
-               <td>{$vo.HallName?$vo.HallName:'默认数据'}</td>
+               <td>{$vo.HallName|default='默认数据'}</td>
                <td>{$vo.title}</td>
                <td>{$vo.form==1?'线上预约':'显示平台'}</td>
                <td>{$vo.titles}</td>

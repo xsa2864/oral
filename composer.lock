@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "edef77ca7fa3f886263dfaef85ebb96a",
+    "content-hash": "d5843419bbe0f7c986288e105bc9de65",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -450,16 +450,16 @@
         },
         {
             "name": "topthink/framework",
-            "version": "v5.1.24",
+            "version": "v5.1.37.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "03ee17d1ea9c432a698fa1d2411df53974420187"
+                "reference": "05eecd121d18d6705aaa10aa44fcdf7c14da4d0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/03ee17d1ea9c432a698fa1d2411df53974420187",
-                "reference": "03ee17d1ea9c432a698fa1d2411df53974420187",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/05eecd121d18d6705aaa10aa44fcdf7c14da4d0b",
+                "reference": "05eecd121d18d6705aaa10aa44fcdf7c14da4d0b",
                 "shasum": ""
             },
             "require": {
@@ -497,7 +497,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2018-09-05T03:37:46+00:00"
+            "time": "2019-05-28T06:57:29+00:00"
         },
         {
             "name": "topthink/think-captcha",
@@ -694,23 +694,24 @@
         },
         {
             "name": "topthink/think-worker",
-            "version": "v2.0.10",
+            "version": "v2.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/think-worker.git",
-                "reference": "d3355b38c2c4242cd3a51fd208ec4586be1a0e0d"
+                "reference": "922d8c95e2f095e0da66d18b9e3fbbfd8de70a3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/think-worker/zipball/d3355b38c2c4242cd3a51fd208ec4586be1a0e0d",
-                "reference": "d3355b38c2c4242cd3a51fd208ec4586be1a0e0d",
+                "url": "https://api.github.com/repos/top-think/think-worker/zipball/922d8c95e2f095e0da66d18b9e3fbbfd8de70a3f",
+                "reference": "922d8c95e2f095e0da66d18b9e3fbbfd8de70a3f",
                 "shasum": ""
             },
             "require": {
+                "ext-fileinfo": "*",
                 "topthink/framework": "^5.1.18",
                 "topthink/think-installer": "^2.0",
                 "workerman/gateway-worker": "^3.0.0",
-                "workerman/workerman": "^3.3.0"
+                "workerman/workerman": "^3.5.0"
             },
             "type": "think-extend",
             "extra": {
@@ -739,7 +740,7 @@
                 }
             ],
             "description": "workerman extend for thinkphp5.1",
-            "time": "2018-08-24T06:35:22+00:00"
+            "time": "2019-03-08T11:22:34+00:00"
         },
         {
             "name": "workerman/gateway-worker",

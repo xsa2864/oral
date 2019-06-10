@@ -267,17 +267,16 @@ class Index extends Controller
         }else{
             $quick->updateStatusM($doctor_id,$ticked_id,2);
             // 缓存信息
-            // $ip = request()->ip();
             $ccd = new \app\api\model\CacheCode;
             $ip = $ccd->getCode();  
-            $queue = DB::name("z_ticket")->where("id",$ticked_id)->find();
-            $push = new \app\pavilion\model\PushCache;
-            $terminal = $push->setCacheInfo($ip,$doctor_id,$queue['que_id'],$hall_id);   
+            $ticket = DB::name("z_ticket")->where("id",$ticked_id)->find();
+            $push = new \app\api\model\PushCache;
+            $num = $push->setCacheInfo('',$ticket,$ip);   
 
-            $data['title']  = $queue['title'];
-            $data['code']   = $queue['prefix'].$queue['code'];
-            $data['name']   = $queue['name']; 
-            $data['number'] = isset($terminal['number'])?$terminal['number']:0; 
+            $data['title']  = $ticket['title'];
+            $data['code']   = $ticket['prefix'].$ticket['code'];
+            $data['name']   = $ticket['name']; 
+            $data['number'] = $num; 
             $re_msg['code'] = 200;
             $re_msg['msg'] = '执行成功';
             $re_msg['data'] = $data; 

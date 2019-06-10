@@ -33,7 +33,8 @@ class Fetch extends Controller
 
         $ccd = new \app\api\model\CacheCode;
         $devices_ip = $ccd->getCode();  
-        $data['ip']     = $devices_ip;
+        $data['ip']     = $devices_ip;        
+        $data['host']   = Request()->ip();
         $data['hall']   = $hall;
         $data['queue']  = $q_list;
         $data['list']   = $list;
@@ -45,8 +46,22 @@ class Fetch extends Controller
     // 获取呼叫信息
     public function getUserInfo(){
     	$idcard = input("idcard",0);
-        $where[] = ['CardId','=',$idcard];
-        $item = Db::name("interface_waitman")->where($where)->find();        
+        $item = array();
+        preg_match_all('/\{(.*?)\}/i',$idcard,$matches);
+        if(!empty($matches[1])){
+            if($matches[1][0]!='T'){
+                $item['CardId'] = $matches[1][0];
+                $item['Name']   = $matches[1][1];
+                $item['Sex']    = $matches[1][2];
+            }else{
+                $where[] = ['CardId','=',$matches[1][1]];
+            }
+        }else{
+            $where[] = ['CardId','=',$idcard];    
+        }
+        if(!empty($where)){
+            $item = Db::name("interface_waitman")->where($where)->find();                
+        }
     	return json($item);
     }
 
@@ -75,8 +90,21 @@ class Fetch extends Controller
         $flag = Db::name("hall")->where('HallNo',$hall_id)->value("card");
         if($flag){
             // 有用户信息生成票号
-            $where[] = ['CardId','=',$idcard];
-            $item = Db::name("interface_waitman")->where($where)->find();
+            if(is_numeric($idcard)){
+                $where[] = ['CardId','=',$idcard];
+                $item = Db::name("interface_waitman")->where($where)->find();        
+            }else{
+                $rule = "/{(.*?)}/i";
+                preg_match_all($rule, $idcard,$result);
+                if($result[1]){
+                    $idcard         = $result[1][0];
+                    $item['Name']   = $result[1][1];
+                    $item['Sex']    = $result[1][2];
+                    $item['Role']  = '';
+                    $item['Origin']  = '';
+                    $item['Brot']  = ''; 
+                }
+            }
             if($item){          
                 $arrs['idcard'] = $idcard;
                 $arrs['name']   = $item['Name'];

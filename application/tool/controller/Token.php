@@ -8,6 +8,19 @@ use think\Db;
 
 class Token extends Controller
 {
+    public function testOrcl()
+    {
+        $conn = oci_connect('system','qa123456','192.168.0.239/orcl','utf8');
+        $stmt = oci_parse($conn, "select * from wxzt");
+        oci_execute($stmt);
+        $nrows = oci_fetch_all($stmt, $results);
+        echo '<pre>';
+        print_r($results);
+    }
+    public function phpinfo()
+    {
+        phpinfo();
+    }
     // 生成激活号码页面
     public function getToken()
     {

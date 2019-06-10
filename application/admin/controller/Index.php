@@ -17,7 +17,9 @@ class Index extends Controller
      */
     public function celarTemp() {
         $my_files = (array)glob(Env::get("RUNTIME_PATH") .'temp/*.php');
-        array_map(function($v){ if(file_exists($v)) @unlink($v); }, $my_files);
+        array_map(function($v){ 
+            if(file_exists($v)) @unlink($v); 
+        }, $my_files);
     }
 
     /**

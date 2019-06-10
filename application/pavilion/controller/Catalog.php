@@ -71,11 +71,7 @@ class Catalog extends Controller
             return $this->fetch("index");
         }
     }
-    public function showAddr()
-    {
-        echo "<pre>";
-        print_r($_SERVER);
-    }
+    
     public function test()
     {        
         return $this->fetch("test");
@@ -116,26 +112,5 @@ class Catalog extends Controller
 		}
 		return '127.0.0.1';
 	} 
-	// public function getColums($table='t_ads')
- //    {
- //    	$rs = Db::query("SHOW FULL COLUMNS FROM `$table`");
- //    	$t = '<br>表名：'.$table.'<br>';
- //    	$t .= '<table>';
- //    	$t .= '<tr><td>字段名</td><td>类型</td><td>默认值</td><td>备注</td></tr>';
- //    	foreach ($rs as $key => $value) {
- //    		$t .= '<tr><td class="tn1">'.$value['Field'].'</td><td class="tn2">'.$value['Type'].'</td><td class="tn3">'.$value['Default'].'</td><td class="tn4">'.$value['Comment'].'</td></tr>';
- //    	}
- //    	$t .= '</table>';
- //    	return $t;
- //    }
- //    public function getTable()
- //    {
- //    	$tables = Db::query("SHOW tables");
- //    	$t = '';
- //    	foreach ($tables as $key => $value) {
- //    		$t .= $this->getColums($value['Tables_in_oral']);
- //    	}
- //    	$t .= '<style>td{border: 1px solid #000;}.tn1{width:130px;}.tn2{width:120px;}.tn3{width:80px;}.tn4{width:250px;}</style>';
- //    	print_r($t);
- //    }
+
 }

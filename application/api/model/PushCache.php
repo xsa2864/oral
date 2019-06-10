@@ -26,7 +26,7 @@ class PushCache extends Model
 		$wait = array();
 	    $wait[] = ['que_id','=',$que_id];
 	    $wait[] = ['doctor_id','in',[0,$doctor_id]];
-	    $wait[] = ['status','>=',1];
+	    $wait[] = ['status','>=',0];
 	    $wait[] = ['status','<=',2];
 	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
 	    $wait_list = DB::name("z_ticket")->field("prefix,code,name,status,order,title")->order("status desc,sort desc,pid asc")->where($wait)->select();
@@ -150,7 +150,7 @@ class PushCache extends Model
            	 		$list['queue_name'] = $value['title'];   
            	 		$list['code'] 		= $value['prefix'].$value['code'];                          
                 }else if($value['status']==1){
-                    if($n < 3){
+                    if($n < 4){
                         if($wait!=''){
                             $wait .= '、';
                         }

@@ -120,10 +120,12 @@ class Hall extends Base
             }
 	    }else{
 	    	$data['InTime'] = date("Y-m-d H:i:s",time());
-	    	$flag = db("hall")->insert($data);
+	    	$flag = db("hall")->insertGetId($data);
     	    if($flag){
     	    	$re_msg['success'] = 1;
             	$re_msg['msg'] = '保存成功';
+                $def = new \app\admin\model\Defaults;
+                $def->setTemp($data['UnitId'],$flag);
     	    }
         }
 	    echo json_encode($re_msg);
@@ -139,6 +141,8 @@ class Hall extends Base
     		if($flag){
     			$re_msg['success'] = 1;
        	 		$re_msg['msg'] = '删除成功';
+                $def = new \app\admin\model\Defaults;
+                $def->delTemp($id);
     		}
     	}else{
     		$re_msg['msg'] = '该数据已经不存在了';

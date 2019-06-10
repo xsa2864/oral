@@ -20,7 +20,7 @@ class Socket extends Model
         $content = json_encode($data);
         // 推送的url地址，使用自己的服务器地址
         $config = Config::get("app.socket_url");
-        $push_api_url = "http://".$_SERVER['HTTP_HOST'].":".$config['port'];
+        $push_api_url = "http://127.0.0.1:".$config['port'];
 
         $post_datas = array(
            "type"       => 'publish',
@@ -63,7 +63,7 @@ class Socket extends Model
         $content = json_encode($data);
         // 推送的url地址，使用自己的服务器地址
         $config = Config::get("app.socket_url");
-        $push_api_url = "http://".$_SERVER['HTTP_HOST'].":".$config['port'];
+        $push_api_url = "http://127.0.0.1:".$config['port'];
 
         $post_datas = array(
            "type"       => 'publish',

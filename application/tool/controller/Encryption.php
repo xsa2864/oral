@@ -14,7 +14,7 @@ class Encryption extends Controller
 	 */
 	public function enSimple($value='')
 	{
-		$filename = 'G:\PHPWAMP_IN3\wwwroot\oral\application\tool\controller\Tool.php';
+		$filename = 'G:\PHPCUSTOM\wwwroot\oral\application\tool\controller\Tool.php';
 	    $type = strtolower(substr(strrchr($filename,'.'),1));  
 
 	    // 如果是PHP文件 并且可写 则进行压缩编码  
@@ -29,7 +29,7 @@ class Encryption extends Controller
 	         // $contents = substr($contents, $headerPos + 5, $footerPos - $headerPos); 
 	         $encode = base64_encode(gzdeflate($contents)); // 开始编码  
 	         $encode = '<?php'."\n eval(gzinflate(base64_decode("."'".$encode."'".")));\n\n?>";
-	         return file_put_contents($filename.'.php', $encode);  
+	         return file_put_contents($filename.'3.php', $encode);  
 	    }  
 	    return false;  
 	}
@@ -39,7 +39,7 @@ class Encryption extends Controller
 	 */
 	public function enComplex($value='')
 	{
-		$filename = 'G:\PHPWAMP_IN3\wwwroot\oral\application\tool\controller\Tools.php'; //要加密的文件  
+		$filename = 'G:\PHPCUSTOM\wwwroot\oral\application\tool\controller\Tool.php'; //要加密的文件  
 		$T_k1 	= $this->RandAbc(); //随机密匙1  
 		$T_k2 	= $this->RandAbc(); //随机密匙2  
 		$vstr 	= file_get_contents($filename);  

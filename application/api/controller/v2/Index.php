@@ -15,7 +15,7 @@ class Index extends Controller
      */
     public function index()
     {
-        return json(['Hospital'=>'口腔医院','Version'=>'v2']);
+        return json(['Hospital'=>'口腔医院','Version'=>'v3']);
     }
 
     // 获取基础信息

@@ -109,12 +109,12 @@ class PushMsg extends Model
             foreach ($hall_ip as $key => $value) {
                 $arr = $soc->terminalSocke($value,$data);
                 if($arr['success']==1){
-                    $Voice = new \app\api\model\Voice;
-                    $Voice->broadcast($data['warning']);    
                     $re_msg['success'] = 1;
                     $re_msg['msg']  = "呼叫成功"; 
                 }
             }        
+            $Voice = new \app\api\model\Voice;
+            $Voice->broadcast($data['warning']);    
         }else{
             $re_msg['msg']  = "设备不在线"; 
         }
