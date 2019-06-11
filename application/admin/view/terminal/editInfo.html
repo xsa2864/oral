@@ -32,16 +32,17 @@
                                         <input type="text" name="ip" id="ip" class="input-text lh30" size="30" value="{$list.ip}">
                                     </td>
                                 </tr>
-                                <!-- <tr>
-                                    <td class="td_right">呼叫器编号：</td>
+                                <tr>
+                                    <td class="td_right">是否显示：</td>
                                     <td>
-                                        <input type="text" name="code" id="code"  lay-verify="required" class="input-text lh30 " size="30" value="{$list.code}">
+                                        <input type="checkbox" name="is_screen" id="is_screen" {if $list.is_screen==1}checked{/if} value="1">
+                                        <label for="is_screen">显示LED屏</label>
                                     </td>
-                                    <td class="td_right">呼叫器名称：</td>
+                                    <td class="td_right">LED屏地址：</td>
                                     <td>
-                                        <input type="text" name="title" id="title" class="input-text lh30" size="30" value="{$list.title}">
+                                        <input type="text" name="screen_code" id="screen_code" class="input-text lh30" size="30" value="{$list.screen_code}">
                                     </td>
-                                </tr> -->
+                                </tr>
                                 <tr>
                                     <td class="td_right">房间名称：</td>
                                     <td><input type="text" name="room_name" id="room_name" class="input-text lh30" size="30" value="{$list.room_name}">

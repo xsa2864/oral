@@ -97,7 +97,7 @@ class Login extends Controller
         cookie('user_info', null);
         $hall = DB::name("hall")->field("HallNo,HallName")->where("EnableFlag",1)->select();        
         $this->assign("hall",$hall);
-        $ter = DB::name("z_terminal")->field("id,hall_id,room_name,seat_name,code")->where("ip",$ip)->find();
+        $ter = DB::name("z_terminal")->field("id,hall_id,room_name,seat_name,screen_code")->where("ip",$ip)->find();
         $this->assign("ter",$ter);
         return $this->fetch('register');
     }
@@ -150,44 +150,5 @@ class Login extends Controller
             Cookie::forever('terminal_id', $re_msg['data']);
         }
         echo json_encode($re_msg);
-    }
-
-    public function showCache($value='')
-    {
-        // @exec("arp -a",$array); //执行arp -a命令，结果放到数组$array中
-        // foreach($array as $value){
-        //     //匹配结果放到数组$mac_array
-        //     if(strpos($value,$_SERVER["REMOTE_ADDR"]) && preg_match("/(:?[0-9A-F]{2}[:-]){5}[0-9A-F]{2}/i",$value,$mac_array)){
-        // print_r($_SERVER["REMOTE_ADDR"]);
-        //         // $mac = $mac_array[0];
-        //         // break;
-        //     }
-        // }
-        // echo $mac;
-        echo "<pre>";
-        // echo time()." ======<br>";
-        // echo memory_get_usage()."<br>";
-        // $ip     = request()->ip();
-        // $push   = new \app\pavilion\model\PushCache; 
-        // echo time()."=====<br>";
-
-        // echo "<pre>";
-        // $hcache = Cache::get("operScreen");
-        // $hrrs = json_decode($hcache,1);
-        // echo '=========== operScreen ===========<br>';
-        // print_r($hrrs);
-
-
-        $cache = Cache::get("devices");
-        $arrs = json_decode($cache,1);
-        // unset($arrs['68-F7-28-48-DE-99']);
-        // cache("devices",json_encode($arrs)); 
-        // print_r($arr);
-        echo '======================<br>';
-        print_r($arrs);
-        // $hcache = Cache::get("hallScreen");
-        // $hrrs = json_decode($hcache,1);
-        // echo '======================<br>';
-        // print_r($hrrs);
-    }
+    }    
 }

@@ -69,7 +69,8 @@ class Terminal extends Base
         if (Request::isPost()){
 	        $arr['hall_id']    	= input("hall_id",'');
             $arr['hall_name']   = input("hall_name",'');
-            $arr['code']      	= input("code",'');
+            $arr['is_screen']  	= input("is_screen",0);
+            $arr['screen_code'] = input("screen_code",0);
             $arr['title']    	= input("title",'');
             $arr['room_name'] 	= input("room_name",'');
             $arr['seat_name']  	= input("seat_name",'');

@@ -34,24 +34,11 @@ class PushCache extends Model
             $arr = $this->setRoomScreenInfo($hall_id,$doctor_info,$terminal,$wait_list);
             $num = $arr['queue_wait_list'];
         }
+
         $this->setHallScreenInfo($hall_id,$doctor_info,$terminal,$wait_list);
         return $num;
 	}
-	/*
-	 * 获取等待列表
-	 */
-	public function getWaitNum($que_id=0,$doctor_id=0)
-	{
-		$wait = array();
-	    $wait[] = ['que_id','=',$que_id];
-	    $wait[] = ['doctor_id','in',[0,$doctor_id]];
-	    $wait[] = ['status','>=',1];
-	    $wait[] = ['status','<=',2];
-	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];	 
-	    $wait_list = DB::name("z_ticket")->field("count(*) as num")->order("status desc,sort desc,pid asc")->where($wait)->find();	
 
-	    return $wait_list['num'];
-	}
 	/*
 	 * 缓存诊室屏和综合屏信息
 	 * code=接口标识 terminal=呼叫器信息 hall_id=区域ID
@@ -67,6 +54,22 @@ class PushCache extends Model
 	    	$this->setHallScreenInfo($hall_id,$doctor_info,$terminal,$wait_list);
 	    }
         return true;
+	}
+
+	/*
+	 * 获取等待列表
+	 */
+	public function getWaitNum($que_id=0,$doctor_id=0)
+	{
+		$wait = array();
+	    $wait[] = ['que_id','=',$que_id];
+	    $wait[] = ['doctor_id','in',[0,$doctor_id]];
+	    $wait[] = ['status','>=',1];
+	    $wait[] = ['status','<=',2];
+	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];	 
+	    $wait_list = DB::name("z_ticket")->field("count(*) as num")->order("status desc,sort desc,pid asc")->where($wait)->find();	
+
+	    return $wait_list['num'];
 	}
 
 	/*
@@ -99,6 +102,11 @@ class PushCache extends Model
 	                $value['seat_name'] = $terminal['seat_name'];   	
 	                if($value['status']==2){
 	                	$arr[$ip]['queue_title'] = $sent->houseString($value,0,0,3);
+	                	if($terminal['is_screen']==1){		//是否LED显示
+				        	$str = $sent->houseString($value,0,2,3);
+				        	$vc = new \app\api\model\Voice;
+				        	$vc->broadcast($str,$terminal['hall_id'],$terminal['screen_code']);
+				        }
 	                }else if($value['status']==1){
 	        			$queue_list[] = $sent->houseString($value,$hall_id);
 	        			$num ++;
