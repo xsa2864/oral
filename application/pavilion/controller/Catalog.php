@@ -24,9 +24,10 @@ class Catalog extends Controller
                 ['op'=>url('pavilion/display/operationTone'),'title'=>'手术显示屏'],
             ];
             $download = [
-                ['op'=>'/oral/public/uploads/video/app.apk','title'=>'下载apk'],
-                ['op'=>'/oral/public/uploads/video/webclient.rar','title'=>'PC客户端'],
-                ['op'=>'/oral/public/uploads/video/CLodop_Setup_for_Win32NT_https_3.080Extend.zip','title'=>'下载打印驱动'],
+                ['op'=>'/uploads/video/app.apk','title'=>'浏览窗口apk'],
+                ['op'=>'/uploads/video/MIPS_DS_Basic_FREE_V4.0.0.apk','title'=>'信息发布apk'],
+                ['op'=>'/uploads/video/webclient.rar','title'=>'PC客户端'],
+                ['op'=>'/uploads/video/CLodop_Setup_for_Win32NT_https_3.080Extend.zip','title'=>'下载打印驱动'],
             ];
             $admin = [
                 ['op'=>url('admin/login/index'),'title'=>'护士站'],
@@ -73,7 +74,7 @@ class Catalog extends Controller
     }
     
     public function test()
-    {        
+    {               
         return $this->fetch("test");
     }
 	function getLocalIP() {

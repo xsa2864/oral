@@ -87,13 +87,14 @@ class Index extends Controller
     {
     	$devices_ip = input("devices_ip",'');
         $devices_type = input("devices_type",0);
-        if(!empty($devices_ip)){
-            Cookie::forever("devices_ip",$devices_ip);
-            $set = new \app\api\model\Organize;
-            $set->setDefault($devices_ip,$devices_type);
-            return json("设置成功",200);
+        if(empty($devices_ip)){
+            $ccd = new \app\api\model\CacheCode;
+            $devices_ip = $ccd->getCode();  
         }
-        return json("请填写编号",201);
+        Cookie::forever("devices_ip",$devices_ip);
+        $set = new \app\api\model\Organize;
+        $set->setDefault($devices_ip,$devices_type);
+        return json("设置成功". $devices_ip,200);       
     }
 
     public function showBases()

@@ -14,7 +14,7 @@ class Encryption extends Controller
 	 */
 	public function enSimple($value='')
 	{
-		$filename = 'G:\PHPCUSTOM\wwwroot\oral\application\tool\controller\Tool.php';
+		$filename = 'H:\PHPCUSTOM\wwwroot\oral\config\activation.php';
 	    $type = strtolower(substr(strrchr($filename,'.'),1));  
 
 	    // 如果是PHP文件 并且可写 则进行压缩编码  
