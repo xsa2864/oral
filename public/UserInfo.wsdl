@@ -1,49 +1,121 @@
 <?xml version="1.0" ?>
-<definitions name="myService" targetNamespace="urn:myService" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:myService" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+<definitions name="HB" targetNamespace="urn:HB" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:HB" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 <types xmlns="http://schemas.xmlsoap.org/wsdl/" />
-<portType name="myServicePort"><operation name="getName">
+<portType name="HBPort"><operation name="getName">
 <input message="tns:getNameRequest" />
 <output message="tns:getNameResponse" />
 </operation>
-<operation name="getUrl">
-<input message="tns:getUrlRequest" />
-<output message="tns:getUrlResponse" />
+<operation name="patient">
+<input message="tns:patientRequest" />
+<output message="tns:patientResponse" />
 </operation>
-<operation name="add">
-<input message="tns:addRequest" />
-<output message="tns:addResponse" />
+<operation name="mkDespeak">
+<input message="tns:mkDespeakRequest" />
+<output message="tns:mkDespeakResponse" />
+</operation>
+<operation name="doctorClass">
+<input message="tns:doctorClassRequest" />
+<output message="tns:doctorClassResponse" />
+</operation>
+<operation name="setClass">
+<input message="tns:setClassRequest" />
+<output message="tns:setClassResponse" />
+</operation>
+<operation name="doctorInfo">
+<input message="tns:doctorInfoRequest" />
+<output message="tns:doctorInfoResponse" />
+</operation>
+<operation name="setDoctor">
+<input message="tns:setDoctorRequest" />
+<output message="tns:setDoctorResponse" />
+</operation>
+<operation name="arrayToXml">
+<input message="tns:arrayToXmlRequest" />
+<output message="tns:arrayToXmlResponse" />
+</operation>
+<operation name="xmlToArray">
+<input message="tns:xmlToArrayRequest" />
+<output message="tns:xmlToArrayResponse" />
 </operation>
 </portType>
-<binding name="myServiceBinding" type="tns:myServicePort">
+<binding name="HBBinding" type="tns:HBPort">
 <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
 <operation name="getName">
-<soap:operation soapAction="urn:myService#UserInfo#getName" />
-<input><soap:body use="encoded" namespace="urn:myService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+<soap:operation soapAction="urn:HB#UserInfo#getName" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </input>
 <output>
-<soap:body use="encoded" namespace="urn:myService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
-<operation name="getUrl">
-<soap:operation soapAction="urn:myService#UserInfo#getUrl" />
-<input><soap:body use="encoded" namespace="urn:myService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+<operation name="patient">
+<soap:operation soapAction="urn:HB#UserInfo#patient" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </input>
 <output>
-<soap:body use="encoded" namespace="urn:myService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
-<operation name="add">
-<soap:operation soapAction="urn:myService#UserInfo#add" />
-<input><soap:body use="encoded" namespace="urn:myService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+<operation name="mkDespeak">
+<soap:operation soapAction="urn:HB#UserInfo#mkDespeak" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </input>
 <output>
-<soap:body use="encoded" namespace="urn:myService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="doctorClass">
+<soap:operation soapAction="urn:HB#UserInfo#doctorClass" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="setClass">
+<soap:operation soapAction="urn:HB#UserInfo#setClass" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="doctorInfo">
+<soap:operation soapAction="urn:HB#UserInfo#doctorInfo" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="setDoctor">
+<soap:operation soapAction="urn:HB#UserInfo#setDoctor" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="arrayToXml">
+<soap:operation soapAction="urn:HB#UserInfo#arrayToXml" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="xmlToArray">
+<soap:operation soapAction="urn:HB#UserInfo#xmlToArray" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
 </binding>
-<service name="myService">
+<service name="HB">
 <documentation />
-<port name="myServicePort" binding="tns:myServiceBinding"><soap:address location="http://oral.com:80/api/v2/wsdl/Service" />
+<port name="HBPort" binding="tns:HBBinding"><soap:address location="http://oral.com:80/api/v2/wsdl/server" />
 </port>
 </service>
 <message name="getNameRequest">
@@ -51,16 +123,52 @@
 <message name="getNameResponse">
 <part name="getName" type="xsd:string" />
 </message>
-<message name="getUrlRequest">
+<message name="patientRequest">
+<part name="xml" type="xsd:string" />
 </message>
-<message name="getUrlResponse">
-<part name="getUrl" type="xsd:string" />
+<message name="patientResponse">
+<part name="patient" type="xsd:string" />
 </message>
-<message name="addRequest">
-<part name="a" type="xsd:string" />
-<part name="b" type="xsd:string" />
+<message name="mkDespeakRequest">
+<part name="arr" type="xsd:string" />
 </message>
-<message name="addResponse">
-<part name="add" type="xsd:string" />
+<message name="mkDespeakResponse">
+<part name="mkDespeak" type="xsd:string" />
+</message>
+<message name="doctorClassRequest">
+<part name="xml" type="xsd:string" />
+</message>
+<message name="doctorClassResponse">
+<part name="doctorClass" type="xsd:string" />
+</message>
+<message name="setClassRequest">
+<part name="arr" type="xsd:string" />
+</message>
+<message name="setClassResponse">
+<part name="setClass" type="xsd:string" />
+</message>
+<message name="doctorInfoRequest">
+<part name="xml" type="xsd:string" />
+</message>
+<message name="doctorInfoResponse">
+<part name="doctorInfo" type="xsd:string" />
+</message>
+<message name="setDoctorRequest">
+<part name="arr" type="xsd:string" />
+</message>
+<message name="setDoctorResponse">
+<part name="setDoctor" type="xsd:string" />
+</message>
+<message name="arrayToXmlRequest">
+<part name="arr" type="xsd:string" />
+</message>
+<message name="arrayToXmlResponse">
+<part name="arrayToXml" type="xsd:string" />
+</message>
+<message name="xmlToArrayRequest">
+<part name="xml" type="xsd:string" />
+</message>
+<message name="xmlToArrayResponse">
+<part name="xmlToArray" type="xsd:string" />
 </message>
 </definitions>

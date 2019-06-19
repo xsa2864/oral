@@ -2,47 +2,228 @@
 namespace app\api\controller\v2;
 
 use think\Controller;
-use app\api\model\UserInfo;
 use think\facade\Env;
-use think\Db;
+use app\api\model\UserInfo;
 
 class Wsdl 
 {
-	private $wsdl = 'UserInfo.wsdl';
-
-	// 生成wsdl文件
 	public function create()
 	{
-		new \app\api\model\UserInfo;
-		$disc = new \app\api\model\SoapDiscovery('UserInfo','myService');
-		$disc->getWSDL();
-	}
+        new \app\api\model\UserInfo;
+        $disc = new \app\api\model\SoapDiscovery('UserInfo','HB');
+        $disc->getWSDL();
+    }
 
-	public function Service()
-	{		
-		// if(!file_exists($this->wsdl)){
-		// }
+	public function server()
+	{
 		$this->create();
-		##此处的Service.wsdl文件是上面生成的
-		$server = new \SoapServer("http://oral.com/UserInfo.wsdl"); 	
-		$server->setClass(UserInfo::class); //注册Service类的所有方法 
-		$server->handle(); //处理请求
+		// define('WSDL_URL',Env::get('ROOT_PATH')."public/UserInfo.wsdl");		        
+		$url = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'];
+		// 创建 SoapServer 对象
+		// $parameter = array(
+		// 	'uri' => $url.'/api/v2/wsdl/server',
+		// );
+		// $s = new \SoapServer(null,$parameter);
+        ##此处的Service.wsdl文件是上面生成的
+        $url = $url.'/UserInfo.wsdl';
+        $s = new \SoapServer($url);
+		// 导出 SiteInfo 类中的全部函数
+		$s->setClass(UserInfo::class);
+		// 处理一个SOAP请求，调用必要的功能，并发送回一个响应。
+		$s->handle();
 	}
 
-	public function test()
+	public function setDoctor()
 	{
 		ini_set('soap.wsdl_cache_enabled', "0"); //关闭wsdl缓存
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+				<MESSAGE>
+				  <BODY>
+				    <META>
+				      <TOPIC_ID>A001</TOPIC_ID>
+				      <APP_ID>EMR</APP_ID>
+				    </META>
+				    <ROWS>
+				      <ROW>
+				       	<unit_id>1</unit_id>
+				       	<unit_name>口腔医院</unit_name>
+				       	<hall_id>1</hall_id>
+				       	<hall_name>一楼区域</hall_name>
+				       	<que_id>1</que_id>	
+						<que_name>队列</que_name>
+						<staff_code>60103</staff_code>
+						<doctor_name>刘医</doctor_name>
+						<type>广告</type>
+						<mobile>17095999878</mobile>
+						<introduce>哈哈哈哈哈</introduce>
+						<pic>http://wwww.baidu.com</pic>
+						<sex>1</sex>
+						<hour_sum>4</hour_sum>
+						<no_char>Y</no_char>
+						<star_no>1000</star_no>
+						<step>1</step>
+						<status>1</status>
+						<worker_gs_time>09:00:00</worker_gs_time>
+						<worker_ge_time>12:00:00</worker_ge_time>
+						<worker_as_time>14:00:00</worker_as_time>
+						<worker_ae_time>18:00:00</worker_ae_time>
+				      </ROW>
+				      <ROW>
+				       	<unit_id>1</unit_id>
+				       	<unit_name>口腔医院</unit_name>
+				       	<hall_id>1</hall_id>
+				       	<hall_name>一楼区域</hall_name>
+				       	<que_id>1</que_id>	
+						<que_name>队列</que_name>
+						<staff_code>100001</staff_code>
+						<doctor_name>刘医</doctor_name>
+						<type>广告</type>
+						<mobile>17095999878</mobile>
+						<introduce>哈哈哈哈哈</introduce>
+						<pic>http://wwww.baidu.com</pic>
+						<sex>1</sex>
+						<hour_sum>4</hour_sum>
+						<no_char>Y</no_char>
+						<star_no>1000</star_no>
+						<step>1</step>
+						<status>1</status>
+						<worker_gs_time>09:00:00</worker_gs_time>
+						<worker_ge_time>12:00:00</worker_ge_time>
+						<worker_as_time>14:00:00</worker_as_time>
+						<worker_ae_time>18:00:00</worker_ae_time>
+				      </ROW>
+				    </ROWS>
+				  </BODY>
+				</MESSAGE>';		
 
-	    // $soap = new \SoapClient('http://oral.com/api/v2/wsdl/Service?wsdl');
-	    // $soap = new \SoapClient('http://localhost/service/cometrue.php?wsdl');
-	    $soap = new \SoapClient('http://oral.com/UserInfo.wsdl');
+		$url = 'http://'.$_SERVER['SERVER_NAME'];
+		$url = $url.'/UserInfo.wsdl';
+		$soap = new \SoapClient($url);
+		$soap = new \app\api\model\UserInfo;
+		  // 调用函数 
+	
+		// echo $soap->getName()."<br>";		
+  		echo '<pre>';
+		$rs = $soap->doctorInfo($xml);
+		echo $rs;						
+	}
 
-	    // echo $soap->strtolink('http://www.baidu.com')."<br/>";
-	    echo $soap->getUrl()."<br/>";
-	    echo $soap->add(30,100)."==<br/>";
-	    // echo $soap->__soapCall('add',array(28,200))."<br/>";
-	    // //或这样调用
-	    // echo $soap->__Call('add',array(28,300))."<br/>";
-	    echo date('Y-m-d H:i:s', time());
+	// 患者信息
+	public function setPatient()
+	{
+		ini_set('soap.wsdl_cache_enabled', "0"); //关闭wsdl缓存
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+				<MESSAGE>
+				  <BODY>
+				    <META>
+				      <TOPIC_ID>A001</TOPIC_ID>
+				      <APP_ID>EMR</APP_ID>
+				    </META>
+				    <ROWS>
+				      <ROW>
+				       	<unit_id>1</unit_id>
+				       	<unit_name>口腔医院</unit_name>
+				       	<hall_id>1</hall_id>
+				       	<hall_name>一楼区域</hall_name>
+				       	<que_id>1</que_id>	
+						<que_name>队列</que_name>
+						<staff_code>1</staff_code>
+						<doctor_name>刘医生</doctor_name>
+						<title>广告</title>
+						<idcard>3124</idcard>
+						<prefix>A</prefix>
+						<code>111</code>
+						<name>张三</name>
+						<mobile>17095999878</mobile>
+						<sex>男</sex>
+						<birth>2011-10-03</birth>
+						<status>1</status>
+						<fetch_status>0</fetch_status>
+						<date>2019-06-11</date>
+						<stime>1560236094</stime>
+						<etime>1560236094</etime>
+				      </ROW>
+				      <ROW>
+				       	<unit_id>1</unit_id>
+				       	<unit_name>口腔医院</unit_name>
+				       	<hall_id>1</hall_id>
+				       	<hall_name>一楼区域</hall_name>
+				       	<que_id>1</que_id>	
+						<que_name>队列</que_name>
+						<staff_code>1</staff_code>
+						<doctor_name>刘医生</doctor_name>
+						<title>广告</title>
+						<idcard>3124</idcard>
+						<prefix>A</prefix>
+						<code>111</code>
+						<name>张三</name>
+						<mobile>17095999878</mobile>
+						<sex>男</sex>
+						<birth>2011-10-03</birth>
+						<status>1</status>
+						<fetch_status>1</fetch_status>
+						<date>2019-06-11</date>
+						<stime>1560236094</stime>
+						<etime>1560236094</etime>
+				      </ROW>
+				    </ROWS>
+				  </BODY>
+				</MESSAGE>';		
+
+		$url = 'http://'.$_SERVER['SERVER_NAME'];
+		$url = $url.'/UserInfo.wsdl';
+		$soap = new \SoapClient($url);
+		$soap = new \app\api\model\UserInfo;
+		// 调用函数 
+  		echo '<pre>';
+		$rs = $soap->patient($xml);
+		echo $rs;						
+	}
+	public function setClass()
+	{
+		ini_set('soap.wsdl_cache_enabled', "0"); //关闭wsdl缓存
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+				<MESSAGE>
+				  <BODY>
+				    <META>
+				      <TOPIC_ID>A001</TOPIC_ID>
+				      <APP_ID>EMR</APP_ID>
+				    </META>
+				    <ROWS>
+				      <ROW>
+				       	<unit_id>1</unit_id>
+				       	<unit_name>口腔医院</unit_name>
+				       	<hall_id>1</hall_id>
+				       	<hall_name>一楼区域</hall_name>
+				       	<que_id>002</que_id>	
+						<que_name>队列</que_name>
+						<doctor_name>刘医生</doctor_name>
+						<staff_code>10802</staff_code>
+						<status>1</status>
+						<date>0,1,2,3,6,7,8,13</date>
+				      </ROW>	
+				      <ROW>
+				       	<unit_id>1</unit_id>
+				       	<unit_name>口腔医院</unit_name>
+				       	<hall_id>1</hall_id>
+				       	<hall_name>一楼区域</hall_name>
+				       	<que_id>002</que_id>	
+						<que_name>队列</que_name>
+						<doctor_name>刘医生</doctor_name>
+						<staff_code>6666</staff_code>
+						<status>1</status>
+						<date>0,1,2,3,4,5,6,7,8,13</date>
+				      </ROW>	
+				    </ROWS>
+				  </BODY>
+				</MESSAGE>';		
+
+		$url = 'http://'.$_SERVER['SERVER_NAME'];
+		$url = $url.'/UserInfo.wsdl';
+		$soap = new \SoapClient($url);
+		$soap = new \app\api\model\UserInfo;
+		// 调用函数 
+		$rs = $soap->doctorClass($xml);
+		echo $rs;
 	}
 }
