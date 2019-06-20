@@ -220,8 +220,9 @@ class Relations extends Model
 		$data['etime']  = isset($arrs['etime'])?$arrs['etime']:0;
 		$data['tips1'] 	= isset($arrs['tips1'])?$arrs['tips1']:'';
 		$data['tips2']  = isset($arrs['tips2'])?$arrs['tips2']:'';
-		$data['sex'] 	= isset($arrs['sex'])?$arrs['sex']:'';
+		$data['sex'] 	= isset($arrs['sex'])?$arrs['sex']:0;
 		$data['birth'] 	= isset($arrs['birth'])?strtotime($arrs['birth']):0;
+		$data['pid'] 	= $data['code'] = isset($arrs['code'])?$arrs['code']:'';
 
 	    $result = db("serque")->where("QueId",$QueId)->find();
 	    if($result){
@@ -244,8 +245,8 @@ class Relations extends Model
 	    		$data['prefix']  = $result['NoChar'];
 	    	}
 	    	$arr = $this->makeNumber($result,$QueId,$doctor_id,$quick);
-	    	$data['code']  	 = $arr['code'];
-	    	$data['pid']  	 = $arr['pid'];	    	
+	    	$data['code']  	 = !empty($data['code'])?$data['code']:$arr['code'];
+	    	$data['pid']  	 = !empty($data['pid'])?$data['pid']:$arr['pid'];	    	
 	    	$data['que_id']  = $QueId;
 	    	$data['hall_id'] = $result['HallNo'];
 	    	$data['title']   = $result['QueName'];
@@ -409,8 +410,9 @@ class Relations extends Model
 				$arrs['name']	= isset($data['name'])?$data['name']:'**';
 				$arrs['stime']	= $data['despeakTime'];
 				$arrs['etime']	= strtotime($data['despeakDate'].' '.$data['time_Part_O']);
-				$arrs['sex']	= '';
-				$arrs['birth']	= '';
+				$arrs['sex']	= $data['sex'];
+				$arrs['birth']	= $data['birth'];
+				$arrs['code']	= $data['queNo'];
 				$result = $this->makeTicket($arrs);
 				if($result['success']==1){
 					$re_msg['success'] = 1;
