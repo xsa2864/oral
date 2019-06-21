@@ -1,0 +1,111 @@
+{extend name="base/base" /}
+
+{block name="main"}
+<div class="container">
+    <div class="main_top">
+        <div class="main_left fl span10">
+            <div class="box pr0">
+                <div class="box_border">   
+                    <div class="box_top" style="background: url;">
+                        <div class="box_top_l fl">
+                            <div  style="float: left;">                                
+                                <i class="fa fa-add fa-telegram"></i>
+                            </div>
+                            <b>语音终端列表</b>
+                        </div>
+                            <a href="javascript:deviceDel(0,1);" style="float: right;margin-right: 20px;">批量删除</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="table" class="mt10" id="editdiv">
+            <div class="box span10 oh">
+                <form name="form1" class="jqtransform" method="get"  >
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size: 1rem;">
+                        <tr>
+                            <th> <input type="checkbox" name="all"> 选择</th>
+                            <th>设备编码</th>
+                            <th>设备名称</th>
+                            <th>设备地址</th>
+                            <th>设备语速</th>
+                            <th>音量（0-最大）</th>
+                            <th>设备状态</th>
+                            <th>设备添加时间</th>
+                            <th>设备激活码</th>
+                            <th>设备修改时间</th>
+                            <th>操作</th>
+                        </tr>  
+                        <tbody id="list_project">
+                            {volist name="list" id="vo"}
+                            <tr class="tr td_center">
+                                <td><input type="checkbox" value="{$vo.m_id}"></td>
+                                <td>{$vo.m_code}</td>
+                                <td>{$vo.m_title}</td>
+                                <td>{$vo.m_address}</td>
+                                <td>{$vo.m_speech}</td>
+                                <td>{$vo.m_vo}</td>
+                                <td>{$vo.m_Struts==1?'启用':'禁用'}</td>
+                                <td>{$vo.m_updatetime}</td>
+                                <td>{$vo.m_addtime}</td>
+                                <td>{$vo.m_key}</td>
+                                <td>
+                                    <a href="{:url('admin/android/machineEdit',array('id'=>$vo.m_id))}">编辑</a> |
+                                    <a href="javascript:deviceDel({$vo.m_id},0);">删除</a>
+                                </td>
+                            </tr>
+                            {/volist}                            
+                        </tbody>                              
+                    </table> 
+                </form>
+                    <!-- 分页开始 -->
+                    <div class="page mt10">
+                        {$page|raw}         
+                    </div>
+                    <!-- 分页结束 -->
+            </div>
+        </div> 
+    </div>
+</div> 
+<style type="text/css">
+tr input{
+    border: 1px solid #636262;
+}
+</style>
+<script type="text/javascript">
+function deviceDel(code,type) {
+    var list = '';
+    $("input[type='checkbox']:checked").each(function(n,e){
+        if(list!=''){
+            list += ',';
+        }
+        list += $(e).val();
+    })
+    if(type==1){
+        if(list == ''){
+            alert("请选择要删除的");
+            return false;
+        }
+    }else{
+        list = code;
+    }
+    if(confirm("确定删除信息？")){
+        $.post('{:url("admin/android/machineDel")}',
+            {'list':list},
+            function(data){
+                if(data){
+                    location.reload();
+                }
+            })
+    }
+}
+
+$("input[name='all']").click(function(){
+　　if($(this).is(":checked")){
+　　　 $("input[type='checkbox']").attr("checked","checked");
+　　}else{　　　　　　        
+      $("input[type='checkbox']").removeAttr("checked","checked");　　
+　　}
+})
+</script>
+{/block}

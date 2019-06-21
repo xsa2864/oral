@@ -20,7 +20,7 @@ class Voice extends Model
 		}
 		$data['AreaCode']	= $hall_id;
 		$data['D_Address']	= $screen_code;
-		$rs = Db::connect('db_voice_config')->table('zx')->insert($data);
+		$rs = Db::table('zx')->insert($data);
 		return $rs;
 	}
 }

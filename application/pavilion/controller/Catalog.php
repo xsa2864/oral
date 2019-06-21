@@ -25,6 +25,7 @@ class Catalog extends Controller
             ];
             $download = [
                 ['op'=>'/uploads/video/app.apk','title'=>'浏览窗口apk'],
+                ['op'=>'/uploads/video/TTS.apk','title'=>'TTS语音apk'],
                 ['op'=>'/uploads/video/MIPS_DS_Basic_FREE_V4.0.0.apk','title'=>'信息发布apk'],
                 ['op'=>'/uploads/video/webclient.rar','title'=>'PC客户端'],
                 ['op'=>'/uploads/video/CLodop_Setup_for_Win32NT_https_3.080Extend.zip','title'=>'下载打印驱动'],

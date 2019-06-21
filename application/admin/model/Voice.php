@@ -17,7 +17,7 @@ class Voice extends Model
 		$data['S_Text']		= $str;
 		$data['D_Address']	= 1;
 		$data['S_SendMark']	= 1;
-		$rs = Db::connect('db_voice_config')->table('zx')->insert($data);
+		$rs = Db::table('zx')->insert($data);
 		return $rs;
 	}
 }

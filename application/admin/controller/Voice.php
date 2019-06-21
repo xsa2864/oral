@@ -41,6 +41,9 @@ class Voice extends Base
         $unit  = db("unit")->where($whu)->select();
         $this->assign("unit",$unit);
 
+        $machine = DB::table("machine")->select();
+        $this->assign("machine",$machine);
+        
         $this->assign("user_id",$this->userid);
 		return $this->fetch("setVoice");
 	}

@@ -248,6 +248,7 @@ class Relations extends Model
 	    	$data['code']  	 = !empty($data['code'])?$data['code']:$arr['code'];
 	    	$data['pid']  	 = !empty($data['pid'])?$data['pid']:$arr['pid'];	    	
 	    	$data['que_id']  = $QueId;
+	    	$data['unit_id'] = $result['UnitId'];
 	    	$data['hall_id'] = $result['HallNo'];
 	    	$data['title']   = $result['QueName'];
 	    	$data['add_time']= time();

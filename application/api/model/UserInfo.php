@@ -72,7 +72,10 @@ class UserInfo
 				$lmsg = '';
 				$ldata = '';
 				unset($data);
-				$is_rs = DB::name("despeak")->where('original_id',$value['original_id'])->find();	
+				unset($where);
+				$where[] = ['original_id','=',$value['original_id']];
+				// $where[] = ['despeakDate','=',$value['date']];
+				$is_rs = DB::name("despeak")->where($where)->find();	
 				if($value['operation']==2){		//删除步骤
 					if($is_rs && $value['original_id']!=0){
 						$rs2 = DB::name("despeak")->where('original_id',$value['original_id'])->delete();

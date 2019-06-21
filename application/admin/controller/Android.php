@@ -348,6 +348,55 @@ class Android extends Base
         }
         cache("devices",json_encode($arr));
     }
+    // 语音列表
+    public function machine()
+    {      
+        $list = DB::table("machine")->paginate(20);  
+        $page = $list->render();        
+        $this->assign("list",$list);
+        $this->assign("page",$page);
+
+        $this->assign("title"," 语音设备列表");
+        return $this->fetch('machine');
+    }
+    public function machineEdit()
+    {
+        $id = input("id",0);
+        $list = DB::table("machine")->where("m_id",$id)->find();
+        $this->assign("list",$list);
+        return $this->fetch("machineInfo");
+    }
+    public function machineSave()
+    {
+        $id = input("m_id",0);
+        
+        $data['m_title']    = input("m_title",'');
+        $data['m_address']  = input("m_address",'');
+        $data['m_speech']   = input("m_speech",'');
+        $data['m_vo']       = input("m_vo",'');
+        $data['m_Struts']   = input("m_Struts",'');
+        $data['m_key']      = input("m_key",'');
+        $data['m_updatetime'] = date("Y-m-d H:i:s",time());
+        $rs = DB::table("machine")->where("m_id",$id)->update($data);
+        return $rs;
+    }
+     // 删除设备
+    public function machineDel()
+    {
+        $list = input("list",''); 
+        $arr = explode(',', $list);
+        $flag = 0;
+        if($list){
+            foreach ($arr as $key => $value) {
+                $rs = DB::table("machine")->where("m_id",$value)->delete();
+                if($rs){
+                    $flag = true;
+                }
+            }
+        }
+        return $flag;
+    }
+
     // 显示屏信息two
     public function infoTwo(){
         // $json = cache("devices");

@@ -105,7 +105,7 @@ class PushCache extends Model
 	                	if($terminal['is_screen']==1){		//是否LED显示
 				        	$str = $sent->houseString($value,0,2,3);
 				        	$vc = new \app\api\model\Voice;
-				        	$vc->broadcast($str,$terminal['hall_id'],$terminal['screen_code']);
+				        	$vc->broadcast($str,$terminal['hall_id'],$terminal['screen_code'],1);
 				        }
 	                }else if($value['status']==1){
 	        			$queue_list[] = $sent->houseString($value,$hall_id);

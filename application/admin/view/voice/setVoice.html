@@ -54,10 +54,7 @@
                                     <td class="td_right">设备编号:</td>
                                     <td><input type="text" name="code" id="code" class="input-text lh30" size="30" value=""></td>
                                 </tr> -->
-                                <tr>
-                                    <td class="td_right">音量大小:</td>
-                                    <td><input type="number" name="number" id="number" class="input-text lh30" value="10"></td>
-                                </tr>
+                                
                                 <tr>
                                     <td class="td_right">模板内容:</td>
                                     <td>
@@ -98,7 +95,6 @@
                             <th width="10%">所属区域</th>
                             <th width="13%">标题名称</th>
                             <th width="6%">IP/地址</th>
-                            <th width="6%">音量大小</th>
                             <th width="22%">内容</th>
                             <th width="12%">添加时间</th>
                             <th width="8%">录入人</th>
@@ -114,7 +110,6 @@
                             <td>{$vo.HallName|default="默认数据"}</td>
                             <td>{$vo.title}</td>
                             <td>{$vo.addr}</td>
-                            <td>{$vo.number}</td>
                             <td>{$vo['rule']}</td>
                             <td>{$vo.add_time|date="Y-m-d H:i"}</td>
                             <td>{$vo['FullName']}</td>
