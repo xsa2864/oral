@@ -3,7 +3,7 @@ namespace app\pavilion\controller;
 
 use think\Controller;
 use think\Db;
-use think\facade\Cookie;
+use think\facade\Cache;
 use think\facade\Request;
 use think\facade\View;
 use think\facade\Env;
@@ -14,12 +14,14 @@ class Catalog extends Controller
 {
 	public function index()
     {
+
         $show = input("show",0);
         if(request()->ip()=='192.168.0.239'||request()->ip()=='192.168.0.133' || true){        
             $screen = [
                 ['op'=>url('pavilion/display/roomTone'),'title'=>'诊室屏(横)'],
                 ['op'=>url('pavilion/display/roomVone'),'title'=>'诊室屏(竖)'],
                 ['op'=>url('pavilion/display/hallTone'),'title'=>'综合显示屏(横)'],
+                ['op'=>url('pavilion/display/largeVues2'),'title'=>'综合显示屏(横2)'],
                 ['op'=>url('pavilion/display/hallVone'),'title'=>'综合显示屏(竖)'],
                 ['op'=>url('pavilion/display/operationTone'),'title'=>'手术显示屏'],
             ];
@@ -76,6 +78,10 @@ class Catalog extends Controller
     
     public function test()
     {               
+        $rs = Cache::get('z_admin');
+        echo "<pre>";
+        print_r(json_decode($rs,1));
+        exit;
         return $this->fetch("test");
     }
 	function getLocalIP() {

@@ -31,6 +31,11 @@ class Display extends Controller
     {
         return $this->fetch("hallTone");
     }
+     // 大厅横屏
+    public function largeVues2()
+    {
+        return $this->fetch("largeVues2");
+    }
     // 大厅竖屏
     public function hallVone()
     {

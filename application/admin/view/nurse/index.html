@@ -12,6 +12,12 @@
 input{
     height: 26px !important;
 }
+.call{
+    background-color: #ddff99 !important;
+}
+.list_table td{
+    padding: 1px;
+}
 </style>
 <div class="container" style="font-size:14px;font-family:'Microsoft YaHei','微软雅黑','sans-serif';">		
     <div class="" style="position: fixed;width: 84%;margin-top: -1px;">
@@ -78,7 +84,7 @@ input{
                         <tfoot>
                         {volist name="vo.data" id="ch"}
                         {if($ch.status==1||$ch.status==2)}
-                        <tr class="tr td_center">
+                        <tr class="tr td_center {if $ch.status==2}call{/if}">
                             <td>{$key+1}</td>
                             <td>{$ch.name}</td>
                             <td>{$ch.prefix}{$ch.code}</td>

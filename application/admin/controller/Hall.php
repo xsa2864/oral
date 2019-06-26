@@ -59,6 +59,7 @@ class Hall extends Base
         $re_msg['msg'] = '保存失败';
 	    $data['HallName']      = input('hallname');
 	    $data['DispName']      = input('dispname','');
+        $data['voice_addr']    = input('voice_addr','');
         $data['h_code']        = input('h_code','');
 	    $data['UnitId'] 	   = input('UnitId');
 	    $data['EnableFlag']    = input('EnableFlag');

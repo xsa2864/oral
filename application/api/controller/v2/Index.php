@@ -46,21 +46,21 @@ class Index extends Controller
         }
     	//顶部广告图片	
 	    $where = array();
-	    $where[] = ['hall_id','=',$hall_id];
+	    $where[] = ['hall_id','in',[0,$hall_id]];
 	    $where[] = ['type','=',1];
         $where[] = ['form','=',0];
         $where[] = ['horizontal','=',$horizontal];        
-	    $ads = DB::name("ads")->where($where)->find();
+	    $ads = DB::name("ads")->where($where)->order("hall_id desc")->find();
 	    if($ads){
 	        $attr = json_decode($ads['attr'],1);
 	        $ads_img = $attr[0]['img'];
 	    }
 	    // 轮播图
 	    $cre = array();
-	    $cre[] = ['hall_id','=',$hall_id];
+	    $cre[] = ['hall_id','in',[0,$hall_id]];
 	    $cre[] = ['type','=',2];
         $cre[] = ['form','=',0];
-	    $cads = DB::name("ads")->where($cre)->find();
+	    $cads = DB::name("ads")->where($cre)->order("hall_id desc")->find();
 
 	    $img_list = 0;
 	    if($cads){
@@ -127,11 +127,11 @@ class Index extends Controller
         }
         // 综合屏顶部展示
         $wh = array();
-        $wh[] = ["hall_id",'=',$hall_id];
+        $wh[] = ["hall_id",'in',[0,$hall_id]];
         $wh[] = ["type",'=','4'];
         $wh[] = ["status",'=','1'];
         $wh[] = ['horizontal','=',$horizontal];
-        $ads = DB::name("ads")->where($wh)->find();
+        $ads = DB::name("ads")->where($wh)->order("hall_id desc")->find();
         if($ads){
             $arr_log = json_decode($ads['attr'],1);
             $top_logo = isset($arr_log[0]['img'])?$arr_log[0]['img']:'';
@@ -139,11 +139,11 @@ class Index extends Controller
         }
         //综合屏图片展示
         $wh = array();
-        $whs[] = ["hall_id",'=',$hall_id];
+        $whs[] = ["hall_id",'in',[0,$hall_id]];
         $whs[] = ["type",'=',3];
         $whs[] = ["status",'=','1'];
         $wh[] = ['horizontal','=',$horizontal];
-        $attr = DB::name("ads")->where($whs)->value("attr");
+        $attr = DB::name("ads")->where($whs)->order("hall_id desc")->value("attr");
         if($attr){
             $img = json_decode($attr,1);
         }

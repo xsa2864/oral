@@ -321,6 +321,15 @@ class Relations extends Model
 				$data['num']	   = $this->getWaitNum($QueId,0,$quick);
 				$data['add_time']  = date("Y-m-d H:i",time());
 				$re_msg['data']	   = $data;
+
+				// 更新前端数据
+		        $ip = db("z_terminal")->where("hall_id",$data['hall_id'])->column("ip");
+		        if($ip){		        	
+		        	$soc = new \app\admin\model\Socket;
+		        	foreach ($ip as $key => $value) {
+		        		$iprs = $soc->terminalSocke($value,['reload'=>1]);
+		        	}
+		        }
 		    }else{
         		$re_msg['msg']  = "请重新取号";
         		$re_msg['data'] = '';

@@ -75,20 +75,21 @@
     <tr>
         <td class="td_right">取号机显示：</td>
         <td  colspan="3">
-            <input type="checkbox" name="ClassesTime[]" value="11" {if condition="in_array(11,$work)"}checked="checked"{/if} title="周一上午" lay-skin="primary"> 周一上午
-            <input type="checkbox" name="ClassesTime[]" value="12" {if condition="in_array(12,$work)"}checked="checked"{/if} title="周一下午" lay-skin="primary"> 周一下午
-            <input type="checkbox" name="ClassesTime[]" value="21" {if condition="in_array(21,$work)"}checked="checked"{/if} title="周二上午" lay-skin="primary"> 周二上午
-            <input type="checkbox" name="ClassesTime[]" value="22" {if condition="in_array(22,$work)"}checked="checked"{/if} title="周二下午" lay-skin="primary"> 周二下午
-            <input type="checkbox" name="ClassesTime[]" value="31" {if condition="in_array(31,$work)"}checked="checked"{/if} title="周三上午" lay-skin="primary"> 周三上午
-            <input type="checkbox" name="ClassesTime[]" value="32" {if condition="in_array(32,$work)"}checked="checked"{/if} title="周三下午" lay-skin="primary"> 周三下午
-            <input type="checkbox" name="ClassesTime[]" value="41" {if condition="in_array(41,$work)"}checked="checked"{/if} title="周四上午" lay-skin="primary"> 周四上午
-            <input type="checkbox" name="ClassesTime[]" value="42" {if condition="in_array(42,$work)"}checked="checked"{/if} title="周四下午" lay-skin="primary"> 周四下午
-            <br><input type="checkbox" name="ClassesTime[]" value="51" {if condition="in_array(51,$work)"}checked="checked"{/if} title="周五上午" lay-skin="primary"> 周五上午
-            <input type="checkbox" name="ClassesTime[]" value="52" {if condition="in_array(52,$work)"}checked="checked"{/if} title="周五下午" lay-skin="primary"> 周五下午
-            <input type="checkbox" name="ClassesTime[]" value="61" {if condition="in_array(61,$work)"}checked="checked"{/if} title="周六上午" lay-skin="primary"> 周六上午
-            <input type="checkbox" name="ClassesTime[]" value="62" {if condition="in_array(62,$work)"}checked="checked"{/if} title="周六下午" lay-skin="primary"> 周六下午
-            <input type="checkbox" name="ClassesTime[]" value="71" {if condition="in_array(71,$work)"}checked="checked"{/if} title="周日上午" lay-skin="primary"> 周日上午
-            <input type="checkbox" name="ClassesTime[]" value="72" {if condition="in_array(72,$work)"}checked="checked"{/if} title="周日下午" lay-skin="primary"> 周日下午
+            <input type="checkbox" name="ClassesTime[]" value="11" {if condition="in_array(11,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time11"> <label for="time11">周一上午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="21" {if condition="in_array(21,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time21"> <label for="time21">周二上午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="31" {if condition="in_array(31,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time31"> <label for="time31">周三上午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="41" {if condition="in_array(41,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time41"> <label for="time41">周四上午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="61" {if condition="in_array(61,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time61"> <label for="time61">周六上午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="51" {if condition="in_array(51,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time51"> <label for="time51">周五上午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="71" {if condition="in_array(71,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time71"> <label for="time71">周日上午</label> &nbsp;
+            <br>
+            <input type="checkbox" name="ClassesTime[]" value="12" {if condition="in_array(12,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time12"> <label for="time12">周一下午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="22" {if condition="in_array(22,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time22"> <label for="time22">周二下午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="32" {if condition="in_array(32,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time32"> <label for="time32">周三下午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="42" {if condition="in_array(42,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time42"> <label for="time42">周四下午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="52" {if condition="in_array(52,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time52"> <label for="time52">周五下午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="62" {if condition="in_array(62,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time62"> <label for="time62">周六下午</label> &nbsp;
+            <input type="checkbox" name="ClassesTime[]" value="72" {if condition="in_array(72,$work)"}checked="checked"{/if} {if(empty($work))}checked{/if} id="time72"> <label for="time72">周日下午</label> &nbsp;
         </td>
 
     </tr>
