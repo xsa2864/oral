@@ -76,15 +76,8 @@ class Catalog extends Controller
         }
     }
     
-    public function test()
-    {               
-        $rs = Cache::get('z_admin');
-        echo "<pre>";
-        print_r(json_decode($rs,1));
-        exit;
-        return $this->fetch("test");
-    }
-	function getLocalIP() {
+    
+	public function getLocalIP() {
 	 	$preg = "/\A((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
 		//获取操作系统为win2000/xp、win7的本机IP真实地址
 	 	exec("ipconfig", $out, $stats);
@@ -121,4 +114,19 @@ class Catalog extends Controller
 		return '127.0.0.1';
 	} 
 
+    public function test()
+    {     
+        $id = input("id",0);
+        $list = [
+            ['url'=>url("api/v2.wsdl/httpSaveDoctor"),'title'=>'http 增加医生'],
+            ['url'=>url("api/v2.wsdl/httpSaveClass"),'title'=>'http 增加排班'],
+            ['url'=>url("api/v2.wsdl/httpSavePatient"),'title'=>'http 增加患者'],
+            ['url'=>url("api/v2.wsdl/saveDoctor"),'title'=>'web service 增加医生'],
+            ['url'=>url("api/v2.wsdl/saveClass"),'title'=>'web service 增加排班'],
+            ['url'=>url("api/v2.wsdl/savePatient"),'title'=>'web service 增加患者'],
+        ];
+
+        $this->assign("list",$list);
+        return $this->fetch("debug");
+    }
 }

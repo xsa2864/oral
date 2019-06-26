@@ -36,7 +36,7 @@ class Wsdl
 	public function saveDoctor()
 	{
 		ini_set('soap.wsdl_cache_enabled', "0"); //关闭wsdl缓存
-		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+		/*$xml = '<?xml version="1.0" encoding="UTF-8"?>
 				<MESSAGE>
 				  <BODY>
 				    <META>
@@ -102,22 +102,22 @@ class Wsdl
 					    </ROW>
 					</ROWS>
 				  </BODY>
-				</MESSAGE>';
+				</MESSAGE>';*/
 
-		$xml = '{"BODY":{"META":{"TOPIC_ID":" A203","APP_ID":" JQ_HIS "},"ROWS":{"ROW":[{"HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","SOLELY_ID":"1","QUE_CODE":"1","QUE_NAME":"1","APPELLATION":"1","TEL":"1","INTRO":"1","PHOTO":"1","SEX_CODE":"1","SEX_NAME":"1","HOUR_SUM":"1","NO_CHAR":"1","START_NO":"1","STEP":"1","WORKER_GS_TIME":"1","WORKER_GE_TIME":"1","WORKER_AS_TIME":"1","WORKER_AE_TIME":"1","STATUS":"1","OPERATION_STATUS":"2","ORIGINAL_ID":"1"},{"HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","SOLELY_ID":"1","QUE_CODE":"1","QUE_NAME":"1","APPELLATION":"1","TEL":"1","INTRO":"1","PHOTO":"1","SEX_CODE":"1","SEX_NAME":"1","HOUR_SUM":"1","NO_CHAR":"1","START_NO":"1","STEP":"1","WORKER_GS_TIME":"2","WORKER_GE_TIME":"2","WORKER_AS_TIME":"2","WORKER_AE_TIME":"2","STATUS":"1","OPERATION_STATUS":"1","ORIGINAL_ID":"2"}]}}}';
-
+		// $xml = '{"BODY":{"META":{"TOPIC_ID":" A203","APP_ID":" JQ_HIS "},"ROWS":{"ROW":[{"HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","SOLELY_ID":"1","QUE_CODE":"1","QUE_NAME":"1","APPELLATION":"1","TEL":"1","INTRO":"1","PHOTO":"1","SEX_CODE":"1","SEX_NAME":"1","HOUR_SUM":"1","NO_CHAR":"1","START_NO":"1","STEP":"1","WORKER_GS_TIME":"1","WORKER_GE_TIME":"1","WORKER_AS_TIME":"1","WORKER_AE_TIME":"1","STATUS":"1","OPERATION_STATUS":"2","ORIGINAL_ID":"1"},{"HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","SOLELY_ID":"1","QUE_CODE":"1","QUE_NAME":"1","APPELLATION":"1","TEL":"1","INTRO":"1","PHOTO":"1","SEX_CODE":"1","SEX_NAME":"1","HOUR_SUM":"1","NO_CHAR":"1","START_NO":"1","STEP":"1","WORKER_GS_TIME":"2","WORKER_GE_TIME":"2","WORKER_AS_TIME":"2","WORKER_AE_TIME":"2","STATUS":"1","OPERATION_STATUS":"1","ORIGINAL_ID":"2"}]}}}';
+		$xml = input("xml",'');
 		$url = 'http://'.$_SERVER['SERVER_NAME'];
 		$url = $url.'/UserInfo.wsdl';
 		$soap = new \SoapClient($url);
-		$soap = new \app\api\model\UserInfo;
+		// $soap = new \app\api\model\UserInfo;
 		// 调用函数 	
 		$rs = $soap->doctorInfo($xml);
-		echo $rs;		
+		return $rs;	
 	}
 
 	public function saveClass()
 	{
-		ini_set('soap.wsdl_cache_enabled', "0"); //关闭wsdl缓存
+		/*ini_set('soap.wsdl_cache_enabled', "0"); //关闭wsdl缓存
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 				<MESSAGE>
 				  	<BODY>
@@ -156,20 +156,21 @@ class Wsdl
 				  	</BODY>
 				</MESSAGE>';
 
-		$xml = '{"BODY":{"META":{"TOPIC_ID":"A204","APP_ID":"JQ_HIS"},"ROWS":{"ROW":[{"ORIGINAL_ID":"1","HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","QUE_CODE":"1","QUE_NAME":"1","SECHEDUAL_DATE":"1,2,3,4,5","STATUS":"1"},{"ORIGINAL_ID":"2","HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","QUE_CODE":"1","QUE_NAME":"1","SECHEDUAL_DATE":"1,2,3,4,5","STATUS":"1"}]}}}';
+		$xml = '{"BODY":{"META":{"TOPIC_ID":"A204","APP_ID":"JQ_HIS"},"ROWS":{"ROW":[{"ORIGINAL_ID":"1","HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","QUE_CODE":"1","QUE_NAME":"1","SECHEDUAL_DATE":"1,2,3,4,5","STATUS":"1"},{"ORIGINAL_ID":"2","HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","QUE_CODE":"1","QUE_NAME":"1","SECHEDUAL_DATE":"1,2,3,4,5","STATUS":"1"}]}}}';*/
+		$xml = input("str",'');
 		$url = 'http://'.$_SERVER['SERVER_NAME'];
 		$url = $url.'/UserInfo.wsdl';
 		$soap = new \SoapClient($url);
 		// $soap = new \app\api\model\UserInfo;
 		  // 调用函数
 		$rs = $soap->doctorClass($xml);
-		echo $rs;		
+		return $rs;	
 	}
 
 	public function savePatient()
 	{		
 		ini_set('soap.wsdl_cache_enabled', "0"); //关闭wsdl缓存
-		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+		/*$xml = '<?xml version="1.0" encoding="UTF-8"?>
 				<MESSAGE>
 				  <BODY>
 				    <META>
@@ -214,15 +215,15 @@ class Wsdl
 				  </BODY>
 				</MESSAGE>';
 
-		$xml = '{"BODY":{"META":{"TOPIC_ID":"A201","APP_ID":"JQ_HIS"},"ROWS":{"ROW":{"HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","QUE_CODE":"1","QUE_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","ORIGINAL_ID":"1","CARD_NO":"1","IDCARD":"1","PREFIX":"1","QUE_NUM":"1","PATIENT_ID":"1","LOCAL_ID":"1","NAME":"1","TEL":"1","SEX_CODE":"1","SEX_NAME":"1","BIRTHDAY":"1","OPERATION_STATUS":"0","ORDERS":["1","1"],"SIGN_IN":["1","1"],"STATUS":"1","FETCH_STATUS":"1","SD_DATE":"2019-06-169","QH_DATE":"2019-06-169 09:30:11","START_DATE":"2019-06-169 09:30:11","END_DATE":"2019-06-169 09:30:11"}}}}';
-
-		$url = 'http://'.$_SERVER['SERVER_NAME'];
+		$xml = '{"BODY":{"META":{"TOPIC_ID":"A201","APP_ID":"JQ_HIS"},"ROWS":{"ROW":{"HOSPITAL_ID":"1","HOSPITAL_NAME":"1","HALL_CODE":"1","HALL_NAME":"1","QUE_CODE":"1","QUE_NAME":"1","DOCTOR_CODE":"1","DOCTOR_NAME":"1","ORIGINAL_ID":"1","CARD_NO":"1","IDCARD":"1","PREFIX":"1","QUE_NUM":"1","PATIENT_ID":"1","LOCAL_ID":"1","NAME":"1","TEL":"1","SEX_CODE":"1","SEX_NAME":"1","BIRTHDAY":"1","OPERATION_STATUS":"0","ORDERS":["1","1"],"SIGN_IN":["1","1"],"STATUS":"1","FETCH_STATUS":"1","SD_DATE":"2019-06-169","QH_DATE":"2019-06-169 09:30:11","START_DATE":"2019-06-169 09:30:11","END_DATE":"2019-06-169 09:30:11"}}}}';*/
+		$xml = input("str",'');
+		$url = 'http://'.$_SERVER['SERVER_NAME'];	
 		$url = $url.'/UserInfo.wsdl';
 		$soap = new \SoapClient($url);
 		// $soap = new \app\api\model\UserInfo;
 		// 调用函数 	
 		$rs = $soap->patient($xml);
-		echo $rs;		
+		return $rs;
 	}
 
 	/*
