@@ -2,42 +2,60 @@
 namespace app\api\controller\v2;
 
 use think\Controller;
-use think\Facade\Config;
-use think\Facade\Cache;
+use think\facade\Request;
+use think\facade\View;
+use think\facade\Env;
+use think\facade\Config;
 
-/**
- * 判断请求是否正规
- */
-class Base  extends Controller
+class Base extends Controller
 {
-	/**
-	 * 验证码口令
-	 */
-	public function initialize()
-	{
-		$re_msg['code'] = 1;
-        $re_msg['msg'] = 'OK';
-
-		$token = input("token",'123:1548482375:4f2fe1744d88d9b54e180784041336b8');	
-		$array = explode(':', $token);
-	
-		if(empty($token)){
-			$re_msg['code'] = 0;
-			$re_msg['msg'] = 'Token不能为空。';
-		}else if($array[1]<time()){
-			$re_msg['code'] = 0;
-			$re_msg['msg'] = 'Token已经过去,请重新获取。';
-		}else{
-			$arr = Config::get("token");
-			$str = $array[0].":".$arr[$array[0]].":".$array[1].":".$arr['secret'];
-			if($array[2] != md5($str) && Cache::get('token') == md5($str)){
-				$re_msg['code'] = 0;
-				$re_msg['msg'] = 'Token无效,请重新获取。';
-			}
-		}
-		if($re_msg['code']==0){
-			echo json_encode($re_msg);exit;
-		}
-		
-	}
+    public $user;
+    public $ter;
+    public function initialize()
+    {
+        $re_msg['code'] = 201;
+        $re_msg['msg'] = '登录失败。';
+        $flag = false;
+        $ip = input("ip",'');
+        $token = input("token",'2:1562751346:ba5e010d5880093a0c2be34991c74d15');
+        if(empty($ip)){            
+            $ccd = new \app\api\model\CacheCode;
+            $ip = $ccd->getCode();  
+        }
+        if($token){            
+            $user_arr = explode(":", $token);
+            if($user_arr[1] > time())
+            {
+                $rs = db("z_doctor")->where("id",$user_arr[0])->find();
+                $secret = 'think';
+                $str = $user_arr[0].":".$rs['staff_code'].":".$user_arr[1].":".$secret;
+                $c_sign = md5($str);
+                if($c_sign==$user_arr[2]){
+                    if($rs['token']==$c_sign){                    
+                        $ter = array();
+                        if($ip){
+                            $ter = db("z_terminal")->where("ip",$ip)->find();
+                            if($ter){                                
+                                $this->ter = $ter;
+                                $this->user = $rs;
+                                $flag = true;
+                            }else{
+                                $re_msg['msg'] = '还未绑定呼叫器';
+                            }
+                        }else{
+                            $re_msg['msg'] = '缺少参数ip或者地址。';
+                        }
+                    }else{
+                        $re_msg['msg'] = '账号已经在其它地方登录,请重新登录账号。';
+                    }
+                }
+            }else{
+                $re_msg['msg'] = '登录已过期，请重新登录。';
+            }        
+        }
+        if(!$flag){
+            echo json_encode($re_msg);
+            exit;
+        }
+    }
 }

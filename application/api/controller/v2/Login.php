@@ -1,5 +1,5 @@
 <?php
-namespace app\api\controller\t1;
+namespace app\api\controller\v2;
 
 
 use think\Controller;
@@ -7,15 +7,10 @@ use think\facade\Cookie;
 use think\helper\Hash;
 use think\Queue;
 use think\Request;
+use think\DB;
 
 class Login extends Controller
-{   
-    public function index()
-    {
-        $re_msg['code']  = 201;
-        $re_msg['msg']   = '无效操作';
-        return json($re_msg);
-    }
+{       
     /**
      * 执行登录逻辑
      * @param Request $request
@@ -88,6 +83,8 @@ class Login extends Controller
         }
         $result = db("z_terminal")->where("id",$terminal_id)->find();
         if($result){
+            $unset['ip'] = '';
+            DB::name("z_terminal")->where("ip",$devices_ip)->update($unset);
             $data['ip'] = $devices_ip;
             $rs = db("z_terminal")->where("id",$terminal_id)->data($data)->update();
             if($rs!==false){

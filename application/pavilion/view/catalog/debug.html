@@ -17,9 +17,14 @@
 	  	</div>
 	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
 		  	<div class="layui-btn-container">
-		  		{volist name="list" id="vo"}
-			  	<button type="button" class="layui-btn" @click="change_url('{$vo.url}')">{$vo.title}</button> 
-		  		{/volist}
+		  		<template v-for="(item,index) in but_arr">
+		  			<template v-if="item.type==1">
+		  				<a type="button" class="layui-btn  layui-btn-primary" v-bind:href='item.url'>{{ item.title }}</a> 
+		  			</template>
+		  			<template v-else/>
+			  			<button type="button" class="layui-btn" @click="change_url(item.url,index)">{{ item.title }}</button> 
+		  			</template>
+		  		</template>
 			</div>
 		</div>
 	  	<div class="layui-col-xs9 layui-col-sm9 layui-col-md9">
@@ -65,6 +70,7 @@ var vm = new Vue({
 			{'key':'ip','cvalue':'192.168.0.239'},
 			{'key':'list','cvalue':'[{"prefix":"w","code":"1002","name":"\u6797\u5c0f\u5170","status":"2","order":"0","title":"\u5916\u79d1"},{"prefix":"w","code":"1003","name":"\u9648\u519b","status":"1","order":"0","title":"\u5916\u79d1"},{"prefix":"w","code":"1004","name":"\u674e\u56db","status":"1","order":"0","title":"\u5916\u79d1"}]'},
 		],
+		but_arr:[],
 	}
 	,methods:{
 		send:function(){
@@ -95,13 +101,22 @@ var vm = new Vue({
 			// 		vm.result = error
 			// 	})
 		}
+		,but:function(){
+			var vm = this
+			axios
+				.get('{:url("pavilion/catalog/but")}')
+				.then(function (res) {
+					vm.but_arr = res.data
+				})
+		}
 		,copy:function () {
 			var str = layui.$("table tbody tr:last-child")[0].innerHTML;
 			var html = '<tr>'+str+'</tr>';
 			layui.$("table tbody").append(html);
 		}
-		,change_url:function(url){
-			this.post_url = 'http://192.168.0.239'+url			
+		,change_url:function(url,str){
+			this.post_url = 'http://192.168.0.239'+url
+			this.post_data = this.but_arr[str].data
 		}
 		,make:function(){
 			var vm = this
@@ -125,6 +140,9 @@ var vm = new Vue({
 			}
 			vm.url = url
 		}
+	}
+	,created:function(){
+		this.but()
 	}
 })
 

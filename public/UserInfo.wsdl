@@ -13,21 +13,41 @@
 <input message="tns:mkDespeakRequest" />
 <output message="tns:mkDespeakResponse" />
 </operation>
+<operation name="addDespeak">
+<input message="tns:addDespeakRequest" />
+<output message="tns:addDespeakResponse" />
+</operation>
+<operation name="upDespeak">
+<input message="tns:upDespeakRequest" />
+<output message="tns:upDespeakResponse" />
+</operation>
 <operation name="doctorClass">
 <input message="tns:doctorClassRequest" />
 <output message="tns:doctorClassResponse" />
 </operation>
-<operation name="setClass">
-<input message="tns:setClassRequest" />
-<output message="tns:setClassResponse" />
+<operation name="saveClass">
+<input message="tns:saveClassRequest" />
+<output message="tns:saveClassResponse" />
+</operation>
+<operation name="upClass">
+<input message="tns:upClassRequest" />
+<output message="tns:upClassResponse" />
 </operation>
 <operation name="doctorInfo">
 <input message="tns:doctorInfoRequest" />
 <output message="tns:doctorInfoResponse" />
 </operation>
-<operation name="setDoctor">
-<input message="tns:setDoctorRequest" />
-<output message="tns:setDoctorResponse" />
+<operation name="saveDoctor">
+<input message="tns:saveDoctorRequest" />
+<output message="tns:saveDoctorResponse" />
+</operation>
+<operation name="addDocotr">
+<input message="tns:addDocotrRequest" />
+<output message="tns:addDocotrResponse" />
+</operation>
+<operation name="upDocotr">
+<input message="tns:upDocotrRequest" />
+<output message="tns:upDocotrResponse" />
 </operation>
 <operation name="arrayToXml">
 <input message="tns:arrayToXmlRequest" />
@@ -64,6 +84,22 @@
 <soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
+<operation name="addDespeak">
+<soap:operation soapAction="urn:HB#UserInfo#addDespeak" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="upDespeak">
+<soap:operation soapAction="urn:HB#UserInfo#upDespeak" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
 <operation name="doctorClass">
 <soap:operation soapAction="urn:HB#UserInfo#doctorClass" />
 <input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
@@ -72,8 +108,16 @@
 <soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
-<operation name="setClass">
-<soap:operation soapAction="urn:HB#UserInfo#setClass" />
+<operation name="saveClass">
+<soap:operation soapAction="urn:HB#UserInfo#saveClass" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="upClass">
+<soap:operation soapAction="urn:HB#UserInfo#upClass" />
 <input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </input>
 <output>
@@ -88,8 +132,24 @@
 <soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
-<operation name="setDoctor">
-<soap:operation soapAction="urn:HB#UserInfo#setDoctor" />
+<operation name="saveDoctor">
+<soap:operation soapAction="urn:HB#UserInfo#saveDoctor" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="addDocotr">
+<soap:operation soapAction="urn:HB#UserInfo#addDocotr" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
+<operation name="upDocotr">
+<soap:operation soapAction="urn:HB#UserInfo#upDocotr" />
 <input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </input>
 <output>
@@ -135,17 +195,35 @@
 <message name="mkDespeakResponse">
 <part name="mkDespeak" type="xsd:string" />
 </message>
+<message name="addDespeakRequest">
+<part name="value" type="xsd:string" />
+</message>
+<message name="addDespeakResponse">
+<part name="addDespeak" type="xsd:string" />
+</message>
+<message name="upDespeakRequest">
+<part name="value" type="xsd:string" />
+</message>
+<message name="upDespeakResponse">
+<part name="upDespeak" type="xsd:string" />
+</message>
 <message name="doctorClassRequest">
 <part name="xml" type="xsd:string" />
 </message>
 <message name="doctorClassResponse">
 <part name="doctorClass" type="xsd:string" />
 </message>
-<message name="setClassRequest">
+<message name="saveClassRequest">
 <part name="arr" type="xsd:string" />
 </message>
-<message name="setClassResponse">
-<part name="setClass" type="xsd:string" />
+<message name="saveClassResponse">
+<part name="saveClass" type="xsd:string" />
+</message>
+<message name="upClassRequest">
+<part name="value" type="xsd:string" />
+</message>
+<message name="upClassResponse">
+<part name="upClass" type="xsd:string" />
 </message>
 <message name="doctorInfoRequest">
 <part name="xml" type="xsd:string" />
@@ -153,11 +231,23 @@
 <message name="doctorInfoResponse">
 <part name="doctorInfo" type="xsd:string" />
 </message>
-<message name="setDoctorRequest">
+<message name="saveDoctorRequest">
 <part name="arr" type="xsd:string" />
 </message>
-<message name="setDoctorResponse">
-<part name="setDoctor" type="xsd:string" />
+<message name="saveDoctorResponse">
+<part name="saveDoctor" type="xsd:string" />
+</message>
+<message name="addDocotrRequest">
+<part name="value" type="xsd:string" />
+</message>
+<message name="addDocotrResponse">
+<part name="addDocotr" type="xsd:string" />
+</message>
+<message name="upDocotrRequest">
+<part name="value" type="xsd:string" />
+</message>
+<message name="upDocotrResponse">
+<part name="upDocotr" type="xsd:string" />
 </message>
 <message name="arrayToXmlRequest">
 <part name="arr" type="xsd:string" />

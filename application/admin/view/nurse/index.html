@@ -229,11 +229,11 @@ function getQueOver(id,str,status){
         {'id':id,'status':status},
         function(data){
             var html = '';
-            if(data.success==1){
                 $(str).parent().find(".btn_1").show();
                 $(str).parent().find(".btn_2").show();
                 $(str).parent().find(".btn_3").show();
                 $(str).hide();
+            if(data.success==1){
 
                 var da = data.data;
                 for(x in da){
@@ -259,6 +259,7 @@ function getQueOver(id,str,status){
                 }
                 $(str).parent().parent().parent().find("table>tfoot").html(html);
             }else{
+                $(str).parent().parent().parent().find("table>tfoot").html('');
                 alert(data.msg)
             }
         },'json')

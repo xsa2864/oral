@@ -73,7 +73,7 @@ class Relations extends Model
 				$data[$value['que_id']]['all_num'] = $this->getWaitNum($value['que_id'],0,0,'all');
 			}
 			$data[$value['que_id']]['title'] = $value['title'];
-			$sort[$value['que_id']][$value['id']] = $value;
+			$sort[$value['que_id']][$value['pid']] = $value;
 			ksort($sort[$value['que_id']]);
 			$sorts = array_values($sort[$value['que_id']]);
 			$data[$value['que_id']]['data'] = $sorts;

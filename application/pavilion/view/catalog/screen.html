@@ -12,48 +12,32 @@
 <body style="background-color: #f2f2f2;">
 <div class="layui-container" id="app">  
 	<div class="layui-row">
-	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="padding-left: 4px;height: 60px;border: 1px solid #fff;display: block;" v-bind:title="url">
-	  	  {{ url }}
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="padding-left: 4px;height: 60px;border: 1px solid #fff;display: block;" v-bind:title="post_url">
+	  	  {{ post_url }}
 	  	</div>
+	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+		  	<div class="layui-btn-container">
+		  		<template v-for="(item,index) in but_arr">
+		  			<template v-if="item.type==1">
+		  				<a type="button" class="layui-btn  layui-btn-primary" v-bind:href='item.url'>{{ item.title }}</a> 
+		  			</template>
+		  			<template v-else/>
+			  			<button type="button" class="layui-btn" @click="change_url(item.url,index)">{{ item.title }}</button> 
+		  			</template>
+		  		</template>
+			</div>
+		</div>
 	  	<div class="layui-col-xs9 layui-col-sm9 layui-col-md9">
-	  	  	<input type="text" placeholder="请输入地址" v-model="url" class="layui-input">
+	  	  	<input type="text" placeholder="请输入地址" v-model="post_url" class="layui-input">
 	  	</div>
 	  	<div class="layui-col-xs3 layui-col-sm3 layui-col-md3" style="text-align: center;">
 	  	  	<button class="layui-btn" lay-submit="" @click="send">立即提交</button>
 	  	</div>
 	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
-	  		<table class="layui-table">
-				<colgroup>
-				    <col width="60">
-				    <col width="200">
-				    <col>
-				</colgroup>
-				<thead>
-				    <tr>
-				      	<th>选择</th>
-				      	<th>key</th>
-				      	<th> value 
-				      		<button class="layui-btn layui-btn-sm" v-on:click="copy" style="float: right;">添加参数</button>
-				      	</th>
-				    </tr> 
-				</thead>
-				<tbody>
-					<tr v-for="item in params">
-						<td>
-					      	<input type="checkbox" checked>
-					    </td>
-					    <td>
-					    	<input type="text" name="key[]" placeholder="key" class="layui-input" v-bind:value="item.key">
-					    </td>
-					    <td>
-					    	<input type="text" name="cvalue" placeholder="value" class="layui-input" v-bind:value="item.cvalue">
-					    </td>
-					</tr>
-				</tbody>
-			</table>
+	  		<textarea name="desc" placeholder="请输入参数json或者xml" class="layui-textarea" v-model="post_data" rows="14"></textarea>
 	  	</div>
 	  	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
-	  		<textarea name="desc" placeholder="请输出内容" class="layui-textarea">{{ result }}</textarea>
+	  		<textarea name="desc" placeholder="返回信息" class="layui-textarea" rows="12">{{ result }}</textarea>
 	  	</div>
 	</div>
 </div>
@@ -78,30 +62,62 @@ var vm = new Vue({
 		checkedKey: '',
 		checkedValue: [],
 		checked:true,
+		post_url:'',
+		post_data:'',
 		params:[
 			{'key':'staff_code','cvalue':'1002'},
 			{'key':'interface_code','cvalue':'100'},
 			{'key':'ip','cvalue':'192.168.0.239'},
 			{'key':'list','cvalue':'[{"prefix":"w","code":"1002","name":"\u6797\u5c0f\u5170","status":"2","order":"0","title":"\u5916\u79d1"},{"prefix":"w","code":"1003","name":"\u9648\u519b","status":"1","order":"0","title":"\u5916\u79d1"},{"prefix":"w","code":"1004","name":"\u674e\u56db","status":"1","order":"0","title":"\u5916\u79d1"}]'},
 		],
+		but_arr:[],
 	}
 	,methods:{
 		send:function(){
 			var vm = this		
-			this.make();
+			if(this.post_url==''||this.post_url==null){
+				layer.msg('请选择请求接口');
+				return false;
+			}
+			// if(this.post_data==''||this.post_data==null){
+			// 	layer.msg('请填写接口参数');
+			// 	return false;
+			// }
+
 			axios
-				.get(vm.url)
-				.then(function(res){
+				.post(this.post_url,{'list':this.post_data})
+				.then(function (res) {
 					vm.result = res.data
 				})
-				.catch(function(error){
-					vm.result = error
+				.catch(function (error) {
+					consoel.log(error)
+				})
+			// this.make();
+			// axios
+			// 	.get(vm.url)
+			// 	.then(function(res){
+			// 		vm.result = res.data
+			// 	})
+			// 	.catch(function(error){
+			// 		vm.result = error
+			// 	})
+		}
+		,but:function(){
+			var vm = this
+			axios
+				.get('{:url("pavilion/catalog/buts")}')
+				.then(function (res) {
+					vm.but_arr = res.data
 				})
 		}
 		,copy:function () {
 			var str = layui.$("table tbody tr:last-child")[0].innerHTML;
 			var html = '<tr>'+str+'</tr>';
 			layui.$("table tbody").append(html);
+		}
+		,change_url:function(url,str){
+			this.post_url = 'http://192.168.0.239'+url
+			this.post_data = this.but_arr[str].data
 		}
 		,make:function(){
 			var vm = this
@@ -126,7 +142,11 @@ var vm = new Vue({
 			vm.url = url
 		}
 	}
+	,created:function(){
+		this.but()
+	}
 })
+
 
 </script>
 </body>

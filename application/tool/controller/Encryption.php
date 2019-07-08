@@ -9,9 +9,6 @@ use think\facade\Log;
 
 class Encryption extends Controller
 {
-	/*
-	 * 简单加密
-	 */
 	public function enSimple($value='')
 	{
 		$filename = 'H:\PHPCUSTOM\wwwroot\oral\config\activation.php';
@@ -34,12 +31,9 @@ class Encryption extends Controller
 	    return false;  
 	}
 
-	/*
-	 * 复杂加密
-	 */
-	public function enComplex($value='')
+	public function enComplex($filename='',$files="")
 	{
-		$filename = 'G:\PHPCUSTOM\wwwroot\oral\application\tool\controller\Tool.php'; //要加密的文件  
+		// $filename = 'G:\PHPCUSTOM\wwwroot\oral\application\tool\controller\Tool.php';   
 		$T_k1 	= $this->RandAbc(); //随机密匙1  
 		$T_k2 	= $this->RandAbc(); //随机密匙2  
 		$vstr 	= file_get_contents($filename);  
@@ -55,8 +49,8 @@ class Encryption extends Controller
 		$s = '$'.$q6.'=urldecode("%6E1%7A%62%2F%6D%615%5C%76%740%6928%2D%70%78%75%71%79%2A6%6C%72%6B%64%679%5F%65%68%63%73%77%6F4%2B%6637%6A");$'.$q1.'=$'.$q6.'{3}.$'.$q6.'{6}.$'.$q6.'{33}.$'.$q6.'{30};$'.$q3.'=$'.$q6.'{33}.$'.$q6.'{10}.$'.$q6.'{24}.$'.$q6.'{10}.$'.$q6.'{24};$'.$q4.'=$'.$q3.'{0}.$'.$q6.'{18}.$'.$q6.'{3}.$'.$q3.'{0}.$'.$q3.'{1}.$'.$q6.'{24};$'.$q5.'=$'.$q6.'{7}.$'.$q6.'{13};$'.$q1.'.=$'.$q6.'{22}.$'.$q6.'{36}.$'.$q6.'{29}.$'.$q6.'{26}.$'.$q6.'{30}.$'.$q6.'{32}.$'.$q6.'{35}.$'.$q6.'{26}.$'.$q6.'{30};eval($'.$q1.'("'.base64_encode('$'.$q2.'="'.$c.'";eval(\'?>\'.$'.$q1.'($'.$q3.'($'.$q4.'($'.$q2.',$'.$q5.'*2),$'.$q4.'($'.$q2.',$'.$q5.',$'.$q5.'),$'.$q4.'($'.$q2.',0,$'.$q5.'))));').'"));';  
 		 
 		$s = '<?php '."\n".$s."\n".' ?>';  
-		// 生成 加密后的PHP文件  
-		$fpp1 = fopen($filename.'.php', 'w');  
+
+		$fpp1 = fopen($files.'.php', 'w');  
 		fwrite($fpp1, $s) or die('写文件错误');  
 	}
 
@@ -68,4 +62,49 @@ class Encryption extends Controller
 	    $str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";  
 	    return str_shuffle($str);  
 	}
+
+	public function showFile($dir,$files)
+	{		  
+		$filePath = '';
+	    if (is_dir($dir))
+	    {
+			if ($dh = opendir($dir))
+			{
+				while (($file = readdir($dh))!= false)
+				{
+					//文件名的全路径 包含文件名
+					$filePath = $dir.$file;
+					//获取文件修改时间
+					$fmt = filemtime($filePath);
+					// if(is_file($filePath)){
+					// 	echo 'is path '.$dir."<br>";
+					// 	echo 'is file '.$file."<br>";
+					// 	// $this->enComplex($filename='',$files="")
+					// }
+					if($file !== "." && $file !== ".."){
+						$pfiles = $files.'\\'.$file;
+						echo $pfiles.'<br>';
+						if(is_file($pfiles)){
+							// mkdir($files.$file);
+						}
+						echo "<span style='color:#666'>(".date("Y-m-d H:i:s",$fmt).'===='.$file.")</span> ".$filePath."<br/>";
+					}
+					if(is_dir($filePath)){
+						$filePath .= '\\';
+						
+					}
+					if($file !== "." && $file !== ".." && is_dir($filePath)){
+						$this->showFile($filePath,$files);
+					}
+				}
+				closedir($dh);
+			}
+		}   
+	}
+
+	     
+	function get_filenamesbydir($dir='G:\PHPCUSTOM\wwwroot\oral\application\\',$files='H:\zend\application')
+	{  
+	    $this->showFile($dir,$files);  
+	}  
 }

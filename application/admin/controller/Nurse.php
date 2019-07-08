@@ -25,8 +25,6 @@ class Nurse extends Base
 				->select();
 		$rel = new \app\admin\model\Relations;
 		$result = $rel->listTicket($list);
-		// echo "<pre>";
-		// print_r($result);exit;
 		$hall = db("hall")->where('HallNo',$this->hallid)->find();
 		$this->assign("hall",$hall);
 		$this->assign("result",$result);
@@ -37,7 +35,7 @@ class Nurse extends Base
 		$id 	= input("id",0);
 		$status = input("status",0);
 		$re_msg['success'] = 0;
-		$re_msg['msg'] 	   = $status==5?"未查询到已呼人员":($status==0?"未查询到过号人员":'');
+		$re_msg['msg'] 	   = $status==5?"未查询到已呼人员":($status==0?"未查询到过号人员":'未查询到等待人员');
 		$where = array();
 		$where[] = ['que_id','=',$id];
 		if($status==1){

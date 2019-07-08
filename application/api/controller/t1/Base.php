@@ -16,8 +16,12 @@ class Base extends Controller
         $re_msg['code'] = 201;
         $re_msg['msg'] = '登录失败。';
         $flag = false;
-        $ip = input("ip",'192.168.0.108');
-        $token = input("token",'65:1551752491:8910f0e08a58df1adde3fcf98022068b');
+        $ip = input("ip",'');
+        $token = input("token",'2:1562751346:ba5e010d5880093a0c2be34991c74d15');
+        if(empty($ip)){            
+            $ccd = new \app\api\model\CacheCode;
+            $ip = $ccd->getCode();  
+        }
         if($token){            
             $user_arr = explode(":", $token);
             if($user_arr[1] > time())

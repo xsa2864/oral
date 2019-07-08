@@ -9,7 +9,7 @@ class Order extends Validate
 {
 	
 	protected $rule = [
-        'idcard'      =>  'require|checkIdCard',
+        'idcard'      =>  'require|idCard',
         'mobile'      =>  'require',
         'despeakDate' =>  'date',
         'time_Part_S' =>  'require',
@@ -18,7 +18,7 @@ class Order extends Validate
 
     protected $message  =   [
         'idcard.require'        => '身份证号不能为空',
-        'idcard.checkIdCard'    => '身份证号不正确',
+        'idcard.idCard'         => '身份证号不正确',
         'mobile'                => '手机格式错误',
         'despeakDate'           => '选择预约时间',
         'time_Part_S'           => '选择预约时间',

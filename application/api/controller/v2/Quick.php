@@ -20,20 +20,20 @@ class Quick extends Controller
     {
 	    $re_msg['code'] = 201;
         $re_msg['msg']  = "操作失败";  
-        $re_msg['data'] = '';  
-
-        $type = input("type",1);
+        $re_msg['data'] = [];  
 
         $ip = input("ip",'');
-        if(empty($ip)){            
+        $type = input("type",1);
+       
+        if(empty($ip)){    
+            // $re_msg['msg']  = "请填写呼叫器地址";     
+            // return json($re_msg);
             $ccd = new \app\api\model\CacheCode;
             $ip = $ccd->getCode();  
         }
 
         $doctor_id  = 0;
         $que_id     = array();
-        $hall_id    = 0;
-        $room_name  = '';
 
         //获取在线医生
         $json       = cache("terminal");
@@ -48,9 +48,7 @@ class Quick extends Controller
         }
         // 呼叫器
         $ter = DB::name("z_terminal")->where("ip",$ip)->find();
-        if($ter){
-        	$hall_id 	= $ter['hall_id'];
-        }
+
         $result = array();
         if($doctor_id){        	
 	        $push = new \app\api\model\PushMsg;

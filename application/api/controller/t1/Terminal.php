@@ -13,7 +13,7 @@ class Terminal extends Base
     {
         $re_msg['code'] = 201;
         $re_msg['msg']  = "无效操作";
-        echo json_encode($re_msg);
+        return json($re_msg);
     }
 
     // 指定诊室屏呼叫显示
@@ -46,7 +46,7 @@ class Terminal extends Base
                 $re_msg['msg']  = "呼叫成功";  
             }   
         }    
-        echo json_encode($re_msg);
+        return json($re_msg);
     }
     // 停诊
     public function stopInfo()
@@ -165,14 +165,10 @@ class Terminal extends Base
     public function getQueue()
     {
         $re_msg['code'] = 201;
-        $re_msg['msg']  = "获取失败";  
+        $re_msg['msg']  = "获取成功";  
         $list = db("serque")->field("QueId as id,code,QueName")->select();
-        if($list){
-            $re_msg['code'] = 201;
-            $re_msg['msg']  = "获取成功";  
-            $re_msg['data'] = $list;  
-        }
-        echo json_encode($re_msg);
+        $re_msg['data'] = $list;  
+        return json($re_msg);
     }
     // 设置语言播放
     public function setVoice()
