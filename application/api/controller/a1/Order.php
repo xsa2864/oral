@@ -74,9 +74,10 @@ class Order extends Controller
             'queId'     =>$data['queId'],
             'despeakDate'=>$data['despeakDate'],
             );
-
+        $data['fetchTime'] = Db::name("config_fetch")->where("unitid",1)->value("fetchTime");
         $result = DB::name("despeak")->where($where)->find();
         if(empty($result)){
+            $data['unitId']   = Db::name("serque")->where("QueId",$data['queId'])->value("UnitId");
             $data['platform'] = '';
             $id = DB::name("despeak")->insertGetId($data);
             if($id){

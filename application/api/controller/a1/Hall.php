@@ -21,28 +21,28 @@ class Hall extends Controller
         $data = array();
         if($unitid){
             $where[] = ['UnitId',"=",$unitid];
-            $list = DB::name("hall")->field("HallNo,HallName as name")->where($where)->page($page,$page_size)->select();
+            $list = Db::name("hall")->field("HallNo,HallName as name")->where($where)->page($page,$page_size)->select();
             if($list){
                 foreach ($list as $key => $value) {                    
                     $value['url'] = url('/app/hall/getQueues',['id'=>$value['HallNo']]);
                     $lists[] = $value;
                 }
             }
-            $count 			= DB::name('hall')->where($where)->count();
+            $count 			= Db::name('hall')->where($where)->count();
 			$max_page 		= ceil($count/$page_size);
 			$data['list']  = $lists;
             $data['title'] = "科室列表";
             $data['pages'] = $max_page;
         }else{
             $where['EnableFlag'] = 1;
-            $list 		= DB::name("unit")->field("UnitId,unitname as name")->where($where)->page($page,$page_size)->select();
+            $list 		= Db::name("unit")->field("UnitId,unitname as name")->where($where)->page($page,$page_size)->select();
             if($list){
                 foreach ($list as $key => $value) {                    
                     $value['url'] = url('/app/hall/selectList',['unitid'=>$value['UnitId']]);
                     $lists[] = $value;
                 }
             }
-            $count 		= DB::name('unit')->where($where)->count();
+            $count 		= Db::name('unit')->where($where)->count();
             $max_page 	= ceil($count/$page_size);
             $data['list']  = $lists;
             $data['title'] = "医院列表";
@@ -60,10 +60,10 @@ class Hall extends Controller
 		$lists 		= array();
 		$where[] = ['HallNo','=',$hall_id];
 		$where[] = ['EnableFlag','=',1];
-		$result = DB::name("serque")->where($where)->page($page,$page_size)->select();
+		$result = Db::name("serque")->where($where)->page($page,$page_size)->select();
 		$max_page = 1;
 		if($result){
-			$count 	  = DB::name("serque")->where($where)->count();
+			$count 	  = Db::name("serque")->where($where)->count();
 			$max_page = ceil($count/$page_size);
 
 			if($flag){				
@@ -87,18 +87,23 @@ class Hall extends Controller
 		$que_id 	= input("que_id",0);
 		$page 	 	= input("page",1);
 		$page_size 	= 10;
+		if($page==999){
+			$page = 1;
+			$page_size 	= 99;
+		}
 		$lists 		= array();
 		$max_page   = 1;
 		$where[] = ['c.que_id','=',$que_id];
 		$where[] = ['d.status','=',1];
-		$result = DB::name("z_doctor")->alias("d")
+		$result = Db::name("z_doctor")->alias("d")
 					->field("d.*")
 					->leftJoin("z_doctor_class c","c.doctor_id=d.id")
 					->where($where)
 					->page($page,$page_size)
 					->select();
+
 		if($result){
-			$count 	= DB::name("z_doctor")->alias("d")
+			$count 	= Db::name("z_doctor")->alias("d")
 					->leftJoin("z_doctor_class c","c.doctor_id=d.id")
 					->where($where)
 					->count();

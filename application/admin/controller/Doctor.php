@@ -243,9 +243,9 @@ class Doctor extends Base
         if($this->userid!=1){
             $whu[]      = ['UnitId','=',$this->unitid];
             $wh['UnitId'] = $this->unitid;
-            // if($this->hallid){
-            //     $wha['HallNo'] = $this->hallid;
-            // }
+            if($this->hallid){
+                $wha['HallNo'] = $this->hallid;
+            }
         }
         $unit = db("unit")->where($wh)->select();
         $que_id = array();
@@ -313,6 +313,13 @@ class Doctor extends Base
         if(empty($data['staff_code'])){
             $re_msg['msg'] = '请填写工号';
             echo json_encode($re_msg);exit;
+        }
+        $find_rs = db("z_doctor")->where("id",$id)->find();
+        if($find_rs){
+            if($find_rs['staff_code'] != $data['staff_code']){
+                $re_msg['msg'] = '员工号已经存在请更换';
+                echo json_encode($re_msg);exit;
+            }
         }
         if(empty($data['QueName'])){
             $re_msg['msg'] = '请填写姓名';

@@ -38,7 +38,7 @@ class Token extends Controller
             $data['Available_time']     = $day;
             $data['Registration_code']  = $arr['data'];
             $data['Registration_time']  = time();
-            $rs = Db::table("zkitsoft_key")->insert($data);
+            $rs = Db::name("zkitsoft_key")->insert($data);
         }
         echo json_encode($arr);
     }

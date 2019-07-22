@@ -50,6 +50,7 @@ class Defaults extends Model
 	public function delTemp($hall_id=0)
 	{
 		$where[] = ['hall_id','=',$hall_id];
+		DB::name("serque")->where("HallNo",$hall_id)->delete();
 		DB::name("ads")->where($where)->delete();
 		DB::name("z_voice")->where($where)->delete();
 	}

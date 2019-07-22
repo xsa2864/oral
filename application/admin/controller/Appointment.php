@@ -309,7 +309,9 @@ class Appointment extends Base
         
         $where = array();
         if($this->userid!=1){
-            $where['HallNo'] = $this->hallid;
+            if($this->user['hallid']){
+                $where['HallNo'] = $this->hallid;
+            }
         }
         $where['EnableFlag'] = 1;
         $result = db("serque")->where($where)->select();
@@ -528,6 +530,8 @@ class Appointment extends Base
                 if($flag){
                     $re_msg['success'] = 1;
                     $re_msg['msg'] = '删除成功';
+                    db("hall")->where("UnitId",$id)->delete();
+                    db("serque")->where("UnitId",$id)->delete();
                 }
             }else{
                 $re_msg['msg'] = '没有权限删除';

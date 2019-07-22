@@ -27,9 +27,9 @@ class Catalog extends Controller
             ];
             $download = [
                 ['op'=>'/uploads/video/app.apk','title'=>'浏览窗口apk'],
+                ['op'=>'/uploads/video/ChromeCore_1249_1.0.4.2.exe','title'=>'谷歌浏览器'],
                 ['op'=>'/uploads/video/TTS.apk','title'=>'TTS语音apk'],
                 ['op'=>'/uploads/video/iflytechvoiceengine_2013112101.apk','title'=>'语音引擎apk'],
-
                 ['op'=>'/uploads/video/MIPS_DS_Basic_FREE_V4.0.0.apk','title'=>'信息发布apk'],
                 ['op'=>'/uploads/video/webclient.rar','title'=>'PC客户端'],
                 ['op'=>'/uploads/video/CLodop_Setup_for_Win32NT_https_3.080Extend.zip','title'=>'下载打印驱动'],
@@ -53,7 +53,8 @@ class Catalog extends Controller
                 ['op'=>'../../app/index/indexs','title'=>'预约通道'],
             ];
             $socket = [
-                ['op'=>'/oral/start.php','title'=>'启动通信'],
+                // ['op'=>'/oral/start.php','title'=>'启动通信'],
+                ['op'=>url('pavilion/catalog/showStart'),'title'=>'启动通信服务说明'],
             ];
             $api = [
                 ['op'=>url('pavilion/catalog/test'),'title'=>'webservice http api'],
@@ -73,10 +74,15 @@ class Catalog extends Controller
             ];
 
             $this->assign("list",$list);
-            $root = $show?$_SERVER['DOCUMENT_ROOT']:'';
-            $this->assign("DOCUMENT_ROOT",$root);
             return $this->fetch("index");
         }
+    }
+    // 启动服务通信说明
+    public function showStart()
+    {
+        $path = str_replace("public","",$_SERVER['DOCUMENT_ROOT']);
+        $this->assign("path",$path);
+        return $this->fetch("start");
     }
     
     

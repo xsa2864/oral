@@ -63,7 +63,9 @@ layui.use('flow', function(){
 var vm = new Vue({
     el: '.layui-fluid',
     data:{
-    	item:'',
+    	item:{
+            title:'',
+        },
         title:'详情',        
     }
     ,methods:{
@@ -74,14 +76,23 @@ var vm = new Vue({
             axios
                 .get('{:url("/api/a1/article/getDetail")}',{params:{'id':id,'cate_id':cate_id}})
                 .then(function(res){
-                    vm.item = res.data
+                    if(res.data){
+                        vm.item = res.data
+                    }
                 })
         },
         gohead:function(url){
             location.href = url
         }
         ,getUrlKey: function (name) {
-            return decodeURIComponent((new RegExp('[?|&|/]' + name + '/' + '([^&;]+?)(&|#|;|$|.)').exec(location.href) || [, ""])[1].replace(/\+/g, '%20')) || null
+            var reg = new RegExp("(^|&|/)"+ name +"[=|/]([^&|^/|^(.html)]*)(/|&|$|(.html))");
+            if(window.location.search){
+                var r = window.location.search.substr(1).match(reg);
+                if(r!=null) return decodeURI(r[2]); return null;                
+            }else{
+                var r = window.location.pathname.substr(1).match(reg);
+                if(r!=null) return decodeURI(r[2]); return null;   
+            }
         }
     }
     ,created:function(){ 

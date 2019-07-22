@@ -103,16 +103,21 @@ function Operation(str,id) {
             if(str=='edit'){
                 location.href = '{:url("admin/appointment/editUnit")}?id='+id;
             }else if(str=='del'){
-                if(confirm("确认删除！")){
-                    $.post('{:url("admin/appointment/unitDel")}',
-                        {'id':id},
-                        function(data){
-                            if(data.success==1){
-                                location.reload();
-                            }
-                            alert(data.msg)
-                    },'json')
-                }
+                // if(confirm("确认删除！")){
+                    var pwd = prompt('输入密码 9999：', '');
+                    if(pwd != '9999'){  
+                        alert('输入密码有误');
+                    }else{                        
+                        $.post('{:url("admin/appointment/unitDel")}',
+                            {'id':id},
+                            function(data){
+                                if(data.success==1){
+                                    location.reload();
+                                }
+                                alert(data.msg)
+                        },'json')
+                    }
+                // }
             }
         }
     }

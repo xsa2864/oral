@@ -41,11 +41,11 @@ $(function(){
 function check(id,name){
     $("#que_id").val(id);
     $("#que_name").val(name);
-    $.post('{:url("admin/appointment/getName")}',
-        {'id':id},function(data){
+    $.post('{:url("api/a1.Hall/getDoctors")}',
+        {'page':999,'que_id':id},function(data){
             var str = '<table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table"><tr><td>';
-            if(data.success==1){
-                var arr = data.msg;
+            var arr = data.list;
+            if(arr){
                 for(x in arr){
                     str += '<input type="button" name="QueName" id="QueName" class="ext_btn ext_btn_submit doctor" onclick="checkdata('+arr[x].id+',\''+arr[x].QueName+'\','+id+')" value="'+arr[x].QueName+' "/> ';
                 }

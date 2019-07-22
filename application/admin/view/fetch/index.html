@@ -49,7 +49,7 @@
                   </td>
                   <td>呼叫器过号、完成后是否直接呼叫下一个患者</td>
                 </tr>
-              <!--  <tr>
+               <tr>
                   <td class="td_right">是否半天内可预约:</td>
                   <td class="">
                     <input type="radio" name="half_day" value="1" id="half_day1" checked="true">
@@ -58,7 +58,7 @@
                     <label for="half_day">不可以</label>
                   </td>
                   <td>取号时是否允许迟到半小时内可以取票号</td>
-                </tr> --> 
+                </tr> 
                 <tr>
                   <td class="td_right">是否当天预约:</td>
                   <td class="">
@@ -68,7 +68,21 @@
                     <label for="today">否</label>
                   </td>
                   <td>是否可以预约当天的预约</td>
-                </tr>      
+                </tr>    
+                <tr>
+                  <td class="td_right">提前多少分钟取号:</td>
+                  <td class=""> 
+                    <input type="text" name="fetchTime" class="input-text lh30" size="20" value="{$list.fetchTime}">
+                  </td>
+                  <td>提前多少分钟取号</td>
+                </tr>  
+                <tr>
+                  <td class="td_right">可以提前预约多少天:</td>
+                  <td class=""> 
+                    <input type="text" name="des_day" class="input-text lh30" size="20" value="{$list.des_day}">
+                  </td>
+                  <td>可以提前预约多少天</td>
+                </tr>  
                 <tr>
                   <td class="td_right">卡片取号次数:</td>
                   <td class=""> 
@@ -83,7 +97,7 @@
                   </td>
                   <td>有填则判断卡片是否符合，否则判断是否在后台录入过卡片</td>
                 </tr>                
-            <!--     <tr>
+                <tr>
                   <td class="td_right">预约次数:</td>
                   <td class=""> 
                     <input type="text" name="blacklist_num" class="input-text lh30" size="20" value="{$list.blacklist_num}">
@@ -96,7 +110,7 @@
                     <input type="text" name="blacklist_day" class="input-text lh30" size="20" value="{$list.blacklist_day}">
                   </td>
                   <td>列入黑名单后n天内不可以再预约</td>
-                </tr> -->
+                </tr>
                     <tr>
                         <td colspan="3" style="text-align: center;">
                             <input type="button" name="button" onclick="save()" class="btn btn82 btn_save2" value="保存"> 

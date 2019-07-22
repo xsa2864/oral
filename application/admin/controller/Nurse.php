@@ -13,7 +13,9 @@ class Nurse extends Base
 	{
 		$where = array();
 		if($this->userid!=1){
-			$where[] = ['t.hall_id','=',$this->hallid];
+			if($this->user['hallid']){
+				$where[] = ['t.hall_id','=',$this->hallid];
+			}
 		}
 		// $where[] = ['t.status','>=',1];
 		// $where[] = ['t.status','<=',2];
@@ -144,7 +146,10 @@ class Nurse extends Base
 	{
 		$where = array();
 		if($this->userid!=1){
-			$where['HallNo'] = $this->hallid;
+			$where['UnitId'] = $this->unitid;
+			if($this->user['hallid']){
+				$where['HallNo'] = $this->hallid;
+			}
 		}
 		$list  = db("serque")->where($where)->select();
 		$this->assign("list",$list);		
@@ -158,7 +163,9 @@ class Nurse extends Base
 	{
 		$where = array();
 		if($this->userid!=1){
-			$where['HallNo'] = $this->hallid;
+			if($this->user['hallid']){
+				$where['HallNo'] = $this->hallid;
+			}
 		}
 		$list  = db("serque")->where($where)->select();
 		$this->assign("list",$list);
@@ -300,7 +307,9 @@ class Nurse extends Base
 		$condition = input("condition",0);
 		$where = array();
 		if($this->userid!=1){
-			$where[] = ['hall_id','=',$this->hallid];
+			if($this->user['hallid']){
+				$where[] = ['hall_id','=',$this->hallid];
+			}
 		}
 		$where[] = ['name|idcard|code','like','%'.$condition.'%'];
 		$where[] = ['status','>=',0];

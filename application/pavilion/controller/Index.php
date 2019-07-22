@@ -260,7 +260,7 @@ class Index extends Controller
         $where[] = ['status','=',2];
         $where[] = ['doctor_id','=',$doctor_id];
         $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
-        $res = DB::name("z_ticket")->where($where)->find();        
+        $res = Db::name("z_ticket")->where($where)->find();        
         if($res){
             $re_msg['msg']  = "请先完成目前患者的检查,然后再操作！";  
             echo json_encode($re_msg);exit;
@@ -269,7 +269,7 @@ class Index extends Controller
             // 缓存信息
             $ccd = new \app\api\model\CacheCode;
             $ip = $ccd->getCode();  
-            $ticket = DB::name("z_ticket")->where("id",$ticked_id)->find();
+            $ticket = Db::name("z_ticket")->where("id",$ticked_id)->find();
             $push = new \app\api\model\PushCache;
             $num = $push->setCacheInfo('',$ticket,$ip);   
 
@@ -286,10 +286,9 @@ class Index extends Controller
         $arr_ip = array();
         $org = new \app\api\model\Organize;
         $hall_ip = $org->getLargeIp($hall_id);
-
         $arr_ip = $hall_ip;
-        if(isset($terminal['devices_ip'])){
-            $arr_ip[] = $terminal['devices_ip']; 
+        if(isset($this->ter['devices_ip'])){
+            $arr_ip[] = $this->ter['devices_ip']; 
         }
         $soc = new \app\api\model\Socket;
         foreach ($arr_ip as $key => $value) {
