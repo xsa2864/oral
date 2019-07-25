@@ -32,7 +32,7 @@
                                 <td class="td_right">启用/暂停：</td>
                                 <td class="">          
                                     <input type="radio" name="EnableFlag" title="启用" value="1" checked> 启用  &nbsp;    
-                                    <input type="radio" name="EnableFlag" title="暂停" value="0" {if $list.EnableFlag==0}checked{/if}>  暂停
+                                    <input type="radio" name="EnableFlag" title="暂停" value="0" {if $list.EnableFlag==0 && !empty($list)}checked{/if}>  暂停
                                 </td>
                                 <td class="td_right">所属單位：</td>
                                 <td class=""> 

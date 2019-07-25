@@ -27,6 +27,7 @@ class Nurse extends Base
 				->select();
 		$rel = new \app\admin\model\Relations;
 		$result = $rel->listTicket($list);
+		
 		$hall = db("hall")->where('HallNo',$this->hallid)->find();
 		$this->assign("hall",$hall);
 		$this->assign("result",$result);
@@ -46,7 +47,8 @@ class Nurse extends Base
 			$where[] = ['status','=',$status];
 		}
 		$where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
- 		$result = db("z_ticket")->where($where)->order("pid asc")->select();
+ 		$result = db("z_ticket")->where($where)->order("sort desc,pid asc")->select();
+
 		if($result){
 			$re_msg['success'] = 1;
 			$re_msg['msg'] 	   = "查询成功";
@@ -257,11 +259,11 @@ class Nurse extends Base
 	    $data['quick'] 	= input("quick",0);
 		$data['idcard'] = input("onlyid","");
 	    $data['name'] 	= input("name","");
-	    $data['tips1'] 	= input("role","");
-	    $data['tips2']  = input("origin","");
+	    $data['tips1']  = input("role","");
 	    $data['sex'] 	= input("sex","男"); 
 	    $data['birth'] 	= strtotime($birth); 
 	    $is_info 		= input("is_info",0);
+	    $data['tips2'] 	= "护士站";
 
 	    $rel = new \app\admin\model\Relations;
 	    if($is_info){

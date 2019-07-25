@@ -190,11 +190,16 @@ var vm = new Vue({
 		,run:''
 		,baseStyles: {
 		}
+		,area:{
+			unitid:0,
+			hallid:0,
+		}
 	}
 	,methods:{
 		get:function () {
+			var vm = this
 			axios
-				.get('{:url("/api/v2/index/getClassTime")}')
+				.get('{:url("/api/v2/index/getClassTime")}',{'params':vm.area})
 				.then(
 					res => {
 						this.list = res.data.list;

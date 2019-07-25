@@ -96,4 +96,5 @@ class Wsdl
 		$rs = $http->patient($str);
 		return $rs;
 	}
+	
 }

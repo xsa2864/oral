@@ -114,24 +114,39 @@ class Android extends Base
 
     //显示屏数据
     public function showInfo(){
+        // $falg = false;
+        // if($this->userid==1){
+        //     $falg = true;
+        // }        
+        // echo $this->hallid.'==='.$this->userid;
+        $area = [];
+        if($this->userid!=1){
+            if($this->hallid){
+                $area[] = $this->hallid;
+            }else{
+                $ah[] = ['UnitId','=',$this->unitid];
+                $area = Db::name("hall")->where($ah)->column('HallNo');
+            }
+        }
     	$json = cache("devices");
         $arr = json_decode($json,1);
         if(!empty($arr)){            
             $volume = array();
             $harr = array();
             foreach ($arr as $key => $value) {
-                if($this->hallid!=0 && $this->userid!=1){
-                    if($this->hallid==$value['devices_area_id']){
+                // if(empty($value['devices_area_id']) || $falg){
+                    if($this->userid!=1){
+                        if(in_array($value['devices_area_id'], $area) || empty($value['devices_area_id'])){
+                            $volume[$key] = $value['devices_area_id'];
+                            $harr[$key] = $value;
+                        }
+                    }else{
                         $volume[$key] = $value['devices_area_id'];
-                        $harr[$key] = $value;
+                        $harr = $arr;
                     }
-                }else{
-                    $volume[$key] = $value['devices_area_id'];
-                    $harr = $arr;
-                }
+                // }
             }
             array_multisort($volume,$harr);
-            // print_r(json_decode($json,1));exit;
         }
     	echo json_encode($harr);
     }
@@ -399,19 +414,6 @@ class Android extends Base
 
     // 显示屏信息two
     public function infoTwo(){
-        // $json = cache("devices");
-        // $arr = json_decode($json,1);
-        // $ijson       = cache("terminal");
-        // $iarr        = json_decode($ijson,1);
-        // $zjson       = cache("z_admin");
-        // $zarr        = json_decode($zjson,1);
-        // echo '<pre>';
-        // // print_r($arr);
-        // echo '======terminal========';
-        // print_r($iarr);
-        // echo '======z_admin========';
-        // print_r($zarr);
-        // exit;
         $this->assign("title"," 显示屏在线信息");
         return $this->fetch('infoTwo');
     }
@@ -420,7 +422,12 @@ class Android extends Base
         $devices_ip = input("ip",0);
         $json = cache("devices");
         $arr  = json_decode($json,1);
-        $hall = db("hall")->where("EnableFlag",1)->select();
+        if($this->userid!=1 && $this->hallid!=0){
+            $wh[] = ["HallNo",'=',$this->hallid];
+        }
+        $wh[] = ["EnableFlag",'=',1];
+        $wh[] = ["UnitId",'=',$this->unitid];
+        $hall = db("hall")->where($wh)->select();
         $this->assign("hall",$hall);
         $this->assign("list",isset($arr[$devices_ip])?$arr[$devices_ip]:array());
         $this->assign("devices_ip",$devices_ip);

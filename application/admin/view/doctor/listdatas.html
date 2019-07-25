@@ -43,6 +43,7 @@
                                 <th><input type="checkbox" id="selAll"> 选择</th>
                                 <th>工号</th>
                                 <th>医生名字</th>
+                                <th>唯一值</th>
                                 <th>就诊队列</th>
                                 <th>前置字符</th>
                                 <th>起始号码</th>
@@ -56,11 +57,12 @@
                                 <td><input type="checkbox" value="{$list.id}"></td>  
                                 <td>{$list.staff_code}</td>                  
                                 <td>{$list.QueName}</td>
+                                <td>{$list.original_id}</td>
                                 <td>{$list.quename}</td>
                                 <td>{$list.NoChar}</td>
                                 <td>{$list.StarNo}</td>
                                 <td>{$list.status==1?'是':'否'}</td>
-                                <td>{$list.type==1?'专家':'医师'}</td>
+                                <td>{$list.type}</td>
                                 <td>
                                     <a href="javascript:Operation('edit',{$list.id});">修改</a> 
                                     |

@@ -1,0 +1,18 @@
+2019-03-28 14:36:34  按键：1+118  结果：(function(){var w=[];var add={now:'2019-03-28 14:36:35',time:'1553754995',update:'',error:'2',total:'0'};window.SWther={w:w,add:add};})();//0
+
+2019-03-28 14:36:36  按键：1+118  结果：(function(){var w=[];var add={now:'2019-03-28 14:36:37',time:'1553754997',update:'',error:'2',total:'0'};window.SWther={w:w,add:add};})();//0
+
+2019-03-28 14:36:37  按键：1+118  结果：(function(){var w=[];var add={now:'2019-03-28 14:36:37',time:'1553754997',update:'',error:'2',total:'0'};window.SWther={w:w,add:add};})();//0
+
+2019-03-28 14:36:37  按键：1+118  结果：(function(){var w=[];var add={now:'2019-03-28 14:36:38',time:'1553754998',update:'',error:'2',total:'0'};window.SWther={w:w,add:add};})();//0
+
+2019-03-28 14:36:37  按键：1+118  结果：(function(){var w=[];var add={now:'2019-03-28 14:36:38',time:'1553754998',update:'',error:'2',total:'0'};window.SWther={w:w,add:add};})();//0
+
+2019-03-28 14:36:38  按键：1+118  结果：(function(){var w=[];var add={now:'2019-03-28 14:36:38',time:'1553754998',update:'',error:'2',total:'0'};window.SWther={w:w,add:add};})();//0
+
+2019-03-28 14:37:13  按键：+112  结果：Web地址调用异常：Connection Closed Gracefully.
+2019-03-28 14:37:14  按键：+112  结果：Web地址调用异常：Connection Closed Gracefully.
+2019-03-28 14:37:24  按键：+112  结果：Web地址调用异常：Connection Closed Gracefully.
+2019-03-28 14:37:24  按键：+112  结果：Web地址调用异常：Connection Closed Gracefully.
+2019-03-28 14:37:25  按键：+112  结果：Web地址调用异常：Connection Closed Gracefully.
+2019-03-28 14:37:25  按键：+112  结果：Web地址调用异常：Connection Closed Gracefully.

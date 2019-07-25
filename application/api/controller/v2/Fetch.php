@@ -109,7 +109,7 @@ class Fetch extends Controller
                 $arrs['idcard'] = $idcard;
                 $arrs['name']   = $item['Name'];
                 $arrs['tips1']  = $item['Role'];
-                $arrs['tips2']  = $item['Origin'];
+                $arrs['tips2']  = "取号机";
                 $arrs['sex']    = $item['Sex'];
                 $arrs['birth']  = $item['Brot'];               
                 $rel = new \app\admin\model\Relations;
@@ -198,7 +198,8 @@ class Fetch extends Controller
             $where[] = ['d.despeak_id','=',0];
         }
         $where[] = ['d.status','=',1];
-        $where[] = ['d.despeakTime','>',strtotime(date("Y-m-d",time()))];
+        $where[] = ['d.despeakTime','>=',strtotime(date("Y-m-d",time()))];
+
         $result = db("despeak")
                     ->alias('d')
                     ->field('d.*')

@@ -14,8 +14,9 @@ class Terminal extends Base
 		$where = array();
 		if($this->userid!=1){
             if($this->hallid){
-                $where['hall_id'] = $this->hallid;
+                $where[] = ['hall_id','=',$this->hallid];
             }
+            $where[] = ['unit_id','=',$this->unitid];
         }
 		$list = db("z_terminal")->where($where)->order("hall_id asc")->paginate(20);
         $page = $list->render();
@@ -36,6 +37,7 @@ class Terminal extends Base
             if($this->hallid){
                 $where['HallNo'] = $this->hallid;
             }
+            $where[] = ['UnitId','=',$this->unitid];
         }
 		$hall = db("hall")->where($where)->select();
 		$list = db("z_terminal")->where("id",$id)->find();
@@ -68,6 +70,8 @@ class Terminal extends Base
         $re_msg['msg'] = '新增失败';
         if (Request::isPost()){
 	        $arr['hall_id']    	= input("hall_id",'');
+            $unit_id = Db::name("hall")->where("HallNo",$arr['hall_id'])->value("UnitId");
+            $arr['unit_id']     = $unit_id;
             $arr['hall_name']   = input("hall_name",'');
             $arr['is_screen']  	= input("is_screen",0);
             $arr['screen_code'] = input("screen_code",0);

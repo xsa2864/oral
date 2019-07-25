@@ -196,7 +196,7 @@ class UserInfo
 		$data['birth'] 			= $value['BIRTHDAY'];		
 		$data['fetch_status'] 	= $value['FETCH_STATUS'];				
 		$data['despeakDate'] 	= $value['SD_DATE'];				
-		$data['despeakTime'] 	= strtotime($value['SD_DATE']);
+		$data['despeakTime'] 	= strtotime($value['SD_DATE'].' '.$value['START_DATE']);
 		$data['time_Part_S'] 	= $value['START_DATE'];
 		$data['time_Part_O'] 	= $value['END_DATE'];
 		$data['inTime'] 	 	= date("Y-m-d H:i:s",time());
@@ -289,6 +289,7 @@ class UserInfo
 		if(!empty($re_msg['msg'])){
 			return $re_msg;
 		}
+		$fetchTime = Db::name("config_fetch")->where("unitid",1)->value("fetchTime");
 		$data['card_no']		= $value['CARD_NO'];
 		$data['doctor_id']		= $doctor_id;
 		$data['d_name'] 	 	= $value['DOCTOR_NAME'];
@@ -299,9 +300,10 @@ class UserInfo
 		$data['mobile'] 	 	= $value['TEL'];
 		$data['sex'] 			= $value['SEX_CODE'];
 		$data['birth'] 			= $value['BIRTHDAY'];		
+		$data['fetchTime'] 		= $fetchTime;		
 		$data['fetch_status'] 	= $value['FETCH_STATUS'];				
 		$data['despeakDate'] 	= $value['SD_DATE'];				
-		$data['despeakTime'] 	= strtotime($value['SD_DATE']);
+		$data['despeakTime'] 	= strtotime($value['SD_DATE'].' '.$value['START_DATE']);
 		$data['time_Part_S'] 	= $value['START_DATE'];
 		$data['time_Part_O'] 	= $value['END_DATE'];
 		$rs = DB::name("despeak")->where('despeak_id',$id)->update($data);
@@ -375,10 +377,13 @@ class UserInfo
 				if($value['STATUS']==0){
 					$re_arr['status'] 	= 0;
 					$re_arr['msg'] 		= '删除失败';
-					$rs = DB::name("z_doctor_class")->where('original_id',$value['ORIGINAL_ID'])->delete();
-					if($rs){
-						$re_arr['status'] 	= 1;
-						$re_arr['msg'] 		= '删除成功';
+					if(intval($value['ORIGINAL_ID'])>0){						
+						$del[] = ['original_id','=',intval($value['ORIGINAL_ID'])];
+						$rs = DB::name("z_doctor_class")->where($del)->delete();
+						if($rs){
+							$re_arr['status'] 	= 1;
+							$re_arr['msg'] 		= '删除成功';
+						}
 					}
 				}else{
 					$re_arr = $this->upClass($value);
@@ -503,10 +508,12 @@ class UserInfo
 				if($value['OPERATION_STATUS']==2){	
 					$re_arr['status']  = 0;
 					$re_arr['msg'] = '删除失败';
-					$rs = DB::name("z_doctor")->where("original_id",$value['ORIGINAL_ID'])->delete();
-					if($rs){
-						$re_arr['status'] = 1;
-						$re_arr['msg'] = '删除成功';
+					if(intval($value['ORIGINAL_ID'])>0){		
+						$rs = DB::name("z_doctor")->where("original_id",intval($value['ORIGINAL_ID']))->delete();
+						if($rs){
+							$re_arr['status'] = 1;
+							$re_arr['msg'] = '删除成功';
+						}
 					}
 				}else if($value['OPERATION_STATUS']==1){
 					$re_arr = $this->upDocotr($value);
@@ -545,11 +552,17 @@ class UserInfo
 		$unit_id = DB::name("unit")->where("api_code",$value['HOSPITAL_ID'])->value("UnitId");
 		if(!$unit_id){
 			$re_msg['msg']		.= '单位不存在,';
-		}	
+		}
 
-		$id = DB::name("z_doctor")->where("original_id",$value['ORIGINAL_ID'])->value("id");
+		$zd[] = ["original_id",'=',$value['ORIGINAL_ID']];
+		$id = DB::name("z_doctor")->where($zd)->value("id");
 		if($id){
-			$re_msg['msg']		.= '医生已经在,';
+			$re_msg['msg']		.= '医生已经存在,';
+		}
+
+		$id = DB::name("z_doctor")->where("staff_code",$value['SOLELY_ID'])->value("id");
+		if($id){
+			$re_msg['msg']		.= '医生工号已经存在,';
 		}
 
 		if(!preg_match('/^1[3-9][0-9]\d{8}$/', $value['TEL']))
@@ -591,7 +604,7 @@ class UserInfo
 		if(!empty($re_msg['msg'])){
 			return $re_msg;
 		}
-
+		$photo = $this->base64_image_content($value['PHOTO']);
 		$data['unit_id']		= $unit_id;
 		$data['hall_id'] 	  	= 0;
 		$data['que_id'] 	  	= '|';
@@ -601,7 +614,7 @@ class UserInfo
 		$data['QueName'] 		= $value['DOCTOR_NAME'];
 		$data['mobile'] 		= $value['TEL'];
 		$data['AlternateField1']= $value['INTRO'];
-		$data['pic'] 			= $value['PHOTO'];
+		$data['pic'] 			= $photo;
 		$data['sex'] 			= $value['SEX_CODE'];				
 		$data['HourSum'] 		= $value['HOUR_SUM'];
 		$data['NoChar'] 		= $value['NO_CHAR'];
@@ -756,4 +769,35 @@ class UserInfo
         $arr  = json_decode($json,true);
         return $arr;
     }
+
+	/**
+	 * [将Base64图片转换为本地图片并保存]
+	 * @param  [Base64] $base64_image_content [要保存的Base64]
+	 * @param  [目录] $path [要保存的路径]
+	 */
+	public function base64_image_content($base64_image_content,$path=''){
+
+		if(empty($path)){
+			$path = $_SERVER['DOCUMENT_ROOT']."/uploads/";
+		}
+	    //匹配出图片的格式
+	    if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)){
+	        $type = $result[2];
+	        $pic_url 	=  date('Ymd',time())."/";
+	        $new_file 	= $path.$pic_url;
+	        if(!file_exists($new_file)){
+	            //检查是否有该文件夹，如果没有就创建，并给予最高权限
+	            mkdir($new_file, 0700);
+	        }
+	        $pic_url = $pic_url.time().".{$type}";
+	        $new_file = $path.$pic_url;
+	        if (file_put_contents($new_file, base64_decode(str_replace($result[1], '', $base64_image_content)))){
+	            return $pic_url;
+	        }else{
+	            return '';
+	        }
+	    }else{
+	        return '';
+	    }
+	}
 }

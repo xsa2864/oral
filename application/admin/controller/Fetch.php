@@ -38,6 +38,7 @@ class Fetch extends Base
         $data['if_name']        = input("if_name",0);
         $data['half_day']       = input("half_day",0);
         $data['fetchTime']      = input("fetchTime",0);
+        $data['degree']         = input("degree","");
         $data['des_day']        = input("des_day",0);
         $data['blacklist_num']  = input("blacklist_num",0);
         $data['blacklist_day']  = input("blacklist_day",0);

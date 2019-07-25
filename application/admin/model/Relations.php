@@ -73,12 +73,25 @@ class Relations extends Model
 				$data[$value['que_id']]['all_num'] = $this->getWaitNum($value['que_id'],0,0,'all');
 			}
 			$data[$value['que_id']]['title'] = $value['title'];
-			$sort[$value['que_id']][$value['pid']] = $value;
+			$pid = $this->sortsArr($sort,$value['que_id'],$value['pid'],$value['sort']);
+			$sort[$value['que_id']][$pid] = $value;
 			ksort($sort[$value['que_id']]);
 			$sorts = array_values($sort[$value['que_id']]);
 			$data[$value['que_id']]['data'] = $sorts;
 		}
 		return $data;
+	}
+
+	public function sortsArr($sort=[],$que_id='',$pid='',$st=0)
+	{
+		if(isset($sort[$que_id][$pid])){
+			$pid ++;
+			self::sortsArr($sort,$que_id,$pid,$st);
+		}
+		if($st>0){
+			$pid = $pid/10000/$st;
+		}
+		return $pid;
 	}
 
 	/*
@@ -98,11 +111,9 @@ class Relations extends Model
 			if($number>0){
 				$where[] = ['pid','<',$result['pid']];
 				$order  = "pid desc";
-				$num = -1;
 			}else{
 				$where[] = ['pid','>',$result['pid']];
 				$order  = "pid asc";
-				$num = 1;
 			}	
 			$rs = DB::name("z_ticket")->where($where)->order($order)->limit(abs($number)+1)->select();
 			if($rs){

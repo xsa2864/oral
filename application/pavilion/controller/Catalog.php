@@ -129,9 +129,108 @@ class Catalog extends Controller
     public function but()
     {     
         $list = [
-            ['type'=>0,'url'=>url("api/v2.wsdl/httpSaveDoctor"),'title'=>'http 增加医生','data'=>'{"BODY":{"META":{"TOPIC_ID":" A203","APP_ID":" JQ_HIS "},"ROWS":{"ROW":{"HOSPITAL_ID":"单位ID","HOSPITAL_NAME":"单位名称","HALL_CODE":"诊区代码","HALL_NAME":"诊区名称","DOCTOR_CODE":"医生代码","DOCTOR_NAME":"医生名称 ","SOLELY_ID":"医生工号","QUE_CODE":"就诊队列代码","QUE_NAME":"就诊队列名称","APPELLATION":"职务","TEL":"手机号码 15344955587","INTRO":"介绍说明","PHOTO":"医生照片","SEX_CODE":"性别代码","SEX_NAME":"性别名称","HOUR_SUM":"每小时可以预约数量","NO_CHAR":"号前字符串","START_NO":"起始号 默认：1000","STEP":"步长","WORKER_GS_TIME":"上午上班时间 12:10:00","WORKER_GE_TIME":"上午下班时间 12:10:00","WORKER_AS_TIME":"下午上班时间 12:10:00","WORKER_AE_TIME":"下午下班时间 12:10:00","STATUS":"在职状态（1-在职，0-离职或其他）","OPERATION_STATUS":"操作状态（0=增加 1=修改 2=删除）","ORIGINAL_ID":"唯一值"}}}}'],
-            ['type'=>0,'url'=>url("api/v2.wsdl/httpSaveClass"),'title'=>'http 增加排班','data'=>'{"BODY":{"META":{"TOPIC_ID":"A204","APP_ID":"JQ_HIS"},"ROWS":{"ROW":{"ORIGINAL_ID":"唯一值","HOSPITAL_ID":"单位ID","HOSPITAL_NAME":"单位名称","HALL_CODE":"诊区代码","HALL_NAME":"诊区名称","DOCTOR_CODE":"医生代码","DOCTOR_NAME":"医生名称","QUE_CODE":"队列代码","QUE_NAME":"队列名称","SECHEDUAL_DATE":"1,2,3,4,5","STATUS":"操作状态（1=添加或更新 0=删除"}}}}'],
-            ['type'=>0,'url'=>url("api/v2.wsdl/httpSavePatient"),'title'=>'http 增加患者','data'=>'{"BODY":{"META":{"TOPIC_ID":"A201","APP_ID":"JQ_HIS"},"ROWS":{"ROW":{"HOSPITAL_ID":"单位ID","HOSPITAL_NAME":"单位名称","HALL_CODE":"诊区代码","HALL_NAME":"诊区名称","QUE_CODE":"队列代码 ","QUE_NAME":"队列名称","DOCTOR_CODE":"医生代码","DOCTOR_NAME":"医生名称","ORIGINAL_ID":"唯一值","CARD_NO":"卡号","IDCARD":"身份证号 350124198912282892","PREFIX":"票号前缀","QUE_NUM":"排队号码","PATIENT_ID":"患者流水号","LOCAL_ID":"患者标识号","NAME":"姓名","TEL":"手机号码 15355895580","SEX_CODE":"性别代码（1-男，2-女，0-未知的性别，9-未说明的性别） ","SEX_NAME":"性别名称","BIRTHDAY":"生日日期","OPERATION_STATUS":"0","STATUS":"操作状态（0=增加1=修改2=删除）","ORDERS":"是否预约 （0=否1=是） ","SIGN_IN":"签到状态（ 0=未签到1=已签到）","FETCH_STATUS":"叫号队列状态 （0=否 1=是，如果是，要就诊日期时间要填写当下日期时间） ","SD_DATE":"就诊日期 2019-06-16","QH_DATE":"取号时间 2019-06-169 09:30:11","START_DATE":"就诊开始时间 09:30:11","END_DATE":"就诊结束时间 09:30:11"}}}}'],
+            ['type'=>0,'url'=>url("api/v2.wsdl/httpSaveDoctor"),'title'=>'http 增加医生','data'=>'{
+    "BODY": {
+        "META": {
+            "TOPIC_ID": " A203",
+            "APP_ID": " JQ_HIS "
+        },
+        "ROWS": {
+            "ROW": {
+                "HOSPITAL_ID": "单位接口编码",
+                "HOSPITAL_NAME": "单位名称",
+                "HALL_CODE": "诊区代码",
+                "HALL_NAME": "诊区名称",
+                "DOCTOR_CODE": "医生代码",
+                "DOCTOR_NAME": "医生名称 ",
+                "SOLELY_ID": "医生工号",
+                "QUE_CODE": "就诊队列代码",
+                "QUE_NAME": "就诊队列名称",
+                "APPELLATION": "职务",
+                "TEL": "手机号码 15344955587",
+                "INTRO": "介绍说明",
+                "PHOTO": "医生照片",
+                "SEX_CODE": "性别代码",
+                "SEX_NAME": "性别名称",
+                "HOUR_SUM": "每小时可以预约数量",
+                "NO_CHAR": "号前字符串",
+                "START_NO": "起始号 默认：1000",
+                "STEP": "步长",
+                "WORKER_GS_TIME": "上午上班时间 12:10:00",
+                "WORKER_GE_TIME": "上午下班时间 12:10:00",
+                "WORKER_AS_TIME": "下午上班时间 12:10:00",
+                "WORKER_AE_TIME": "下午下班时间 12:10:00",
+                "STATUS": "在职状态（1-在职，0-离职或其他）",
+                "OPERATION_STATUS": "操作状态（0=增加 1=修改 2=删除）",
+                "ORIGINAL_ID": "唯一值"
+            }
+        }
+    }
+}'],
+            ['type'=>0,'url'=>url("api/v2.wsdl/httpSaveClass"),'title'=>'http 增加排班','data'=>'{
+    "BODY": {
+        "META": {
+            "TOPIC_ID": "A204",
+            "APP_ID": "JQ_HIS"
+        },
+        "ROWS": {
+            "ROW": {
+                "ORIGINAL_ID": "唯一值",
+                "HOSPITAL_ID": "单位接口编码",
+                "HOSPITAL_NAME": "单位名称",
+                "HALL_CODE": "诊区代码",
+                "HALL_NAME": "诊区名称",
+                "DOCTOR_CODE": "医生代码",
+                "DOCTOR_NAME": "医生名称",
+                "QUE_CODE": "队列代码",
+                "QUE_NAME": "队列名称",
+                "SECHEDUAL_DATE": "1,2,3,4,5",
+                "STATUS": "操作状态（1=添加或更新 0=删除"
+            }
+        }
+    }
+}'],
+            ['type'=>0,'url'=>url("api/v2.wsdl/httpSavePatient"),'title'=>'http 增加患者','data'=>'{
+    "BODY": {
+        "META": {
+            "TOPIC_ID": "A201",
+            "APP_ID": "JQ_HIS"
+        },
+        "ROWS": {
+            "ROW": {
+                "HOSPITAL_ID": "单位接口编码",
+                "HOSPITAL_NAME": "单位名称",
+                "HALL_CODE": "诊区代码",
+                "HALL_NAME": "诊区名称",
+                "QUE_CODE": "队列代码 ",
+                "QUE_NAME": "队列名称",
+                "DOCTOR_CODE": "医生代码",
+                "DOCTOR_NAME": "医生名称",
+                "ORIGINAL_ID": "唯一值",
+                "CARD_NO": "卡号",
+                "IDCARD": "身份证号 350124198912282892",
+                "PREFIX": "票号前缀",
+                "QUE_NUM": "排队号码",
+                "PATIENT_ID": "患者流水号",
+                "LOCAL_ID": "患者标识号",
+                "NAME": "姓名",
+                "TEL": "手机号码 15355895580",
+                "SEX_CODE": "性别代码（1-男，2-女，0-未知的性别，9-未说明的性别） ",
+                "SEX_NAME": "性别名称",
+                "BIRTHDAY": "生日日期",
+                "OPERATION_STATUS": "0",
+                "STATUS": "操作状态（0=增加1=修改2=删除）",
+                "ORDERS": "是否预约 （0=否1=是） ",
+                "SIGN_IN": "签到状态（ 0=未签到1=已签到）",
+                "FETCH_STATUS": "叫号队列状态 （0=否 1=是，如果是，要就诊日期时间要填写当下日期时间） ",
+                "SD_DATE": "就诊日期 2019-06-16",
+                "QH_DATE": "取号时间 2019-06-169 09:30:11",
+                "START_DATE": "就诊开始时间 09:30:11",
+                "END_DATE": "就诊结束时间 09:30:11"
+            }
+        }
+    }
+}'],
             ['type'=>0,'url'=>url("api/v2.wsdl/saveDoctor"),'title'=>'web service 增加医生','data'=>'<?xml version="1.0" encoding="UTF-8"?>
                 <MESSAGE>
                   <BODY>
@@ -141,7 +240,7 @@ class Catalog extends Controller
                     </META>
                     <ROWS>
                         <ROW>
-                           <HOSPITAL_ID>单位ID</HOSPITAL_ID>
+                           <HOSPITAL_ID>单位接口编码</HOSPITAL_ID>
                             <HOSPITAL_NAME>单位名称</HOSPITAL_NAME>
                             <HALL_CODE>诊区代码</HALL_CODE>
                             <HALL_NAME>诊区名称</HALL_NAME>
@@ -181,7 +280,7 @@ class Catalog extends Controller
                         <ROWS>
                             <ROW>
                                 <ORIGINAL_ID>唯一值</ORIGINAL_ID>
-                                <HOSPITAL_ID>单位ID</HOSPITAL_ID>
+                                <HOSPITAL_ID>单位接口编码</HOSPITAL_ID>
                                 <HOSPITAL_NAME>单位名称</HOSPITAL_NAME>
                                 <HALL_CODE>诊区代码</HALL_CODE>
                                 <HALL_NAME>诊区名称</HALL_NAME>
@@ -204,7 +303,7 @@ class Catalog extends Controller
                     </META>
                     <ROWS>
                         <ROW>
-                            <HOSPITAL_ID>单位ID</HOSPITAL_ID>
+                            <HOSPITAL_ID>单位接口编码</HOSPITAL_ID>
                             <HOSPITAL_NAME>单位名称</HOSPITAL_NAME>
                             <HALL_CODE>诊区代码</HALL_CODE>
                             <HALL_NAME>诊区名称</HALL_NAME>

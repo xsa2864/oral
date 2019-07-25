@@ -185,6 +185,14 @@ class Index extends Controller
     // 获取排班表信息
     public function getClassTime()
     {
+        $unitid = input('unitid',0);
+        $hallid = input('hallid',0);
+        if($unitid){
+            $where[] = ['UnitId','=',$unitid];
+        }
+        if($hallid){
+            $where[] = ['HallNo','=',$hallid];
+        }
         $where[] = ['class','<>',0];
         $result = db("z_doctor_class")->alias("dc")->field("dc.*,s.QueName,dr.QueName as name,dr.type")
             ->rightJoin("z_doctor dr","dr.id=dc.doctor_id")

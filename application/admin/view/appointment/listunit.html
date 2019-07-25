@@ -104,7 +104,7 @@ function Operation(str,id) {
                 location.href = '{:url("admin/appointment/editUnit")}?id='+id;
             }else if(str=='del'){
                 // if(confirm("确认删除！")){
-                    var pwd = prompt('输入密码 9999：', '');
+                    var pwd = prompt('输入密码删除时会同时删除该单位的区域和队列：', '');
                     if(pwd != '9999'){  
                         alert('输入密码有误');
                     }else{                        

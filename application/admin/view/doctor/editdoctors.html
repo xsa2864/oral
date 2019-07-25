@@ -63,7 +63,12 @@
         </td>
         <td>
             <input type="password" name="password" id="password" class="input-text lh30" size="30" value="" placeholder="默认密码：123456 不填不修改">
-        </td>   
+        </td>  
+        <td class="td_right">唯一值：
+        </td>
+        <td>
+            <input type="text" name="original_id" id="original_id" class="input-text lh30" size="30" placeholder="唯一值">
+        </td>  
     </tr>
     <tr>     
         <td class="td_right">手机号：
@@ -87,7 +92,7 @@
         <td class="td_right">启用/暂停：</td>
         <td class=""> 
             <input type="radio" name="status" title="启用" value="1" checked> 启用   &nbsp;
-            <input type="radio" name="status" title="暂停" value="0" {if $list.status==0}checked{/if}>  暂停
+            <input type="radio" name="status" title="暂停" value="0" {if $list.status==0 && !empty($list)}checked{/if}>  暂停
         </td>
         <td class="td_right">预约方式：</td>
         <td class=""> 

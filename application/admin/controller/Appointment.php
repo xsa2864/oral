@@ -417,7 +417,7 @@ class Appointment extends Base
         }
         $result = db("despeak")->where($where)->find();
         if(empty($result)){
-            $data['platform'] = 'phone';
+            $data['platform']   = '现场预约';
             $id = db("despeak")->insertGetId($data);
             if($id){
                 $re_msg['success'] = 1;

@@ -22,11 +22,10 @@ class Doctor extends Base
             }
         }else if($id!=0) {
             $where['s.UnitId'] = $id;
-        }else{
-            $hall_id = input("hall_id",'');
-            if($hall_id){
-                $where['s.HallNo'] = $hall_id;
-            }
+        }
+        $hall_id = input("hall_id",'');
+        if($hall_id){
+            $where['s.HallNo'] = $hall_id;
         }
     	$list = db("serque")->alias("s")
                 ->field('s.*,u.unitname,h.HallName')
@@ -247,6 +246,7 @@ class Doctor extends Base
                 $wha['HallNo'] = $this->hallid;
             }
         }
+
         $unit = db("unit")->where($wh)->select();
         $que_id = array();
         $serque = db("serque")->where($wha)->select();
@@ -259,11 +259,12 @@ class Doctor extends Base
         if(isset($result['ClassesTime'])){
             $work = explode('-', $result['ClassesTime']);
         }
-        $type_list = array();
-        if(Config()['app']['duties']){
-            $type_list = Config()['app']['duties'];
+        $type_list = Db::name("config_fetch")->where("unitid",1)->value("degree");
+        if($type_list){
+            $type_list = explode(',', $type_list);
         }
         $this->assign("type_list",$type_list);
+
         $this->assign("que_id",$que_id);
         $this->assign("unit",$unit);
         $this->assign("serque",$serque);
@@ -291,7 +292,8 @@ class Doctor extends Base
         $data['url']        = input('url','');
         $data['QueName']    = input('quename','');
         $data['status']     = input('status',0);
-        $data['type']       = input('type',0);
+        $data['original_id']= input('original_id',0);
+        $data['type']       = input('type','');
         $data['step']       = input('step',1);
         $data['QueForm']    = input('QueForm',0);
         $data['WorkTime1']  = input('stime1');
@@ -328,6 +330,11 @@ class Doctor extends Base
         if(empty($data['unit_id'])){
             $re_msg['msg'] = '请选择单位';
             echo json_encode($re_msg);exit;
+        }
+        $ors = Db::name("z_doctor")->where("original_id",$data['original_id'])->find();
+        if($ors && $ors['id'] != $id){
+            $re_msg['msg'] = '唯一值已经存在';
+            return json($re_msg);
         }
         $flag = 0;
         if($id > 0){
@@ -397,10 +404,14 @@ class Doctor extends Base
         $wh['QueId']    = $QueId = input("QueId",0);
         $wh['name']     = $name = input("name",'');
         $where = array();
+        $swh = array();
         if($this->userid!=1){
             if($this->hallid){
                 $where[] = ['s.HallNo','=',$this->hallid];
+                $swh[]   = ['HallNo','=',$this->hallid];
             }
+            $where[]    = ['h.UnitId','=',$this->unitid];
+            $swh[]      = ['UnitId','=',$this->unitid];
         }
         if(!empty($name)){
             $where[] = ['d.QueName|s.QueName','like','%'.$name.'%'];
@@ -433,7 +444,7 @@ class Doctor extends Base
         $this->assign("lists",$lists);
         $dlist = Db::name("z_doctor")->order("QueName","asc")->select();
         $this->assign("dlist",$dlist);
-        $qlist = Db::name("serque")->where("HallNo",$this->hallid)->order("QueName","asc")->select();
+        $qlist = Db::name("serque")->where($swh)->order("QueName","asc")->select();
         $this->assign("qlist",$qlist);
         return $this->fetch("classtime");
     }
