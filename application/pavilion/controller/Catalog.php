@@ -161,7 +161,7 @@ class Catalog extends Controller
                 "WORKER_AS_TIME": "下午上班时间 12:10:00",
                 "WORKER_AE_TIME": "下午下班时间 12:10:00",
                 "STATUS": "在职状态（1-在职，0-离职或其他）",
-                "OPERATION_STATUS": "操作状态（0=增加 1=修改 2=删除）",
+                "OPERATION_STATUS": "操作状态（0=删除 1=增加或者更新）",
                 "ORIGINAL_ID": "唯一值"
             }
         }
@@ -185,7 +185,7 @@ class Catalog extends Controller
                 "QUE_CODE": "队列代码",
                 "QUE_NAME": "队列名称",
                 "SECHEDUAL_DATE": "1,2,3,4,5",
-                "STATUS": "操作状态（1=添加或更新 0=删除"
+                "OPERATION_STATUS": "操作状态（0=删除 1=增加或者更新）"
             }
         }
     }
@@ -218,8 +218,7 @@ class Catalog extends Controller
                 "SEX_CODE": "性别代码（1-男，2-女，0-未知的性别，9-未说明的性别） ",
                 "SEX_NAME": "性别名称",
                 "BIRTHDAY": "生日日期",
-                "OPERATION_STATUS": "0",
-                "STATUS": "操作状态（0=增加1=修改2=删除）",
+                "OPERATION_STATUS": "操作状态（0=删除 1=增加或者更新）",
                 "ORDERS": "是否预约 （0=否1=是） ",
                 "SIGN_IN": "签到状态（ 0=未签到1=已签到）",
                 "FETCH_STATUS": "叫号队列状态 （0=否 1=是，如果是，要就诊日期时间要填写当下日期时间） ",
@@ -264,7 +263,7 @@ class Catalog extends Controller
                             <WORKER_AS_TIME>下午上班时间 12:10:00</WORKER_AS_TIME>
                             <WORKER_AE_TIME>下午下班时间 12:10:00</WORKER_AE_TIME>
                             <STATUS>在职状态（1-在职，0-离职或其他）</STATUS>
-                            <OPERATION_STATUS>操作状态（0=增加 1=修改 2=删除）</OPERATION_STATUS>
+                            <OPERATION_STATUS>操作状态（0=删除 1=增加或者更新）</OPERATION_STATUS>
                             <ORIGINAL_ID>唯一值</ORIGINAL_ID>
                         </ROW>                       
                     </ROWS>
@@ -289,7 +288,7 @@ class Catalog extends Controller
                                 <QUE_CODE>队列代码</QUE_CODE>
                                 <QUE_NAME>队列名称</QUE_NAME>
                                 <SECHEDUAL_DATE>1,2,3,4,5</SECHEDUAL_DATE>
-                                <STATUS>操作状态 1=添加或更新 0=删除</STATUS>
+                                <OPERATION_STATUS>操作状态 (0=删除 1=增加或者更新)</OPERATION_STATUS>
                             </ROW>
                         </ROWS>
                     </BODY>
@@ -323,8 +322,7 @@ class Catalog extends Controller
                             <SEX_CODE>性别代码（1-男，2-女，0-未知的性别，9-未说明的性别） </SEX_CODE>
                             <SEX_NAME>性别名称</SEX_NAME>
                             <BIRTHDAY>生日日期</BIRTHDAY>
-                            <OPERATION_STATUS>0</OPERATION_STATUS>
-                            <STATUS>操作状态（0=增加1=修改2=删除）</STATUS>
+                            <OPERATION_STATUS>操作状态（0=删除 1=增加或者更新）</OPERATION_STATUS>
                             <ORDERS>是否预约 （0=否1=是） </ORDERS>
                             <SIGN_IN>签到状态（ 0=未签到1=已签到）</SIGN_IN>
                             <FETCH_STATUS>叫号队列状态 （0=否 1=是，如果是，要就诊日期时间要填写当下日期时间） </FETCH_STATUS>

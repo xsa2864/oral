@@ -412,6 +412,7 @@ class Doctor extends Base
             }
             $where[]    = ['h.UnitId','=',$this->unitid];
             $swh[]      = ['UnitId','=',$this->unitid];
+            $dwh[]      = ['unit_id','=',$this->unitid];
         }
         if(!empty($name)){
             $where[] = ['d.QueName|s.QueName','like','%'.$name.'%'];
@@ -442,7 +443,7 @@ class Doctor extends Base
         $this->assign("page",$list->render());
         $this->assign("wh",$wh);
         $this->assign("lists",$lists);
-        $dlist = Db::name("z_doctor")->order("QueName","asc")->select();
+        $dlist = Db::name("z_doctor")->where($dwh)->order("QueName","asc")->select();
         $this->assign("dlist",$dlist);
         $qlist = Db::name("serque")->where($swh)->order("QueName","asc")->select();
         $this->assign("qlist",$qlist);

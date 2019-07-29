@@ -17,10 +17,6 @@
 <input message="tns:addDespeakRequest" />
 <output message="tns:addDespeakResponse" />
 </operation>
-<operation name="upDespeak">
-<input message="tns:upDespeakRequest" />
-<output message="tns:upDespeakResponse" />
-</operation>
 <operation name="doctorClass">
 <input message="tns:doctorClassRequest" />
 <output message="tns:doctorClassResponse" />
@@ -44,10 +40,6 @@
 <operation name="addDocotr">
 <input message="tns:addDocotrRequest" />
 <output message="tns:addDocotrResponse" />
-</operation>
-<operation name="upDocotr">
-<input message="tns:upDocotrRequest" />
-<output message="tns:upDocotrResponse" />
 </operation>
 <operation name="arrayToXml">
 <input message="tns:arrayToXmlRequest" />
@@ -90,14 +82,6 @@
 </operation>
 <operation name="addDespeak">
 <soap:operation soapAction="urn:HB#UserInfo#addDespeak" />
-<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
-</input>
-<output>
-<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
-</output>
-</operation>
-<operation name="upDespeak">
-<soap:operation soapAction="urn:HB#UserInfo#upDespeak" />
 <input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </input>
 <output>
@@ -152,14 +136,6 @@
 <soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
-<operation name="upDocotr">
-<soap:operation soapAction="urn:HB#UserInfo#upDocotr" />
-<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
-</input>
-<output>
-<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
-</output>
-</operation>
 <operation name="arrayToXml">
 <soap:operation soapAction="urn:HB#UserInfo#arrayToXml" />
 <input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
@@ -187,7 +163,7 @@
 </binding>
 <service name="HB">
 <documentation />
-<port name="HBPort" binding="tns:HBBinding"><soap:address location="http://oral.com:80/api/v2/wsdl/server" />
+<port name="HBPort" binding="tns:HBBinding"><soap:address location="http://192.168.0.239:80/api/v2.wsdl/server.html" />
 </port>
 </service>
 <message name="getNameRequest">
@@ -212,12 +188,6 @@
 </message>
 <message name="addDespeakResponse">
 <part name="addDespeak" type="xsd:string" />
-</message>
-<message name="upDespeakRequest">
-<part name="value" type="xsd:string" />
-</message>
-<message name="upDespeakResponse">
-<part name="upDespeak" type="xsd:string" />
 </message>
 <message name="doctorClassRequest">
 <part name="xml" type="xsd:string" />
@@ -254,12 +224,6 @@
 </message>
 <message name="addDocotrResponse">
 <part name="addDocotr" type="xsd:string" />
-</message>
-<message name="upDocotrRequest">
-<part name="value" type="xsd:string" />
-</message>
-<message name="upDocotrResponse">
-<part name="upDocotr" type="xsd:string" />
 </message>
 <message name="arrayToXmlRequest">
 <part name="arr" type="xsd:string" />

@@ -21,15 +21,23 @@ class Fetch extends Controller
     // 获取基础信息
     public function card()
     {
+        $unit_id = cookie("unit_id")?cookie("unit_id"):0;
     	$hall_id = cookie("hall_id")?cookie("hall_id"):0;
-        $where[] = ['HallNo','=',$hall_id];
+
+        $where[] = ['UnitId','=',$unit_id];
+        if($hall_id){
+            $halls = explode(',', $hall_id);
+            if(!empty($halls)){
+                $where[] = ['HallNo','in',$hall_id];
+            }
+        }
         $hwere[] = ['EnableFlag','=',1];
         $queue = Db::name("serque")->field("QueId,QueName,ClassesTime")->where($where)->select();
         $rel = new \app\admin\model\ClassTime;
         $q_list = $rel->queueValid($queue);
         
-        $hall = Db::name("hall")->where('HallNo',$hall_id)->find();
-        $list = Db::name("hall")->field("HallNo,HallName")->where('EnableFlag',"1")->select();
+        $hall = Db::name("hall")->field("*,GROUP_CONCAT(HallName) AS HallNames")->where($where)->find();
+        $list = Db::name("unit")->field("UnitId,unitname")->where('EnableFlag',"1")->select();
 
         $ccd = new \app\api\model\CacheCode;
         $devices_ip = $ccd->getCode();  
@@ -64,16 +72,27 @@ class Fetch extends Controller
         }
     	return json($item);
     }
-
+    // 获取区域iD
+    public function getHall()
+    {
+        $unit_id = input('unit_id','');
+        $unit = Db::name("hall")->field("HallNo,HallName")->where("UnitId",$unit_id)->select();
+        return json($unit);
+    }
     // 修改区域编号
     public function setHall()
     {
+        $unit_id = input("unit_id",0);
         $hall_id = input("hall_id",0);
-        if(!empty($hall_id)){
+        if(is_array($hall_id)){
+            $hall_id = implode(',', $hall_id);
+        }
+        if(!empty($unit_id)){
+            Cookie::forever('unit_id',$unit_id);
             Cookie::forever('hall_id',$hall_id);
             return json("设置成功",200);
         }
-        return json("请填写区域编号",201);
+        return json("请选择单位",201);
     }
 
     // 生成票号

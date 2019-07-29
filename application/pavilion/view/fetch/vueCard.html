@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <title>开始取号</title>
   <meta http-equiv="refresh" content="1800">
-  <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">  
+  <link rel="stylesheet" href="__HUI__/lib/layui/css/formSelects-v4.css" media="all">
   <script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
 	<script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
 	<script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 	
@@ -81,7 +82,7 @@
 	    		<a name="switch">{{ hall.title }}&nbsp;</a>
 	    	</legend>
 	    </fieldset>
-	    <span class="sign">{{ hall.HallName }}</span>
+	    <span class="sign">{{ hall.HallNames }}</span>
 	</div>
 
 <!-- <form class="layui-form" action=""> -->
@@ -238,17 +239,24 @@
 	<!-- 区域配置 -->
 	<div v-show="showChange">		
 		<div class="overBack" @click="setHallClose"></div>
-		<form id="changeHall" class="layui-form">
+		<form id="changeHall" class="layui-form" style="height: 360px;">
 			<fieldset style="border: none;padding: 0;border-top: 1px solid #eee;">
 		    	<legend style="margin-left: 20px;padding: 0 10px;font-size: 4vw;font-weight: 300;text-align: center;">
 		    		<a name="switch">区域配置</a>
 		    	</legend>
 		    </fieldset>
-			<div style="text-align: center;padding: 10px;">
+		    <div style="text-align: center;padding: 10px;">
 			    <div class="layui-input-inline">
-			      <select name="hall_id" lay-verify="required" lay-filter="selectHall" v-model="hall_id">
-			        <option disabled="true" value="">选择区域</option>		       
-			        <option v-for="option in options" v-bind:value="option.HallNo">{{ option.HallName }}</option>
+			      <select name="unit_id" lay-verify="required" lay-filter="selectUnit" >
+			        <option disabled="true" value="">选择单位</option>		       
+			        <option v-for="nts in units" v-bind:value="nts.UnitId">{{ nts.unitname }}</option>
+			      </select>
+			    </div>
+		  	</div>
+			<div style="text-align: center;padding: 10px;" class="layui-form">
+    			<label class="layui-form-label">请选择区域</label>
+			    <div class="layui-input-block">
+			      <select name="hall_id" xm-select="selectHall">
 			      </select>
 			    </div>
 		  	</div>
@@ -263,7 +271,8 @@
 	<div class="printInfo" style="padding: 20px;display: none;"></div>
 
 </div> <!-- end #app -->
-	
+
+<script type="text/javascript" src="__HUI__/lib/layui/formSelects-v4.js"></script> 
 <script>
 //一般直接写在一个js文件中
 layui.use(['layer', 'form'], function(){
@@ -271,11 +280,26 @@ layui.use(['layer', 'form'], function(){
     ,$=layui.$
     ,form = layui.form
     ,c=''
-    ,i='';
-
-    form.on('select(selectHall)', function(data){
-    	vm.hall_id = data.value
-	});      
+    ,i=''
+    ,formSelects = layui.formSelects;
+    form.on('select(selectUnit)', function(data){
+    	vm.unit_id = data.value
+    	$.post("{:url('/api/v2/fetch/getHall')}",{"unit_id":data.value},
+    		function(res){
+    			vm.options = res;
+    			var arrs = []
+    			if(res){
+    				for(rs in res){
+    					var op = {}	
+	    				op.name = res[rs].HallName
+	    				op.value = res[rs].HallNo    
+	    				arrs[rs] = op					
+    				}
+    			} 
+				layui.formSelects.data("selectHall",'local',{arr:arrs})
+    	})
+	}); 
+        
 	form.on('checkbox(ticket)', function(data){
 		vm.tickets_id = [];
 		layui.$("input[type='checkbox']").each(function(n,e){
@@ -293,8 +317,10 @@ var vm = new Vue({
 			title:''
 		}
 		,queue:{}
+		,units:{}
 		,options:{}
 		,doctor_list:{}
+		,unit_id:''
 		,hall_id:''
 		,idcard:''
 		,s_idcard:''
@@ -325,7 +351,7 @@ var vm = new Vue({
 							}
 						}
 						vm.queue = res.data.queue
-						vm.options = res.data.list
+						vm.units = res.data.list
 						if(!res.data.hall_id){							
 							setTimeout(function(){
 								layui.form.render()
@@ -498,8 +524,10 @@ var vm = new Vue({
 		}
 		,setHall:function(){
 			var vm = this
+			var formSelects = layui.formSelects;
+			this.hall_id = formSelects.value('selectHall', 'val'); 
 			axios
-				.post('{:url("/api/v2/fetch/setHall")}',{'hall_id':this.hall_id})
+				.post('{:url("/api/v2/fetch/setHall")}',{'unit_id':vm.unit_id,'hall_id':vm.hall_id})
 				.then(
 					function(res){
 						if(res.status==200){
