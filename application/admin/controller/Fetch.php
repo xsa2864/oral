@@ -12,14 +12,12 @@ class Fetch extends Base
 	// 取号配置
     public function index(){
     	$wh = array();        
-        $where = array();   
         $unit_id = input('unit_id',1);
         if($this->userid!=1){
             $wh[] = ['unitid','=',$this->unitid];
         }        
         $unit = db("unit")->where($wh)->select();
-        $where[] = ['unitid','=',$unit_id];
-        $list = db("config_fetch")->where($where)->find();
+        $list = db("config_fetch")->where($wh)->find();
         $this->assign("list",$list);
         $this->assign("unit",$unit);
         $this->assign("unit_id",$unit_id);
@@ -42,19 +40,32 @@ class Fetch extends Base
         $data['des_day']        = input("des_day",0);
         $data['blacklist_num']  = input("blacklist_num",0);
         $data['blacklist_day']  = input("blacklist_day",0);
+
+        $data['yuyue_num']      = input("yuyue_num",0);
+        $data['gs_time']        = input("gs_time",0);
+        $data['ge_time']        = input("ge_time",0);
+        $data['as_time']        = input("as_time",0);
+        $data['ae_time']        = input("ae_time",0);
         $data['warning']        = input("warning","");
-        $unitid                 = input("unit_id",1);
+        $unitid                 = $this->unitid;
+        $id                     = input("id",0);
         $rs = 0;
-    	$result = db("config_fetch")->where('unitid',$unitid)->find();
+        $where[] = ['unitid','=',$unitid];
+        $where[] = ['id','=',$id];
+    	$result = db("config_fetch")->where($where)->find();
     	if($result){
-    		$rs = db("config_fetch")->where('unitid',$unitid)->update($data);
+    		$rs = db("config_fetch")->where('id',$id)->update($data);
+        	if($rs!==false){
+        		$re_msg['success'] = 1;
+        		$re_msg['msg'] = '更新成功';
+        	}
     	}else{
     		$data['unitid'] = $unitid;
     		$rs = db("config_fetch")->data($data)->insert();
-    	}
-    	if($rs!==false){
-    		$re_msg['success'] = 1;
-    		$re_msg['msg'] = '更新成功';
+            if($rs){
+                $re_msg['success'] = 1;
+                $re_msg['msg'] = '添加成功';
+            }
     	}
     	echo json_encode($re_msg);
     }

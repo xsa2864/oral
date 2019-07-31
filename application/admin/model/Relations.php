@@ -155,13 +155,16 @@ class Relations extends Model
 	 * 获取当前在线医生
 	 * return array
 	 */
-    public function getOnLine($hall_id=0,$user_id=0)
+    public function getOnLine($unit_id=0,$hall_id=0,$user_id=0)
     {
     	$wh = array();
     	if($user_id!=1){
-    		$wh[] = ["hall_id",'=',$hall_id];
+    		if($hall_id){
+    			$wh[] = ["hall_id",'=',$hall_id];	
+    		}
+    		$wh[] = ["unit_id",'=',$unit_id];	
     	}
-    	$rs = DB::name("z_terminal")->where($wh)->column("ip");
+    	$rs = Db::name("z_terminal")->where($wh)->column("ip");
         $line = array();
     	if($rs){    		
 	        $json = cache("terminal");
@@ -361,7 +364,7 @@ class Relations extends Model
 		$flag = false;
 		if($item){
 			if($item['status']==1){				
-				$config = db("config_fetch")->where("unitid",1)->find(); 
+				$config = db("config_fetch")->where("unitid",$this->unitid)->find(); 
 				$wh['d.idcard'] 		= $item['idcard'];
 				$wh['d.despeakDate'] 	= date("Y-m-d",time());
 				$wh['d.status']			= 2;

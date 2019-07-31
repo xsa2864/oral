@@ -75,7 +75,7 @@ class Base extends Controller
         }
 
         $rel = new \app\admin\model\Relations();
-        $larr = $rel->getOnLine($this->hallid,$this->userid); 
+        $larr = $rel->getOnLine($this->unitid,$this->hallid,$this->userid); 
         $ilist = array();
         if($arr){
             $keys = array_keys($larr);
@@ -97,7 +97,7 @@ class Base extends Controller
         // 记录操作日志
         if (Request::instance()->isPost()){
             $log = new \app\admin\model\OperationLog;
-            $log->writeLog($this->userid,input(),$this->current_action);
+            $log->writeLog($this->unitid,$this->userid,input(),$this->current_action);
         }
        
         if(!$result){

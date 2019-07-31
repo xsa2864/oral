@@ -29,14 +29,18 @@
                                 <tr>
                                     <td class="td_right">唯一标识：</td>
                                     <td>
-                                        <input type="text" name="u_code" id="u_code"  lay-verify="required" class="input-text lh30 " size="30" value="{$list.u_code}" placeholder="填写3个字符">[必填]
+                                        <input type="text" name="u_code" id="u_code"  lay-verify="required" class="input-text lh30 " size="30" value="{$list.u_code?$list.u_code:$u_code}">
                                     </td>
                                     <td class="td_right">接口编码：</td>
                                     <td>
-                                        <input type="text" name="api_code" id="api_code" class="input-text lh30" size="30" value="{$list.api_code}" placeholder="填写6个字符">
+                                        <input type="text" name="api_code" id="api_code" class="input-text lh30" size="30" value="{$list.api_code?$list.api_code:$api_code}">
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td class="td_right">单位编码：</td>
+                                    <td>
+                                        <input type="text" name="unit_num" id="unit_num" class="input-text lh30" size="30" value="{$list.unit_num?$list.unit_num:$unit_num}">
+                                    </td>
                                     <td class="td_right">简介：</td>
                                     <td><input type="text" name="AlternateField1" id="AlternateField1" class="input-text lh30" size="30" value="{$list.AlternateField1}">
                                     </td>

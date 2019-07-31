@@ -363,7 +363,7 @@ class Index extends Controller
         $quick = new \app\api\model\PushMsg;
         $result = $quick->executeQueueM($doctor_id,$status);
         if($result['success']==1){
-            $next = DB::name("config_fetch")->where("unitid",1)->value("next");
+            $next = DB::name("config_fetch")->where("unitid",$this->unitid)->value("next");
             if($next){
                 $re_msg['code'] = 208;
             }else{

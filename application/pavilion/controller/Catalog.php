@@ -12,9 +12,14 @@ use think\facade\Config;
 
 class Catalog extends Controller
 {
+    public function substr_cut($user_name){
+        $strlen     = mb_strlen($user_name, 'utf-8');
+        $firstStr     = mb_substr($user_name, 0, 1, 'utf-8');
+        $lastStr     = mb_substr($user_name, -1, 1, 'utf-8');
+        echo $strlen <= 2 ? $user_name : $firstStr . str_repeat("*", $strlen - 2) . $lastStr;
+    }
 	public function index()
     {
-
         $show = input("show",0);
         if(request()->ip()=='192.168.0.239'||request()->ip()=='192.168.0.133' || true){        
             $screen = [

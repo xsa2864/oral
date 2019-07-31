@@ -24,8 +24,8 @@
                   <td>
                     <select name="hallname" class="select">
                       <option value="">请选择科室</option>
-                      {volist name="list_hall" id="vo"}
-                      <option value="{$vo.HallName}" {if $vo.HallName==$wh['hallname']}selected{/if}>{$vo.HallName}</option>
+                      {volist name="list_d" id="vs"}
+                      <option value="{$vs.QueName}" {if $vs.QueName==$wh['quename']}selected{/if}>{$vs.QueName}</option>
                       {/volist}
                     </select>
                   </td>
@@ -33,7 +33,7 @@
                   <td>
                     <select name="quename" class="select">
                       <option value="">请选择医生</option>
-                      {volist name="list_d" id="vs"}
+                      {volist name="doctor" id="vs"}
                       <option value="{$vs.QueName}" {if $vs.QueName==$wh['quename']}selected{/if}>{$vs.QueName}</option>
                       {/volist}
                     </select>

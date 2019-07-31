@@ -17,7 +17,33 @@ class Fetch extends Controller
     {
         return json(['Hospital'=>'口腔医院','Version'=>'v2']);
     }
+        // 获取所选区域信息
+    public function halls()
+    {
+        $unit_id = cookie("unit_id")?cookie("unit_id"):0;
+        $hall_id = cookie("hall_ids")?cookie("hall_ids"):0;
 
+        $where[] = ['UnitId','=',$unit_id];
+        if($hall_id){
+            $halls = explode('|', $hall_id);
+            if(!empty($halls)){
+                $where[] = ['HallNo','in',$halls];
+            }
+        }
+        $hwere[] = ['EnableFlag','=',1];        
+        $hall = Db::name("hall")->field("*")->where($where)->select();
+        $list = Db::name("unit")->field("UnitId,unitname")->where('EnableFlag',"1")->select();
+
+        $ccd = new \app\api\model\CacheCode;
+        $devices_ip = $ccd->getCode();  
+        $data['ip']     = $devices_ip;        
+        $data['host']   = Request()->ip();
+        $data['hall']   = $hall;
+        $data['list']   = $list;
+        $data['hall_id']   = $hall_id;
+
+        return json($data);
+    }
     // 获取基础信息
     public function card()
     {
@@ -80,13 +106,25 @@ class Fetch extends Controller
         return json($unit);
     }
     // 修改区域编号
-    public function setHall()
+    public function setHalls()
     {
         $unit_id = input("unit_id",0);
         $hall_id = input("hall_id",0);
         if(is_array($hall_id)){
-            $hall_id = implode(',', $hall_id);
+            $halls = implode('|', $hall_id);
         }
+        if(!empty($unit_id)){
+            Cookie::forever('hall_ids',$halls);
+            Cookie::forever('unit_id',$unit_id);
+            return json("设置成功",200);
+        }
+        return json("请选择单位",201);
+    }
+    // 修改区域编号
+    public function setHall()
+    {
+        $unit_id = input("unit_id",0);
+        $hall_id = input("hall_id",0);
         if(!empty($unit_id)){
             Cookie::forever('unit_id',$unit_id);
             Cookie::forever('hall_id',$hall_id);

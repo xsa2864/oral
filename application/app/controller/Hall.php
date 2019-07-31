@@ -236,7 +236,7 @@ class Hall extends Common
         if(Cookie::has('unitid')){
             $where[] = ['unitid','=',Cookie::get('unitid')];
         }else{
-            $where[] = ['unitid','=',1];
+            $where[] = ['unitid','=',$this->unitid];
         }
         $if_name = db("config_fetch")->where($where)->value("if_name");
         

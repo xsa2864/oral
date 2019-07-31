@@ -17,6 +17,7 @@ class Ads extends Base
             if($this->hallid){
                 $where['a.hall_id'] = $this->hallid;
             }
+            $where['u.UnitId'] = $this->unitid;
         }
         $list = db("ads")->alias("a")
         		->field("a.*,u.unitname,t.title as titles,h.HallName")
@@ -40,8 +41,9 @@ class Ads extends Base
         if($this->userid!=1){
             $whu[]      = ['UnitId','=',$this->unitid];
             if($this->hallid){
-                $wh['HallNo'] = $this->hallid;
+                $wh[] = ['HallNo','=',$this->hallid];
             }
+            $wh[] = ['UnitId','=',$this->unitid];
             $where['hall_id'] = $this->hallid;
         }
         $hall = db("hall")->where($wh)->select();

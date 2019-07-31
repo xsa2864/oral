@@ -44,7 +44,9 @@ class Doctor extends Base
         $work = array();
 
         $where = array();
-        $hall = db("hall")->where("EnableFlag",1)->select();
+        $wh[] = ["EnableFlag",'=',1];
+        $wh[] = ["UnitId",'=',$this->unitid];
+        $hall = db("hall")->where($wh)->select();
         $where['QueId'] = $id;
     	$result = db("serque")->where($where)->find();
 
@@ -57,10 +59,18 @@ class Doctor extends Base
             $where['UnitId'] = $this->unitid;
         }
         $unit = db("unit")->where($where)->select();
+
         $this->assign("unit",$unit);
         $this->assign("hall",$hall);
     	$this->assign("list",$result);
         $this->assign("work",$work);
+        $code = Db::name("serque")->where("UnitId",$this->unitid)->value("max(code)");
+        $InterfaceID = Db::name("serque")->where("UnitId",$this->unitid)->value("max(InterfaceID)");
+        $ser_num = Db::name("serque")->where("UnitId",$this->unitid)->value("max(ser_num)");
+        // 模板输出
+        $this->assign("code",$code+1);
+        $this->assign("InterfaceID",$InterfaceID+1);
+        $this->assign("ser_num",$ser_num+1);
     	return $this->fetch('editdoctor');
     }
     // 保存信息
@@ -73,6 +83,7 @@ class Doctor extends Base
 	    $data['HallNo']     = input('hall_id',0);
 	    $data['UnitId'] 	= input('unitid',1);
         $data['NoChar']     = input('NoChar','');
+        $data['ser_num']    = input('ser_num','');
         $data['StarNo']     = input('StarNo','Y');
         $data['quick_char'] = input('quick_char','V');
         $data['mobile']     = input('mobile','');
@@ -93,25 +104,49 @@ class Doctor extends Base
         $data['AlternateField1']    = input('AlternateField1','');
         $queid          = input('queid',0);
         $password       = input('password','');
-        
-        $result = db("serque")->where("code",$data['code'])->find();
+
+        $cw[] = ["UnitId",'=',$data['UnitId']];
+        $cw[] = ["code",'=',$data['code']];
+        $result = db("serque")->where($cw)->find();
         if($result){
             $re_msg['msg'] = '已经存在队列编号，请更换';
             if($queid>0){
                 if($result['QueId']!=$queid){
-                    echo json_encode($re_msg);exit;
+                    return json($re_msg);
                 }
             }else{                
-                echo json_encode($re_msg);exit;
+                return json($re_msg);
             }
         }
         if(empty($data['QueName'])){
             $re_msg['msg'] = '请填写队列名称';
-            echo json_encode($re_msg);exit;
+            return json($re_msg);
         }
         if(empty($data['HallNo'])){
             $re_msg['msg'] = '请选择区域';
-            echo json_encode($re_msg);exit;
+            return json($re_msg);
+        }
+        if(!empty($data['ser_num'])){
+            $sw[] = ['UnitId','=',$data['UnitId']];
+            $sw[] = ['ser_num','=',$data['ser_num']];
+            $ser = Db::name("serque")->where($sw)->find();           
+            if($ser){                
+                if($ser['QueId']!=$queid){                
+                    $re_msg['msg'] = '唯一编码已经存在';
+                    return json($re_msg);
+                }
+            }
+        }
+        if($data['InterfaceID']){
+            $ssw[] = ['UnitId','=',$data['UnitId']];
+            $ssw[] = ['InterfaceID','=',$data['InterfaceID']];
+            $sser = Db::name("serque")->where($ssw)->find();           
+            if($sser){                
+                if($sser['QueId']!=$queid){                
+                    $re_msg['msg'] = '接口编码已经存在';
+                    return json($re_msg);
+                }
+            }
         }
 
 	    $flag = 0;
@@ -240,10 +275,11 @@ class Doctor extends Base
         $whu    = array();
         $where  = array();
         if($this->userid!=1){
+            $wha[] = ['UnitId','=',$this->unitid];
             $whu[]      = ['UnitId','=',$this->unitid];
             $wh['UnitId'] = $this->unitid;
             if($this->hallid){
-                $wha['HallNo'] = $this->hallid;
+                $wha[] = ['HallNo','=',$this->hallid];
             }
         }
 
@@ -259,11 +295,13 @@ class Doctor extends Base
         if(isset($result['ClassesTime'])){
             $work = explode('-', $result['ClassesTime']);
         }
-        $type_list = Db::name("config_fetch")->where("unitid",1)->value("degree");
+        $config_fetch = Db::name("config_fetch")->where("unitid",$this->unitid)->find();
+        $type_list = $config_fetch['degree'];
         if($type_list){
             $type_list = explode(',', $type_list);
         }
         $this->assign("type_list",$type_list);
+        $this->assign("config_fetch",$config_fetch);
 
         $this->assign("que_id",$que_id);
         $this->assign("unit",$unit);
@@ -292,7 +330,7 @@ class Doctor extends Base
         $data['url']        = input('url','');
         $data['QueName']    = input('quename','');
         $data['status']     = input('status',0);
-        $data['original_id']= input('original_id',0);
+        // $data['original_id']= input('original_id',0);
         $data['type']       = input('type','');
         $data['step']       = input('step',1);
         $data['QueForm']    = input('QueForm',0);
@@ -316,9 +354,11 @@ class Doctor extends Base
             $re_msg['msg'] = '请填写工号';
             echo json_encode($re_msg);exit;
         }
-        $find_rs = db("z_doctor")->where("id",$id)->find();
+        $cw[] = ['staff_code','=',$data['staff_code']];
+        $cw[] = ["unit_id",'=',$this->unitid];
+        $find_rs = db("z_doctor")->where($cw)->find();
         if($find_rs){
-            if($find_rs['staff_code'] != $data['staff_code']){
+            if($find_rs['id'] != $id){
                 $re_msg['msg'] = '员工号已经存在请更换';
                 echo json_encode($re_msg);exit;
             }
@@ -331,11 +371,15 @@ class Doctor extends Base
             $re_msg['msg'] = '请选择单位';
             echo json_encode($re_msg);exit;
         }
-        $ors = Db::name("z_doctor")->where("original_id",$data['original_id'])->find();
-        if($ors && $ors['id'] != $id){
-            $re_msg['msg'] = '唯一值已经存在';
-            return json($re_msg);
-        }
+        // $oh[] = ["original_id",'=',$data['original_id']];
+        // $oh[] = ["unit_id",'=',$this->unitid];
+        // $ors = Db::name("z_doctor")->where($oh)->find();
+        // if($ors){
+        //     if($ors['id'] != $id){                
+        //         $re_msg['msg'] = '唯一值已经存在';
+        //         return json($re_msg);
+        //     }
+        // }
         $flag = 0;
         if($id > 0){
             if($password){

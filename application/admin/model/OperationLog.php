@@ -7,7 +7,7 @@ use think\facade\Env;
 
 class OperationLog extends Model
 {
-	public function writeLog($manager_id=0,$request='',$url='')
+	public function writeLog($unit_id=0,$manager_id=0,$request='',$url='')
 	{
 		if($url == 'admin/Operation/index'){
 			return true;
@@ -17,6 +17,7 @@ class OperationLog extends Model
 		unset($request['subtitle']);
 		unset($request['content']);
 
+		$data['unit_id'] 	= $unit_id;
 		$data['manager_id'] = $manager_id;
 		$data['url']		= $url;
 		$data['op_name']	= db("auth_rule")->where("name",$url)->value("title");

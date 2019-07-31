@@ -27,12 +27,13 @@
         <td>
             <input type="text" name="quename" id="quename" class="input-text lh30" size="30" value="{$list.QueName}" >[必填]
         </td>
-        <td class="td_right">队列编号：
+        <td class="td_right">队列编码：
         </td>
         <td>
-            <input type="text" name="code" id="code" class="input-text lh30" size="30" value="{$list.code}" >[必填]
+            <input type="text" name="code" id="code" class="input-text lh30" size="30" value="{$list.code?$list.code:$code}" >
         </td>
     </tr>
+    
     <tr>
         <td class="td_right">启用/暂停：</td>
         <td class=""> 
@@ -54,11 +55,11 @@
     <tr>
         <td class="td_right">号码前置字符：</td>
         <td class="">
-        	<input type="text" name="NoChar" class="input-text lh30" size="15" style="width: 62px;" value="{$list.NoChar}">
+        	<input type="text" name="NoChar" class="input-text lh30" size="15" style="width: 62px;" value="{$list.NoChar?$list.NoChar:'A'}">
         </td>					
         <td class="td_right">绿色通道前置字符：</td>
         <td class="">
-            <input type="text" name="quick_char" class="input-text lh30" size="15" style="width: 62px;" value="{$list.quick_char}">
+            <input type="text" name="quick_char" class="input-text lh30" size="15" style="width: 62px;" value="{$list.quick_char?$list.quick_char:'V'}">
         </td>   
     </tr>
     <tr>                  
@@ -68,7 +69,7 @@
         </td>
         <td class="td_right">步 长 ：</td>
         <td>
-            <input type="number" name="step" class="input-text lh30" size="15" style="width: 62px;" value="{$list.step}">
+            <input type="number" name="step" class="input-text lh30" size="15" style="width: 62px;" value="{$list.step?$list.step:'1'}">
         </td>
     </tr>
 
@@ -105,7 +106,7 @@
             <select name="unitid" id="unitid" class="select" onchange="deptajx($(this).val())"> 
                 <option value="">请选择单位</option>
                 {volist name="unit" id="un"}
-                <option value="{$un.UnitId}" {if condition="$un.UnitId==$list.UnitId"}selected{/if}>{$un.unitname}</option>
+                <option value="{$un.UnitId}" {if condition="$un.UnitId==$list.UnitId"}selected{/if} {if condition="empty($list)"}selected{/if}>{$un.unitname}</option>
                 {/volist}        
             </select>
             </div>
@@ -123,12 +124,19 @@
         </td>
     </tr>
     <tr>
-        <td class="td_right">接口标识：</td>
-        <td> <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list.InterfaceID}"> <b style="color: red;font-size: 0.2em;">对应服务器 业务设置》业务编号</b> </td>  
+        <td class="td_right">接口编码：</td>
+        <td> <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list.InterfaceID?$list.InterfaceID:$InterfaceID}"> </td>  
         <td class="td_right">语音地址：</td>
         <td> 
             <input type="text" name="voice_addr" id="voice_addr" class="input-text lh30" size="6" value="{$list.voice_addr}"></td>  
         </td>  
+    </tr>
+    <tr>    
+        <td class="td_right">唯一编码：
+        </td>
+        <td>
+            <input type="text" name="ser_num" id="ser_num" class="input-text lh30" size="30" value="{$list.ser_num?$list.ser_num:$ser_num}" >
+        </td>
     </tr>
 </table>
             </div>

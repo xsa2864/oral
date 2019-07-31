@@ -61,7 +61,7 @@ class Appointment extends Base
         if($this->userid!=1)
         {
             $where[] = ['d.unitId','=',$this->unitid];
-            $hwh[]   = ['UnitId','=',$this->unitid];
+            $hwh[]   = ['unit_id','=',$this->unitid];
             $swh[]   = ['UnitId','=',$this->unitid];
             if($this->user['yygroup_id']){                
                 $lists = $this->getNextUid();
@@ -126,8 +126,8 @@ class Appointment extends Base
         $this->assign("wh",$wh);
         $this->assign("page",$page);
         $this->assign("list",$result);
-        $list_hall = db("hall")->where($hwh)->select();
-        $this->assign("list_hall",$list_hall);
+        $doctor = db("z_doctor")->where($hwh)->select();
+        $this->assign("doctor",$doctor);
         $list_d = db("serque")->where($swh)->select();
         $this->assign("list_d",$list_d);
         return $this->fetch('signdata');
@@ -312,6 +312,7 @@ class Appointment extends Base
             if($this->user['hallid']){
                 $where['HallNo'] = $this->hallid;
             }
+            $where['UnitId'] = $this->unitid;
         }
         $where['EnableFlag'] = 1;
         $result = db("serque")->where($where)->select();
@@ -388,7 +389,9 @@ class Appointment extends Base
         $data['doctor_id']   = input("queid",0);
         $data['d_name']      = input("quename",'');
         $data['despeakDate'] = input("date1",0);
-        $data['hallNo']      = $this->hallid;
+        $que = Db::name("serque")->where("QueId",$data['queId'])->find();
+        $data['hallNo']      = $que['HallNo'];
+        $data['unitId']      = $que['UnitId'];
         $time1 = input("time1",'');
         $arr = explode('-', $time1);
         $data['time_Part_S'] = $arr[0].':00';
@@ -453,6 +456,7 @@ class Appointment extends Base
             $arr['unitname']    = input("unitname",'');
             $arr['dispname']    = input("dispname",'');
             $arr['u_code']      = input("u_code",'');
+            $arr['unit_num']    = input("unit_num",'');
             $arr['api_code']    = input("api_code",'');
             $arr['AlternateField1'] = input("AlternateField1",'');
             $arr['EnableFlag']  = input("EnableFlag",'');
@@ -515,7 +519,13 @@ class Appointment extends Base
         $result = array();
         $result = db("unit")->where("UnitId",$id)->find();
         $this->assign('list',$result);
+        $u_code = Db::name("unit")->value("max(u_code)");
+        $api_code = Db::name("unit")->value("max(api_code)");
+        $unit_num = Db::name("unit")->value("max(unit_num)");
         // 模板输出
+        $this->assign("u_code",$u_code+1);
+        $this->assign("api_code",$api_code+1);
+        $this->assign("unit_num",$unit_num+1);
         return $this->fetch('editunit');
     }
     // 删除单位

@@ -37,6 +37,9 @@ class Message extends Base
 		if($id){
 			$where[] = ['id','=',$id];
 		}
+		if($this->userid!=1){
+			$where[] = ['unit_id','=',$this->unitid];
+		}
 		$doctor = db("z_doctor")->where($where)->select();
 		$this->assign("doctor",$doctor);
 		$this->assign("mid",$mid);

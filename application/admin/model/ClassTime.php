@@ -224,7 +224,7 @@ class ClassTime extends Model
 	        }       
 	        $date_w = array_unique($date_w); //去重
 
-	        $config  = db("config_fetch")->where("unitid",1)->find();
+	        $config  = db("config_fetch")->where("unitid",$ser['unit_id'])->find();
 	        $des_day = $config['des_day']>7 ? $config['des_day'] : 7;
 	        // 判断上班时间具体日期
 	        for ($i=1; $i <= $des_day; $i++) { 

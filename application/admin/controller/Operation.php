@@ -19,6 +19,9 @@ class Operation extends Base
 			$where = array();
 			$stime = strtotime($date.'-01');
 			$etime = strtotime("+1 month",$stime);
+			if($this->userid!=1){
+				$where[] = ['o.unit_id','=',$this->unitid];
+			}
 			// $where[] = ['add_time','>=',$stime];
 			// $where[] = ['add_time','<',$etime];
 			$list = db($table_name)->alias("o")

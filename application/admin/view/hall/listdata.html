@@ -32,7 +32,7 @@
                             <th width="12%">所属单位</th>
                             <th width="12%">上午</th>
                             <th width="12%">下午</th>
-                            <th width="8%">接口标识</th> 
+                            <th width="8%">唯一编码</th> 
                             <th width="5%">启用？</th>
                             <th width="">录入时间</th>
                             <th>操作</th>
@@ -48,7 +48,7 @@
                             <td>{$vo['unitname']}</td>
                             <td>{$vo['WorkTime1']} - {$vo['WorkTime2']}</td>
                             <td>{$vo['WorkTime3']} - {$vo['WorkTime4']}</td>
-                            <td>{$vo['SerInterface']?$vo['SerInterface']:'无'}</td>
+                            <td>{$vo['h_code']?$vo['h_code']:'无'}</td>
                             <td>
 	                            {if $vo['EnableFlag']==1}
 	                            启用

@@ -51,6 +51,13 @@ class Hall extends Base
     	$unit = db("unit")->where($where)->select();
     	$this->assign("unit",$unit);
         $this->assign("m_unitid",$this->unitid);
+        $h_code = Db::name("hall")->value("max(h_code)");
+        $SerInterface = Db::name("hall")->value("max(SerInterface)");
+        $hall_num = Db::name("hall")->value("max(hall_num)");
+        // 模板输出
+        $this->assign("h_code",$h_code+1);
+        $this->assign("SerInterface",$SerInterface+1);
+        $this->assign("hall_num",$hall_num+1);
     	return $this->fetch('edithall');
     }
     // 保存信息
@@ -61,7 +68,7 @@ class Hall extends Base
 	    $data['DispName']      = input('dispname','');
         $data['voice_addr']    = input('voice_addr','');
         $data['h_code']        = input('h_code','');
-	    $data['UnitId'] 	   = input('UnitId');
+	    $data['UnitId'] 	   = input('UnitId','');
 	    $data['EnableFlag']    = input('EnableFlag');
 	    $data['AlternateField1'] 	= input('synopsis');
 	    $data['WorkTime1']     = input('stime1');
@@ -70,6 +77,7 @@ class Hall extends Base
 	    $data['WorkTime4']     = input('etime2');
 	    $data['Despeak_Part']  = input('Despeak_Part');
 	    $data['SerInterface']  = input('intfaces','');
+        $data['hall_num']       = input('hall_num','');
         $data['title']         = input('title');
         $data['pic']           = input('pic');
         $data['status']        = input('status',0);
@@ -83,32 +91,39 @@ class Hall extends Base
             echo json_encode($re_msg);exit;
         }
 
-        if($data['h_code']){                
-            if(strlen($data['h_code'])!=4){
-                $re_msg['msg'] = '请填写4个字符唯一编码';
-                echo json_encode($re_msg);exit;
-            }   
+        if($data['h_code']){            
             $awh[] = ["h_code",'=',$data['h_code']];
-            $awh[] = ["HallNo",'<>',$hallno];
             $awh[] = ["UnitId",'=',$data['UnitId']];
-            $a_rs = db("hall")->where($awh)->select();
+            $a_rs = db("hall")->where($awh)->find();
             if($a_rs){
-                $re_msg['msg'] = '唯一编码已经存在，请更换';
-                echo json_encode($re_msg);exit;
+                if($a_rs['HallNo']!=$hallno){           
+                    $re_msg['msg'] = '唯一编码已经存在，请更换';
+                    return json($re_msg);
+                }
             }
         }
 
-        if($data['SerInterface']){                
-            if(strlen($data['SerInterface'])!=4){
-                $re_msg['msg'] = '请填写4个字符接口标识';
-                echo json_encode($re_msg);exit;
-            }   
-            $awh[] = ["SerInterface",'=',$data['SerInterface']];
-            $awh[] = ["HallNo",'<>',$hallno];
-            $a_rs = db("hall")->where($awh)->select();
-            if($a_rs){
-                $re_msg['msg'] = '接口标识已经存在，请更换';
-                echo json_encode($re_msg);exit;
+        if($data['SerInterface']){         
+            $awh[] = ["SerInterface",'=',$data['SerInterface']];            
+            $awh[] = ["UnitId",'=',$data['UnitId']];
+            $w_rs = db("hall")->where($awh)->find();
+            if($w_rs){
+                if($w_rs['HallNo']!=$hallno){                    
+                    $re_msg['msg'] = '接口编码已经存在，请更换';
+                    return json($re_msg);
+                }
+            }
+        }
+
+        if($data['hall_num']){            
+            $awh[] = ["hall_num",'=',$data['hall_num']];
+            $awh[] = ["UnitId",'=',$data['UnitId']];
+            $h_rs = db("hall")->where($awh)->find();
+            if($h_rs){
+                if($h_rs['HallNo']!=$hallno){           
+                    $re_msg['msg'] = '区域编码已经存在，请更换';
+                    return json($re_msg);
+                }
             }
         }
 

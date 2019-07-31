@@ -58,7 +58,7 @@ class Fetch extends Controller
 
 	public function showCard()
 	{
-		return $this->fetch('vueCard');
+		return $this->fetch('hall'); //vueCard
 	}
 	// 保存区域
 	public function setHall()
@@ -167,7 +167,7 @@ class Fetch extends Controller
 		$que_id = input("que_id",0);
 		$flag = true;
 
-		$config = Db::name("config_fetch")->where("unitid",1)->lock(true)->find();
+		$config = Db::name("config_fetch")->where("unitid",$this->unitid)->lock(true)->find();
 		$limit = $config['fetch_number'];
 
         $where[] = ['over_time','>=',strtotime(date("Y-m-d",time()))];

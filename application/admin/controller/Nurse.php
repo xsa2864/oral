@@ -16,6 +16,7 @@ class Nurse extends Base
 			if($this->user['hallid']){
 				$where[] = ['t.hall_id','=',$this->hallid];
 			}
+			$where[] = ['t.unit_id','=',$this->unitid];
 		}
 		// $where[] = ['t.status','>=',1];
 		// $where[] = ['t.status','<=',2];
@@ -47,6 +48,9 @@ class Nurse extends Base
 			$where[] = ['status','=',$status];
 		}
 		$where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+		if($this->userid!=1){
+			$where[] = ['unit_id','=',$this->unitid];
+		}
  		$result = db("z_ticket")->where($where)->order("sort desc,pid asc")->select();
 
 		if($result){
@@ -64,6 +68,9 @@ class Nurse extends Base
 		$where = array();
 		$where[] = ['id','=',$id];
 		$where[] = ['status','in',[0,5]];
+		if($this->userid!=1){
+			$where[] = ['unit_id','=',$this->unitid];
+		}
  		$result = db("z_ticket")->where($where)->find();
 		if($result){
 			$rs = db("z_ticket")->where("id",$id)->update(['status'=>1]);
@@ -168,6 +175,7 @@ class Nurse extends Base
 			if($this->user['hallid']){
 				$where['HallNo'] = $this->hallid;
 			}
+			$where[] = ['UnitId','=',$this->unitid];
 		}
 		$list  = db("serque")->where($where)->select();
 		$this->assign("list",$list);
@@ -187,7 +195,10 @@ class Nurse extends Base
 		$where[] = ['d.idcard|d.mobile','like','%'.$idcard.'%'];
 		$where[] = ['d.status','=',1];
 		$where[] = ['d.despeakTime','>',strtotime(date("Y-m-d",time()))];
-		$result = db("despeak")
+		if($this->userid!=1){
+			$where[] = ['unitId','=',$this->unitid];
+		}
+ 		$result = db("despeak")
 					->alias('d')
 					->field('d.*')
 					->where($where)

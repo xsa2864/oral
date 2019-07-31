@@ -67,7 +67,7 @@
         <td class="td_right">唯一值：
         </td>
         <td>
-            <input type="text" name="original_id" id="original_id" class="input-text lh30" size="30" placeholder="唯一值">
+            <label>{$list.original_id}</label>
         </td>  
     </tr>
     <tr>     
@@ -108,7 +108,7 @@
     <tr>
         <td class="td_right">号码前置字符：</td>
         <td class="">
-            <input type="text" name="NoChar" class="input-text lh30" size="15" style="width: 62px;" value="{$list.NoChar}">[必填]
+            <input type="text" name="NoChar" class="input-text lh30" size="15" style="width: 62px;" value="{$list.NoChar?$list.NoChar:'A'}">[必填]
         </td>                   
         <td class="td_right">起始号码：</td>
         <td>
@@ -118,27 +118,27 @@
     <tr>
         <td class="td_right">每小时预约人数：</td>
         <td class="">
-            <input type="text" name="HourSum" class="input-text lh30" size="15" style="width: 62px;" value="{$list.HourSum}">
+            <input type="text" name="HourSum" class="input-text lh30" size="15" style="width: 62px;" value="{$list.HourSum?$list.HourSum:$config_fetch['yuyue_num']}">
         </td>    
     </tr>
     <tr>
         <td class="td_right">上午起始：</td>
         <td>                                               
-            <input type="time" name="stime1" class="select" value="{notempty name='list'}{$list.WorkTime1}{else /}09:00{/notempty}">[时-分，必填]
+            <input type="time" name="stime1" class="select" value="{notempty name='list'}{$list.WorkTime1}{else /}{$config_fetch['gs_time']}{/notempty}">[时-分，必填]
         </td>
         <td class="td_right">上午结束：</td>
         <td>
-            <input type="time" name="etime1" class="select" value="{notempty name='list'}{$list.WorkTime2}{else /}12:00{/notempty}">[时-分，必填]
+            <input type="time" name="etime1" class="select" value="{notempty name='list'}{$list.WorkTime2}{else /}{$config_fetch['ge_time']}{/notempty}">[时-分，必填]
         </td>
     </tr>
     <tr>
         <td class="td_right">下午起始：</td>
         <td>
-            <input type="time" name="stime2" class="select" value="{notempty name='list'}{$list.WorkTime3}{else /}14:00{/notempty}">[时-分，必填]
+            <input type="time" name="stime2" class="select" value="{notempty name='list'}{$list.WorkTime3}{else /}{$config_fetch['as_time']}{/notempty}">[时-分，必填]
         </td>
         <td class="td_right">下午结束：</td>
         <td>
-            <input type="time" name="etime2" class="select" value="{notempty name='list'}{$list.WorkTime4}{else /}18:00{/notempty}">[时-分，必填]
+            <input type="time" name="etime2" class="select" value="{notempty name='list'}{$list.WorkTime4}{else /}{$config_fetch['ae_time']}{/notempty}">[时-分，必填]
         </td>
     </tr>
     <tr>
@@ -193,8 +193,9 @@
     </tr>
     <tr>
         <td class="td_right">接口标识：</td>
-        <td> <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list.InterfaceID}"> <b style="color: red;font-size: 1em;">对应服务器 业务设置》业务编号</b> </td>  
-        <td class="td_right"</td>
+        <td> <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list.InterfaceID}">
+        </td>  
+        <td class="td_right"></td>
         <td> </td>  
     </tr>
 </table>

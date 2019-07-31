@@ -145,7 +145,7 @@ class Terminal extends Base
 
         $org = new \app\pavilion\model\Organize;
         $hall_ip = $org->getLargeIp($hall_id);
-        $str = db("config_fetch")->where("unitid",1)->value("warning");
+        $str = db("config_fetch")->where("unitid",$this->unitid)->value("warning");
         $data['warning'] = $str.$room_name;
         if(!empty($hall_ip)){            
             $soc = new \app\admin\model\Socket;

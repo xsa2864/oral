@@ -18,7 +18,7 @@ class Order extends Controller
 			$cla = new \app\admin\model\ClassTime;
 	        $data['list'] = $cla->checktime($doctor_id,$que_id);
 		}
-        $data['if_name'] = DB::name("config_fetch")->where("unitid",1)->value("if_name");
+        $data['if_name'] = DB::name("config_fetch")->where("unitid",$this->unitid)->value("if_name");
         $where[] = ['c.doctor_id','=',$doctor_id];
         $where[] = ['c.que_id','=',$que_id];
 		$data['path'] = DB::name("z_doctor_class")->alias("c")
@@ -74,7 +74,7 @@ class Order extends Controller
             'queId'     =>$data['queId'],
             'despeakDate'=>$data['despeakDate'],
             );
-        $data['fetchTime'] = Db::name("config_fetch")->where("unitid",1)->value("fetchTime");
+        $data['fetchTime'] = Db::name("config_fetch")->where("unitid",$this->unitid)->value("fetchTime");
         $result = DB::name("despeak")->where($where)->find();
         if(empty($result)){
             $data['unitId']   = Db::name("serque")->where("QueId",$data['queId'])->value("UnitId");

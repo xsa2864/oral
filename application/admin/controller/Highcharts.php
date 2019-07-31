@@ -338,7 +338,10 @@ class Highcharts extends Base
     {
         $wh = array();
         if($this->userid!=1){
-            $wh[] = ['HallNo','=',$this->hallid];
+            if($this->hallid){
+                $wh[] = ['HallNo','=',$this->hallid];
+            }
+            $wh[] = ['UnitId','=',$this->unitid];
         }
         $hall = db("hall")->where($wh)->select();
         $this->assign("hall",$hall);

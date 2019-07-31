@@ -57,7 +57,7 @@ class Http extends Controller
 		$str = $id.$st.$area.$SecretKey;
 		$ch_sig = strtolower(md5($str));
 		
-		$config = db("config_fetch")->where("unitid",0)->find(); 
+		$config = db("config_fetch")->where("unitid",$this->unitid)->find(); 
 
 		// 是否验证通过
 		if($ch_sig==$sig){

@@ -21,6 +21,7 @@ class Voice extends Base
                 $wh[]       = ['HallNo','=',$this->hallid];
                 $where[]    = ['s.hall_id','=',$this->hallid];
             }            
+            $where[]    = ['s.unit_id','=',$this->unitid];
         }        
         $where[]    = ['s.type','=',1];
         $list = db("z_voice")->alias("s")

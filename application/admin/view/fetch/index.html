@@ -33,7 +33,7 @@
                 <tr>
                     <td class="td_right">呼叫保安提示语:</td>
                     <td class=""> 
-                        <input type="text" name="warning" class="input-text lh30" size="20" value="{$list.warning}">
+                        <input type="text" name="warning" class="input-text lh30" size="20" value="{$list.warning|default='请保安人员与护士到'}">
                     </td>
                     <td>用于显示或者语音呼叫保安</td>
                 </tr>
@@ -70,56 +70,93 @@
                   <td>是否可以预约当天的预约</td>
                 </tr>    
                 <tr>
-                  <td class="td_right">提前多少分钟取号:</td>
-                  <td class=""> 
-                    <input type="text" name="fetchTime" class="input-text lh30" size="20" value="{$list.fetchTime}">
-                  </td>
-                  <td>提前多少分钟取号</td>
-                </tr>  
-                <tr>
                   <td class="td_right">可以提前预约多少天:</td>
                   <td class=""> 
-                    <input type="text" name="des_day" class="input-text lh30" size="20" value="{$list.des_day}">
+                    <input type="text" name="des_day" class="input-text lh30" size="20" value="{$list.des_day|default='10'}">
                   </td>
                   <td>可以提前预约多少天</td>
                 </tr>  
                 <tr>
+                  <td class="td_right">预约次数:</td>
+                  <td class=""> 
+                    <input type="text" name="blacklist_num" class="input-text lh30" size="20" value="{$list.blacklist_num|default='5'}">
+                  </td>
+                  <td>预约人连续n次预约完成后不取消也不到现场列入黑名单</td>
+                </tr>
+                <tr>
+                  <td class="td_right">预约人数:</td>
+                  <td class=""> 
+                    <input type="text" name="yuyue_num" class="input-text lh30" size="20" value="{$list.yuyue_num|default='6'}">
+                  </td>
+                  <td>预约人数</td>
+                </tr>
+                <tr>
+                  <td class="td_right">天 数 :</td>
+                  <td class=""> 
+                    <input type="text" name="blacklist_day" class="input-text lh30" size="20" value="{$list.blacklist_day|default='60'}">
+                  </td>
+                  <td>列入黑名单后n天内不可以再预约</td>
+                </tr>
+                <tr>
+                  <td class="td_right">提前多少分钟取号:</td>
+                  <td class=""> 
+                    <input type="text" name="fetchTime" class="input-text lh30" size="20" value="{$list.fetchTime|default='90'}">
+                  </td>
+                  <td>提前多少分钟取号</td>
+                </tr>  
+                <tr>
                   <td class="td_right">卡片取号次数:</td>
                   <td class=""> 
-                    <input type="text" name="fetch_number" class="input-text lh30" size="20" value="{$list.fetch_number}">
+                    <input type="text" name="fetch_number" class="input-text lh30" size="20" value="{$list.fetch_number|default='3'}">
                   </td>
                   <td>一个卡片一天能领取几个号码</td>
                 </tr>
                   <tr>
                   <td class="td_right">卡片前置字符:</td>
                   <td class="">
-                    <input type="text" name="prefix" class="input-text lh30" size="20" value="{$list.prefix}">
+                    <input type="text" name="prefix" class="input-text lh30" size="20" value="{$list.prefix|default=''}">
                   </td>
                   <td>有填则判断卡片是否符合，否则判断是否在后台录入过卡片</td>
                 </tr>                
                 <tr>
-                  <td class="td_right">预约次数:</td>
-                  <td class=""> 
-                    <input type="text" name="blacklist_num" class="input-text lh30" size="20" value="{$list.blacklist_num}">
-                  </td>
-                  <td>预约人连续n次预约完成后不取消也不到现场列入黑名单</td>
-                </tr>
-                <tr>
-                  <td class="td_right">天 数 :</td>
-                  <td class=""> 
-                    <input type="text" name="blacklist_day" class="input-text lh30" size="20" value="{$list.blacklist_day}">
-                  </td>
-                  <td>列入黑名单后n天内不可以再预约</td>
-                </tr>
-                <tr>
                   <td class="td_right">职称类型:</td>
                   <td class=""> 
-                    <input type="text" name="degree" class="input-text lh30" size="20" value="{$list.degree}">
+                    <input type="text" name="degree" class="input-text lh30" size="20" value="{$list.degree|default='医师,副主任医师,主任医师,副教授,教授'}">
                   </td>
                   <td>用英文逗号(,)分隔开</td>
                 </tr>
                 <tr>
+                  <td class="td_right">上午开始时间:</td>
+                  <td class=""> 
+                    <input type="time" name="gs_time" class="input-text lh30" size="20" value="{$list.gs_time|default='8:30'}">
+                  </td>
+                  <td>医生上午预约开始时间</td>
+                </tr>
+                <tr>
+                  <td class="td_right">上午结束时间:</td>
+                  <td class=""> 
+                    <input type="time" name="ge_time" class="input-text lh30" size="20" value="{$list.ge_time|default='12:00'}">
+                  </td>
+                  <td>医生上午预约结束时间</td>
+                </tr>
+                <tr>
+                  <td class="td_right">下午开始时间:</td>
+                  <td class=""> 
+                    <input type="time" name="as_time" class="input-text lh30" size="20" value="{$list.as_time|default='14:00'}">
+                  </td>
+                  <td>医生下午预约开始时间</td>
+                </tr>
+                <tr>
+                  <td class="td_right">下午结束时间:</td>
+                  <td class=""> 
+                    <input type="time" name="ae_time" class="input-text lh30" size="20" value="{$list.ae_time|default='18:30'}">
+                  </td>
+                  <td>医生下午预约结束时间</td>
+                </tr>
+
+                <tr>
                     <td colspan="3" style="text-align: center;">
+                      <input type="hidden" name="id" value="{$list.id}">
                         <input type="button" name="button" onclick="save()" class="btn btn82 btn_save2" value="保存"> 
                         <input type="reset" name="button" class="btn btn82 btn_res" value="重置"> 
                     </td>

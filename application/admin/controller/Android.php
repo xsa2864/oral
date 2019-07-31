@@ -22,6 +22,7 @@ class Android extends Base
                 $wh[]       = ['HallNo','=',$this->hallid];
                 $where[]    = ['s.hall_id','=',$this->hallid];
             }   
+            $where[]    = ['s.unit_id','=',$this->unitid];
         }        
         $where[]    = ['s.type','=',0];
         $list = db("z_voice")->alias("s")

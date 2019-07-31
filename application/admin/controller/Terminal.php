@@ -35,7 +35,7 @@ class Terminal extends Base
 		$where = array();
 		if($this->userid!=1){
             if($this->hallid){
-                $where['HallNo'] = $this->hallid;
+                $where[] = ['HallNo','=',$this->hallid];
             }
             $where[] = ['UnitId','=',$this->unitid];
         }
