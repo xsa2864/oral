@@ -117,14 +117,14 @@
             <select name="hall_id" id="hall_id" class="select"> 
                 <option value="">请选择区域</option>
                 {volist name="hall" id="un"}
-                <option value="{$un.HallNo}" {if condition="$un.HallNo==$list.HallNo"}selected{/if}>{$un.HallName}</option>
+                <option value="{$un.HallNo}" {if condition="$un.HallNo==$list.HallNo || $un.HallNo==$now_hall_id"}selected{/if}>{$un.HallName}</option>
                 {/volist}        
             </select>
             </div>
         </td>
     </tr>
     <tr>
-        <td class="td_right">接口编码：</td>
+        <td class="td_right">接口标识：</td>
         <td> <input type="text" name="intfaces" id="intfaces" class="input-text lh30" size="30" value="{$list.InterfaceID?$list.InterfaceID:$InterfaceID}"> </td>  
         <td class="td_right">语音地址：</td>
         <td> 

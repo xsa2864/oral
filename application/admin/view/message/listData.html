@@ -24,6 +24,7 @@
         <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" style="font-size: 1rem;">
             <tr>
                <th width="50">ID</th>
+               <th width="12%">单位名称</th>
                <th width="12%">区域名称</th>
                <th width="80">状态</th>
                <th width="12%">医生</th>
@@ -35,6 +36,7 @@
             {volist name="list" id="vo"}
             <tr class="tr td_center">
                <td>{$vo.id}</td>
+               <td>{$vo.unitname}</td>     
                <td>{$vo.HallName}</td>               
                <td>{$vo.type==1?'接收':'发送'}</td>
                <td>{$vo.QueName}</td>

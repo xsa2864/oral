@@ -104,8 +104,9 @@ var vm = new Vue({
     ,methods:{
         getList:function(page,next){
             var vm = this
+            unitid = localStorage.getItem("unitid");
             axios
-                .get('{:url("/api/a1/article/getList")}',{params:{'cate_id':1,'page':page}})
+                .get('{:url("/api/a1/article/getList")}',{params:{'cate_id':1,'page':page,'unitid':unitid}})
                 .then(function(res){
                     for(item in res.data.list){
                         vm.list.push(res.data.list[item])

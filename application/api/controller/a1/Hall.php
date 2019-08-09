@@ -11,9 +11,6 @@ class Hall extends Controller
 	public function selectList()
 	{
 		$unitid = input("unitid",0);
-        if(Cookie::has('unitid') && $unitid==0){
-            $unitid = Cookie::get('unitid');
-        }
         $page = input("page",1);
 		$page_size = 10;
         $where = array();

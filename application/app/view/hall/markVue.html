@@ -204,6 +204,7 @@ var vm = new Vue({
                     vm.path = res.data.path
                     vm.if_name = res.data.if_name
                     if(res.data.path){
+                        vm.params.unit_id   = res.data.path.unit_id
                         vm.params.hall_id   = res.data.path.hall_id
                         vm.params.que_id    = que_id
                         vm.params.qname     = res.data.path.qname

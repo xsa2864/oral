@@ -18,16 +18,17 @@ class Order extends Controller
 			$cla = new \app\admin\model\ClassTime;
 	        $data['list'] = $cla->checktime($doctor_id,$que_id);
 		}
-        $data['if_name'] = DB::name("config_fetch")->where("unitid",$this->unitid)->value("if_name");
         $where[] = ['c.doctor_id','=',$doctor_id];
         $where[] = ['c.que_id','=',$que_id];
-		$data['path'] = DB::name("z_doctor_class")->alias("c")
-						->field("s.HallNo as hall_id,h.HallName as hname,s.QueName as qname,t.QueName as dname")
+        $result = DB::name("z_doctor_class")->alias("c")
+						->field("t.unit_id,s.HallNo as hall_id,h.HallName as hname,s.QueName as qname,t.QueName as dname")
 						->leftJoin("serque s","c.que_id=s.QueId")
 						->leftJoin("z_doctor t","t.id=c.doctor_id")
 						->leftJoin("hall h","h.HallNo=s.HallNo")
 						->where($where)
 						->find();
+		$data['path'] = $result;
+        $data['if_name'] = DB::name("config_fetch")->where("unitid",$result['unit_id'])->value("if_name");
 		return json($data);
 	}
 	// 获取时间
@@ -54,6 +55,7 @@ class Order extends Controller
         $data['doctor_id']   = input("doctor_id",0);
         $data['d_name']      = input("dname",'');
         $data['hallName']    = input("hname",'');
+        $data['unitId']      = input("unit_id",'');
         $data['despeakDate'] = input("date",0);
         $time = input("time",'');
         $arr = explode('-', $time);
@@ -71,13 +73,12 @@ class Order extends Controller
         $data['hallNo']      = input("hall_id",'');
         $where = array(
             'idcard'     =>$data['idcard'],
-            'queId'     =>$data['queId'],
+            'queId'      =>$data['queId'],
             'despeakDate'=>$data['despeakDate'],
             );
-        $data['fetchTime'] = Db::name("config_fetch")->where("unitid",$this->unitid)->value("fetchTime");
+        $data['fetchTime'] = Db::name("config_fetch")->where("unitid",$data['unitId'])->value("fetchTime");
         $result = DB::name("despeak")->where($where)->find();
-        if(empty($result)){
-            $data['unitId']   = Db::name("serque")->where("QueId",$data['queId'])->value("UnitId");
+        if(empty($result)){            
             $data['platform'] = '';
             $id = DB::name("despeak")->insertGetId($data);
             if($id){

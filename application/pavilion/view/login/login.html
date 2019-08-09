@@ -20,7 +20,9 @@
     	<div class="layui-form-item">
 		    <span class="layui-breadcrumb">
 		    	<span>配置信息：</span>
+			  <a><cite>{$ter.unitname}</cite></a>
 			  <a><cite>{$ter.HallName}</cite></a>
+			  <br>
 			  <a><cite>{$ter.room_name}</cite></a>
 			  <a><cite>{$ter.seat_name}</cite></a>
 			</span>
@@ -34,6 +36,7 @@
         <input type="password" name="password" id="LAY-user-login-password" lay-verify="required" placeholder="密码" class="layui-input">
       </div>
       <div class="layui-form-item">
+      	<input type="hidden" name="unit_id" value="{$ter.unit_id}">
         <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="LAY-user-login-submit">登 录</button>
       </div>
       <div class="layui-trans layui-form-item layadmin-user-login-other">

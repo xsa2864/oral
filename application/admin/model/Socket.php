@@ -13,10 +13,10 @@ class Socket extends Model
         $re_msg['code'] = 201;
         $re_msg['msg']  = "执行失败";      
 
-        $org = new \app\pavilion\model\Organize();
+        $org = new \app\api\model\Organize();
         $devices_ip = $org->getConnIp($id,$type);   
         $devices_ip = $type=='z_admin'?'9.'.$devices_ip:$devices_ip;
-
+      
         $content = json_encode($data);
         // 推送的url地址，使用自己的服务器地址
         $config = Config::get("app.socket_url");

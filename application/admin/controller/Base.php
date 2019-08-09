@@ -24,6 +24,10 @@ class Base extends Controller
         $this->userid = Session::get('user.UserId');
         $this->hallid = Session::get('user.hallid');
 
+        if(!Session::get('user')){
+            return $this->redirect('admin/login/index');
+        }
+        
         $where[] = ['status','=',1] ;
         $where[] = ['ismenu','=',1] ;
         $admin_flag = 0;
@@ -53,14 +57,20 @@ class Base extends Controller
         if($this->hallid){
             $whm[] = ['m.hall_id','=',$this->hallid];
         }
+        if($this->unitid){
+            $whm[] = ['m.unit_id','=',$this->unitid];
+        }
         $whm[] = ['m.status','=',0];
         $whm[] = ['m.type','=',1];
         $msg_list = db("z_message")->alias("m")->field("m.id,d.QueName,m.content")->leftJoin("z_doctor d","d.id=m.doctor_id")->where($whm)->order("d.id","desc")->limit(10)->select();
         View::share('msg_list',$msg_list);
 
         $g = array();
-        if($this->userid!=1 && $this->hallid){
-            $g[] = ['hall_id','=',$this->hallid];
+        if($this->userid!=1){
+            $g[] = ['unit_id','=',$this->unitid];
+            if($this->hallid){
+                $g[] = ['hall_id','=',$this->hallid];
+            }
         }
         $g[] = ['status','=',0];
         $g[] = ['type','=',1];
@@ -68,11 +78,7 @@ class Base extends Controller
         View::share('msg_num',$msg_num['num']);
         if($this->unitid){
             View::share('unitname',db("unit")->where("UnitId",$this->unitid)->value("unitname"));
-        }
-
-        if(!Session::get('user')){
-            return $this->redirect('admin/login/index');
-        }
+        }        
 
         $rel = new \app\admin\model\Relations();
         $larr = $rel->getOnLine($this->unitid,$this->hallid,$this->userid); 

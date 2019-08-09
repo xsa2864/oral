@@ -10,7 +10,7 @@
                         <div style="float: left;">   
                             <i class="fa fa-add fa-file-sound-o"></i>
                         </div>
-                        <b>显示模板管理</b>
+                        <b>显示规则管理</b>
                     </div>
                     <div class="box_center">
                         <form  name="form1" class="jqtransform" >
@@ -108,6 +108,7 @@
                     <table width="100%" border="0" cellpadding="0" cellspacing="0"
                            class="list_table" id="table1">
                         <tr>
+                            <th width="10%">区域编码</th>
                             <th width="10%">所属区域</th>
                             <th width="10%">显示屏类型</th>
                             <th width="10%">标题名称</th><!-- 
@@ -126,6 +127,7 @@
                         {else /}
                         {volist name="list" id="vo"}
                         <tr class="tr td_center">
+                            <td>{$vo.hall_num|default=""}</td>
                             <td>{$vo.HallName|default="默认数据"}</td>
                             <td>
                                 {if($vo.screen_type==1)}

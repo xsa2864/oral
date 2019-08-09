@@ -97,7 +97,7 @@ class Permissions extends Base
             $arr = explode(',', $rs['rules']);
         }
 
-        $list = db("auth_rule")->order('sort desc')->select();
+        $list = db("auth_rule")->order('sort asc')->select();
         $list = $this->getc_Rule($list,0,$arr);
         
         $this->assign('id',$id);
@@ -149,11 +149,12 @@ class Permissions extends Base
     // 保存信息
     public function ruleSave(){
         $re_msg['success'] = 0;
-        $re_msg['msg'] = '保存失败';
+        $re_msg['msg']  = '保存失败';
         $data['pid']    = input("pid",0);
         $data['title']  = input("title",0);
         $data['name']   = input("name",0);
         $data['status'] = input("status",0);
+        $data['ico']    = input("ico",'');
         $data['ismenu'] = input("ismenu",0);
         $data['sort']   = input("sort",0);
         $data['condition'] = input("condition",'');

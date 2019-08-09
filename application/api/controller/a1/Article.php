@@ -15,6 +15,10 @@ class Article extends Controller
 		$page = input("page",1);
 		$page_size = 10;
 		$where[] = ['cate_id','=',$cate_id];
+		$unitid = input("unitid",0);
+		if($unitid){
+			$where[] = ['unitid','=',$unitid];
+        }
 		$result = DB::name("article")->field("content",true)->where($where)->page($page,$page_size)->select();
 		$count = DB::name("article")->where($where)->count();
 		$max_page = ceil($count/$page_size);
@@ -38,7 +42,11 @@ class Article extends Controller
 	{
 		$id 		= input("id",0);
 		$cate_id 	= input("cate_id",0);
+		$unitid = input("unitid",0);
 		$where = array();
+		if($unitid){
+			$where[] = ['unitid','=',$unitid];
+        }
 		if($id){
 			$where[] 	= ['id','=',$id];
 		}

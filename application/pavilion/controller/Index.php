@@ -106,6 +106,7 @@ class Index extends Controller
             $arr = $socket->changeSocke($this->ter['hall_id'],'z_admin',['devices_type'=>'message']);
             
             if($arr['code']==200){
+                $data['unit_id']    = $this->ter['unit_id'];
                 $data['hall_id']    = $this->ter['hall_id'];
                 $data['doctor_id']  = $this->doctor_id;
                 $data['type']       = 1;
@@ -156,15 +157,13 @@ class Index extends Controller
             $id_arr = explode(',', $id);
             $wh[] = ['QueId','in',$id_arr];
             $result = db("serque")->field("GROUP_CONCAT(QueName) as que_name")->where($wh)->find();
+            
             if($result){
-                // $devices_ip = request()->ip();
-                $ccd = new \app\api\model\CacheCode;
-                $devices_ip = $ccd->getCode();
+                $devices_ip = $this->ter['ip'];
                 $set = new \app\pavilion\model\Organize();
                 $set->setTerminal($this->doctor_id,$devices_ip,$result['que_name'],$id);                
             }
         }
-
         // echo json_encode($re_msg);
         return json($re_msg);
     }
@@ -363,7 +362,7 @@ class Index extends Controller
         $quick = new \app\api\model\PushMsg;
         $result = $quick->executeQueueM($doctor_id,$status);
         if($result['success']==1){
-            $next = DB::name("config_fetch")->where("unitid",$this->unitid)->value("next");
+            $next = DB::name("config_fetch")->where("unitid",$this->ter['unit_id'])->value("next");
             if($next){
                 $re_msg['code'] = 208;
             }else{

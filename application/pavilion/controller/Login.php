@@ -28,8 +28,9 @@ class Login extends Controller
     {              
         $ccd = new \app\api\model\CacheCode;
         $ip = $ccd->getCode();     
-        $ter = DB::name("z_terminal")->alias("z")->field("z.seat_name,z.room_name,h.HallName")
+        $ter = DB::name("z_terminal")->alias("z")->field("z.unit_id,z.seat_name,z.room_name,h.HallName,u.unitname")
                 ->leftJoin("hall h","h.HallNo=z.hall_id")
+                ->leftJoin("unit u","u.UnitId=z.unit_id")
                 ->where("ip",$ip)->find();
         $info['username'] = Cookie::has('username')?Cookie::get("username"):'';
         // $info['password'] = Cookie::has('password')?Cookie::get("password"):'';
@@ -49,7 +50,8 @@ class Login extends Controller
         $re_msg['msg']      = '登录失败';
 
         $data['staff_code'] = input("username","");
-        $data['password'] = input("password","");   
+        $data['password']   = input("password","");   
+        $unit_id            = input("unit_id","");   
         Cookie::forever("username",$data['staff_code']);
         $sur = new \app\admin\model\Survey;
         $arr = $sur->isValid();
@@ -59,7 +61,9 @@ class Login extends Controller
             exit;
         }
 
-        $user = db("z_doctor")->alias("m")->where('m.staff_code',$data['staff_code'])->find();
+        $uw[] = ['m.staff_code','=',$data['staff_code']];
+        $uw[] = ['m.unit_id','=',$unit_id];
+        $user = db("z_doctor")->alias("m")->where($uw)->find();
         
         if($user){            
             if (md5($data['password']) != $user['password']){
@@ -95,11 +99,32 @@ class Login extends Controller
         $ccd = new \app\api\model\CacheCode;
         $ip = $ccd->getCode();   
         cookie('user_info', null);
-        $hall = DB::name("hall")->field("HallNo,HallName")->where("EnableFlag",1)->select();        
-        $this->assign("hall",$hall);
-        $ter = DB::name("z_terminal")->field("id,hall_id,room_name,seat_name,screen_code")->where("ip",$ip)->find();
+        $unit = DB::name("unit")->field("UnitId,unitname")->where("EnableFlag",1)->select();         
+        $this->assign("unit",$unit);
+        $ter = DB::name("z_terminal")->field("id,unit_id,hall_id,hall_name,room_name,seat_name,screen_code")->where("ip",$ip)->find();
         $this->assign("ter",$ter);
         return $this->fetch('register');
+    }
+    // 获取终端
+    public function getHall(){
+        $re_msg['code'] = 200;
+        $re_msg['msg']  = "获取成功";  
+
+        $unit_id    = input("unit_id",0);
+        $list = db("hall")->where("UnitId",$unit_id)->select();
+        // $json       = cache("devices");
+        // $arr        = json_decode($json,1);
+        // $list       = array();
+        // if($arr){
+        //     foreach ($arr as $key => $value) {
+        //         if($value['devices_area_id']==$hall_id){
+        //             $list[]       = $value;
+        //         }
+        //     }
+        // }
+
+        $re_msg['data'] = $list;
+        echo json_encode($re_msg);
     }
     // 获取终端
     public function getTerminal(){
@@ -127,7 +152,8 @@ class Login extends Controller
         $re_msg['code'] = 201;
         $re_msg['msg']  = "注册失败";  
         $re_msg['data'] = '';
-        $terminal_id      = input("terminal_id",0);
+        $terminal_id    = input("terminal_id",0);
+        $unit_id        = input("unit_id",0);
         // $ip      = request()->ip();
         $ccd = new \app\api\model\CacheCode;
         $ip = $ccd->getCode();        
@@ -136,6 +162,7 @@ class Login extends Controller
             $unset['ip'] = '';
             DB::name("z_terminal")->where("ip",$ip)->update($unset);
             $data['ip'] = $ip;
+            $data['unit_id'] = $unit_id;
             $rs = DB::name("z_terminal")->where("id",$terminal_id)->update($data);
             if($rs!==false){
                 $re_msg['code'] = 200;

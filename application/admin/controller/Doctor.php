@@ -6,6 +6,7 @@ use think\Controller;
 use think\Request;
 use think\Db;
 use think\Config;
+use think\facade\Cookie;
 use think\facade\Env;
 
 class Doctor extends Base
@@ -20,12 +21,14 @@ class Doctor extends Base
             if($this->hallid){
                 $where['s.HallNo'] = $this->hallid;
             }
-        }else if($id!=0) {
+        }
+        if($id) {
             $where['s.UnitId'] = $id;
         }
         $hall_id = input("hall_id",'');
         if($hall_id){
             $where['s.HallNo'] = $hall_id;
+            cookie("now_hall_id",$hall_id);
         }
     	$list = db("serque")->alias("s")
                 ->field('s.*,u.unitname,h.HallName')
@@ -45,7 +48,12 @@ class Doctor extends Base
 
         $where = array();
         $wh[] = ["EnableFlag",'=',1];
-        $wh[] = ["UnitId",'=',$this->unitid];
+        if($this->userid!=1){
+            $wh[] = ["UnitId",'=',$this->unitid];
+            if($this->hallid){
+                $wh[] = ['HallNo','=',$this->hallid];
+            }
+        }
         $hall = db("hall")->where($wh)->select();
         $where['QueId'] = $id;
     	$result = db("serque")->where($where)->find();
@@ -59,7 +67,8 @@ class Doctor extends Base
             $where['UnitId'] = $this->unitid;
         }
         $unit = db("unit")->where($where)->select();
-
+        $now_hall_id = cookie("now_hall_id");
+        $this->assign("now_hall_id",$now_hall_id);
         $this->assign("unit",$unit);
         $this->assign("hall",$hall);
     	$this->assign("list",$result);
@@ -330,7 +339,7 @@ class Doctor extends Base
         $data['url']        = input('url','');
         $data['QueName']    = input('quename','');
         $data['status']     = input('status',0);
-        // $data['original_id']= input('original_id',0);
+        $data['original_id']= input('original_id',0);
         $data['type']       = input('type','');
         $data['step']       = input('step',1);
         $data['QueForm']    = input('QueForm',0);
@@ -371,15 +380,28 @@ class Doctor extends Base
             $re_msg['msg'] = '请选择单位';
             echo json_encode($re_msg);exit;
         }
-        // $oh[] = ["original_id",'=',$data['original_id']];
-        // $oh[] = ["unit_id",'=',$this->unitid];
-        // $ors = Db::name("z_doctor")->where($oh)->find();
-        // if($ors){
-        //     if($ors['id'] != $id){                
-        //         $re_msg['msg'] = '唯一值已经存在';
-        //         return json($re_msg);
-        //     }
-        // }
+        if($data['InterfaceID']){            
+            $ih[] = ["InterfaceID",'=',$data['InterfaceID']];
+            $ih[] = ["unit_id",'=',$this->unitid];
+            $irs = Db::name("z_doctor")->where($ih)->find();
+            if($irs){
+                if($irs['id'] != $id){                
+                    $re_msg['msg'] = '接口标识已经存在';
+                    return json($re_msg);
+                }
+            }
+        }
+        if($data['original_id']){            
+            $oh[] = ["original_id",'=',$data['original_id']];
+            $oh[] = ["unit_id",'=',$this->unitid];
+            $ors = Db::name("z_doctor")->where($oh)->find();
+            if($ors){
+                if($ors['id'] != $id){                
+                    $re_msg['msg'] = '唯一值已经存在';
+                    return json($re_msg);
+                }
+            }
+        }
         $flag = 0;
         if($id > 0){
             if($password){
@@ -449,6 +471,7 @@ class Doctor extends Base
         $wh['name']     = $name = input("name",'');
         $where = array();
         $swh = array();
+        $dwh = array();
         if($this->userid!=1){
             if($this->hallid){
                 $where[] = ['s.HallNo','=',$this->hallid];

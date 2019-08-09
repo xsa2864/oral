@@ -46,7 +46,7 @@
                     <td class="td_right">选择区域：</td>
                     <td class="">
                         <select name="hall_id" class="select"> 
-                            <option value="0">默认广告位</option> 
+                            <option value="0">默认区域</option> 
                             {volist name="hall" id="ad"}
                             <option value="{$ad.HallNo}" {if condition="$ad.HallNo==$list.hall_id"}selected{/if}>{$ad.HallName}</option> 
                             {/volist}
@@ -61,7 +61,6 @@
                             <option value="{$ad.id}" {if condition="$ad.id==$list.type"}selected{/if}>{$ad.title}</option> 
                             {/volist}
                         </select> 
-                        <i style="font-size: 0.5rem;color: red;">(上传5M以内的图片,推荐比例诊室屏抬头：1080*115   中间1015*538  综合屏：622*864)</i>
                     </td>
                 </tr>
                 <tr >
@@ -85,6 +84,13 @@
     </form> 
                     </td>
                     
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <i style="font-size: 0.5rem;color: red;">上传5M以内的图片，图片大小尽量小,图片推荐分辨率： 诊室背景（横）1920*1080、 诊室背景（竖）1080*1920 、  综合屏 背景（横）1920*1080、  综合屏背景（竖）1080*1920 、 综合屏中间：622*864
+                        </i>
+                    </td>
                 </tr>
                 <tr>
                     <td class="td_right">图片：</td>

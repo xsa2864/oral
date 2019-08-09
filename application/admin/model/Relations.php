@@ -237,6 +237,7 @@ class Relations extends Model
 		$data['sex'] 	= isset($arrs['sex'])?$arrs['sex']:0;
 		$data['birth'] 	= isset($arrs['birth'])?strtotime($arrs['birth']):0;
 		$data['pid'] 	= $data['code'] = isset($arrs['code'])?$arrs['code']:'';
+		$data['original_id'] = isset($arrs['original_id'])?$arrs['original_id']:0;
 
 	    $result = db("serque")->where("QueId",$QueId)->find();
 	    if($result){
@@ -318,6 +319,7 @@ class Relations extends Model
 	    	$data['que_id']  = $QueId;
 	    	$data['hall_id'] = $result['HallNo'];
 	    	$data['title']   = $result['QueName'];
+	    	$data['unit_id'] = $result['UnitId'];
 	    	$data['add_time']= time();
 	    	$data['in_date'] = date("Y-m-d H:i:s",time());
 
@@ -364,7 +366,7 @@ class Relations extends Model
 		$flag = false;
 		if($item){
 			if($item['status']==1){				
-				$config = db("config_fetch")->where("unitid",$this->unitid)->find(); 
+				$config = db("config_fetch")->where("unitid",$item['unitId'])->find(); 
 				$wh['d.idcard'] 		= $item['idcard'];
 				$wh['d.despeakDate'] 	= date("Y-m-d",time());
 				$wh['d.status']			= 2;
@@ -378,7 +380,7 @@ class Relations extends Model
 					$re_msg['msg'] 				= '超过取号限制次数';
 				}
 
-				$stime = strtotime($item['despeakDate'].$item['time_Part_S'])-$item['fetchTime']*60;
+				$stime = strtotime($item['despeakDate'].$item['time_Part_S'])-$config['fetchTime']*60;
 				$etime = strtotime($item['despeakDate'].$item['time_Part_O']);
 
 				if(strtotime(date("Y-m-d")."23:59:59") < $etime){

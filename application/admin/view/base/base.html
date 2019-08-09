@@ -243,9 +243,9 @@ body,td,th {
                     {/if}  
                     {if in_array(114,$rules)||$admin_flag}
                     <li>
-                        <a href="javascript:gourl('{:url("admin/voice/setvoice")}',114)">
+                        <a href="javascript:gourl('{:url("admin/nurse/getticket")}',148)">
                         <i class="fa fa-file-sound-o"></i>
-                        <div class="doc-icon-name">语音配置</div>
+                        <div class="doc-icon-name">取预约号</div>
                         </a>
                     </li>    
                     {/if}  
@@ -285,8 +285,8 @@ body,td,th {
                         <ul style="max-height: 250px;overflow-y: auto;">
                     {notempty name="$ilist"}
                         {volist name="$ilist" id="ld"}  
-                            <li onclick="sendMsg({$ld.id})" attrid="{$ld.id}">
-                                <i class="fa fa-user"></i>{$ld.title} {$ld.name}
+                            <li onclick="sendMsg({$ld.id})" attrid="{$ld.id}" title="{$ld.title}">
+                                <i class="fa fa-user"></i>{$ld.name} {$ld.title} 
                             </li>
                         {/volist} 
                     {else/}

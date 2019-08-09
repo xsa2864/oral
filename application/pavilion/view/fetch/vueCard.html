@@ -75,7 +75,7 @@
 </head>
 
 <body> 
-<div id="app" v-bind:style="baseStyle">
+<div id="app" v-bind:style="baseStyle" v-on:mousemove="mousemoves">
 	<div class="site-title" style="padding: 15px 0 15px 0;height: 20%;">
 	    <fieldset style="border: none;padding: 0;border-top: 1px solid #eee;" v-if="hall.title!=''">
 	    	<legend style="margin-left: 20px;padding: 0 10px;font-size: 4vw;font-weight: 300;text-align: center;">
@@ -202,8 +202,8 @@
 	</form>
 </div>
 
-	<!-- 区域配置 -->
-	<div style="display: block;width: 50px;height: 50px;position: fixed;top: 0px;" v-on:dblclick="changeHalls"></div>
+	<!-- 区域配置 /*width: 50px;height: 50px;*/-->
+	<div style="display: none;position: fixed;top: 0px;padding: 10px;  font-size: 18px;color: #ef1b14;cursor:pointer;" v-on:dblclick="changeHalls">双击返回</div>
 	<!-- 验证码 -->
 	<div id="line_pwd" style="display: none;">
 		<form class="layui-form layui-form-pane" style="padding: 10px 20px 0 20px;" v-on:submit.prevent="testing">
@@ -247,7 +247,7 @@
 		    </fieldset>
 		    <div style="text-align: center;padding: 10px;">
 			    <div class="layui-input-inline">
-			      <select name="unit_id" lay-verify="required" lay-filter="selectUnit" >
+			      <select name="unit_id" lay-verify="required" lay-filter="selectUnit">
 			        <option disabled="true" value="">选择单位</option>		       
 			        <option v-for="nts in units" v-bind:value="nts.UnitId">{{ nts.unitname }}</option>
 			      </select>
@@ -333,6 +333,7 @@ var vm = new Vue({
 		,btn_show:1
 		,ticket_list:''
 		,tickets_id:[]
+		,move:''
 	}
 	,computed:{
 		
@@ -360,6 +361,7 @@ var vm = new Vue({
 						}else{
 							vm.hall_id = res.data.hall_id							
 						}
+						
 						if(res.data.hall.pic){
 						    vm.baseStyle.backgroundSize = '100% 100%';
 						    vm.baseStyle.backgroundRepeat = 'no-repeat';
@@ -370,7 +372,7 @@ var vm = new Vue({
 					}
 				)
 
-		}
+		}		
 		,checkBtn:function(que_id,str){		//判断是否开启选择医生
 			if(this.hall.is_doctor){
 				this.getDoctor(que_id,str)
@@ -422,6 +424,7 @@ var vm = new Vue({
 							// layui.$("#result").focus()							
 							vm.demoPrint(false)
 							layer.msg(ress.msg)
+							history.go(-1)
 						}
 						vm.pageClose();
 					}else{
@@ -522,6 +525,15 @@ var vm = new Vue({
 				}
 			});  	
 		}
+		,mousemoves:function(){		
+			clearInterval(this.move)
+			this.op_scroll()
+		}
+		,op_scroll:function(){
+			this.move = setTimeout(res => {
+				history.go(-1)
+			},12000);
+		}
 		,setHall:function(){
 			var vm = this
 			var formSelects = layui.formSelects;
@@ -548,6 +560,8 @@ var vm = new Vue({
 			}
 		}
 		,changeHalls:function(){
+			location.href = "{:url('pavilion/fetch/showcard')}";
+			return false;
 			layer.open({
 			 	title:'验证码验证',
 				type: 1,
@@ -631,7 +645,7 @@ var vm = new Vue({
 		this.get()			
 		setTimeout(function(){
 			layui.$("#idcard").focus()
-		},300)
+		},300)		
 	}
 	,mounted:function(){
 	}

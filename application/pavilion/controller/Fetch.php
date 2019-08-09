@@ -60,6 +60,10 @@ class Fetch extends Controller
 	{
 		return $this->fetch('hall'); //vueCard
 	}
+	public function vueCard()
+	{
+		return $this->fetch('vueCard'); //vueCard
+	}
 	// 保存区域
 	public function setHall()
 	{
@@ -163,11 +167,12 @@ class Fetch extends Controller
 		$re_msg['code'] = 201;
         $re_msg['msg']  = "没有有效预约信息";
         $hall_id = cookie("hall_id")?cookie("hall_id"):0;
+        $unit_id = cookie("unit_id")?cookie("unit_id"):0;
 		$idcard = input("online_idcard",0);
 		$que_id = input("que_id",0);
 		$flag = true;
 
-		$config = Db::name("config_fetch")->where("unitid",$this->unitid)->lock(true)->find();
+		$config = Db::name("config_fetch")->where("unitid",$unit_id)->lock(true)->find();
 		$limit = $config['fetch_number'];
 
         $where[] = ['over_time','>=',strtotime(date("Y-m-d",time()))];

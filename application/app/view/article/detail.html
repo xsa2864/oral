@@ -73,8 +73,9 @@ var vm = new Vue({
             var vm = this
             let id = this.getUrlKey("id")
             let cate_id = this.getUrlKey("cate_id")
+            let unitid = localStorage.getItem("unitid");
             axios
-                .get('{:url("/api/a1/article/getDetail")}',{params:{'id':id,'cate_id':cate_id}})
+                .get('{:url("/api/a1/article/getDetail")}',{params:{'id':id,'cate_id':cate_id,'unitid':unitid}})
                 .then(function(res){
                     if(res.data){
                         vm.item = res.data

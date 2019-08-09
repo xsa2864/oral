@@ -92,12 +92,12 @@ class Ads extends Base
             $re_msg['msg'] = '广告类型不能为空';
             echo json_encode($re_msg);exit;
         }
-        if($this->userid!=1){
-            if(empty($data['hall_id'])){
-                $re_msg['msg'] = '请选择区域';
-                echo json_encode($re_msg);exit;
-            }
-        }
+        // if($this->userid!=1){
+        //     if(empty($data['hall_id'])){
+        //         $re_msg['msg'] = '请选择区域';
+        //         echo json_encode($re_msg);exit;
+        //     }
+        // }
 
         $arr = array();
         if(!empty($pic)){

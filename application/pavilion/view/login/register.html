@@ -23,22 +23,31 @@
 		    	<span>配置信息：</span>
 			  <a>
 			  	<cite>
-			  	{volist name="hall" id="vo"}
-		        {if $ter.hall_id == $vo.HallNo}{$vo.HallName}{/if}
+			  	{volist name="unit" id="vo"}
+		        	{if $ter.unit_id == $vo.UnitId}{$vo.unitname}{/if}
 		        {/volist}
 		    	</cite>
 			  </a>
+			  <a><cite>{$ter.hall_name}</cite></a>
+			  <br>&nbsp;&nbsp;
 			  <a><cite>{$ter.room_name}</cite></a>
 			  <a><cite>{$ter.seat_name}</cite></a>
 			</span>
 	    </div>
 	    <div class="layui-form-item">
 		    <div class="layui-input-fluid">
-		      <select name="hall_id" lay-verify="required" lay-filter="aihao">
-		        <option value="">选择诊区</option>
-		        {volist name="hall" id="vo"}
-		        <option value="{$vo.HallNo}"s>{$vo.HallName}</option>
+		      <select name="unit_id" lay-verify="required" lay-filter="unit">
+		        <option value="">选择单位</option>
+		        {volist name="unit" id="vo"}
+		        <option value="{$vo.UnitId}"s>{$vo.unitname}</option>
 		        {/volist}
+		      </select>
+		    </div>
+		</div>
+	    <div class="layui-form-item">
+		    <div class="layui-input-fluid">
+		      <select name="hall_id" id="hall_id" lay-verify="required" lay-filter="aihao">
+		        <option value="">选择区域</option>		       
 		      </select>
 		    </div>
 		</div>
@@ -61,7 +70,24 @@
 <script>
 layui.use(['form','element'], function(){
 	var $ = layui.$
-	,form = layui.form;  	
+	,form = layui.form;  
+	form.on('select(unit)',function(data) {
+		$.post('{:url("pavilion/login/getHall")}',
+			{"unit_id":data.value},
+			function(res){
+				if(res.code==200){
+					var str = '<option value="">选择区域</option>';
+					var da = res.data;
+					for(x in da){
+						str += '<option value="'+da[x].HallNo+'">';
+						str += da[x].HallName;
+						str += '</option>';
+					}
+					$("#hall_id").html(str)
+					form.render();
+				}
+		},'json')
+	});	
 	form.on('select(aihao)',function(data) {
 		$.post('{:url("pavilion/login/getTerminal")}',
 			{"hall_id":data.value},

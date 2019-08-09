@@ -66,7 +66,14 @@ class UserInfo
 				$re_msg['STATUS'] = 1;
 			}
 			$re_msg['MESSAGE'] 	= $rs['msg'];
-			$re_msg['DETAIL'] 	= $rs['data'];
+			$re_msg['DETAIL'] 	= $rs['data'];	
+
+			$log_data['type']	  = 3;
+			$log_data['note']	  = json_encode($result);
+			$log_data['msg']	  = $re_msg['MESSAGE'];
+			$log_data['status']	  = $re_msg['STATUS'];
+			$log = new \app\admin\model\OperationLog;
+            $log->writeHisLog($log_data);
 		}
 		if($type=='json'){
 			$xmls = json_encode($re_msg);
@@ -104,7 +111,7 @@ class UserInfo
 				}				
 				$re_msg['msg'] 	.= $re_arr['msg'];
 				$re_msg['data'] .= $value['ORIGINAL_ID'];	
-			} 
+			} 		
 		}else{
 			$re_msg['success'] = 0;
 		}
@@ -169,7 +176,7 @@ class UserInfo
 		}else{
 			$re_msg['msg'] .= 'QUE_CODE 队列信息不存在,';
 		}
-		$doctor_id = DB::name("z_doctor")->where("original_id",$value['DOCTOR_CODE'])->value("id");
+		$doctor_id = DB::name("z_doctor")->where("InterfaceID",$value['DOCTOR_CODE'])->value("id");
 		if(empty($doctor_id)){
 			$re_msg['msg'] .= '该医生不存在,';
 		}
@@ -273,6 +280,13 @@ class UserInfo
 			}
 			$re_msg['MESSAGE']  = $rs['msg'];
 			$re_msg['DETAIL'] 	= $rs['data'];
+			// 日志
+			$log_data['type']	  = 2;
+			$log_data['note']	  = json_encode($result);
+			$log_data['msg']	  = $re_msg['MESSAGE'];
+			$log_data['status']	  = $re_msg['STATUS'];
+			$log = new \app\admin\model\OperationLog;
+            $log->writeHisLog($log_data);
 		}
 
 		if($type=='json'){
@@ -325,7 +339,7 @@ class UserInfo
 	{
 		$re_msg['status'] = 0;
 		$re_msg['msg'] = '';
-		$doctor_id = DB::name("z_doctor")->where('original_id',$value['DOCTOR_CODE'])->value("id");
+		$doctor_id = DB::name("z_doctor")->where('InterfaceID',$value['DOCTOR_CODE'])->value("id");
 		if(empty($doctor_id)){
 			$re_msg['msg'] .= 'DOCTOR_CODE 医生数据不存在,';
 		}
@@ -349,6 +363,14 @@ class UserInfo
 		$calss 			   = explode(',', $value['SECHEDUAL_DATE']);
 		$data['class'] 	   = $class->binDecClass($calss);
 		$id = DB::name("z_doctor_class")->where('original_id',$value['ORIGINAL_ID'])->find(); 
+		if(!$data['class']){
+			$rs = Db::name("z_doctor_class")->where('original_id',$value['ORIGINAL_ID'])->delete();
+			if($rs){
+				$re_msg['status'] = 1;
+				$re_msg['msg'] = '删除成功';
+			}
+			return $re_msg;
+		}
 		if($id){
 			$rs = DB::name("z_doctor_class")->where('original_id',$value['ORIGINAL_ID'])->update($data); 
 			if($rs!==false){
@@ -404,6 +426,13 @@ class UserInfo
 			}
 			$re_msg['MESSAGE'] 	= $rs['msg'];
 			$re_msg['DETAIL'] 	= $rs['data'];
+			// 日志
+			$log_data['type']	  = 1;
+			$log_data['note']	  = json_encode($result);
+			$log_data['msg']	  = $re_msg['MESSAGE'];
+			$log_data['status']	  = $re_msg['STATUS'];
+			$log = new \app\admin\model\OperationLog;
+            $log->writeHisLog($log_data);
 		}
 		if($type=='json'){
 			$xmls = json_encode($re_msg);
@@ -447,7 +476,6 @@ class UserInfo
 		}else{
 			$re_msg['success']  = 0;
 		}
-
 		return $re_msg;
 	}
 
@@ -563,7 +591,7 @@ class UserInfo
 			}else{
 				$re_msg['msg']		= '更新失败';
 			}
-		}
+		}		
 		return $re_msg;
 	}
 	

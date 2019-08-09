@@ -26,12 +26,12 @@ class Android extends Base
         }        
         $where[]    = ['s.type','=',0];
         $list = db("z_voice")->alias("s")
-                ->field("s.*,u.HallName,m.FullName,q.QueName")
+                ->field("s.*,u.HallName,m.FullName,q.QueName,u.hall_num")
                 ->leftJoin("hall u","u.HallNo=s.hall_id")
                 ->leftJoin("serque q","q.QueId=s.que_id")
                 ->leftJoin("manager m","m.UserId=s.manager_id")
                 ->where($where)
-                ->order("s.unit_id asc")
+                ->order("s.unit_id asc,u.hall_num asc")
                 ->paginate(20);  
         $page = $list->render();
         $this->assign("page",$page);

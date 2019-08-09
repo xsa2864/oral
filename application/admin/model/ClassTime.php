@@ -237,7 +237,7 @@ class ClassTime extends Model
 	            if(in_array($da, $date_w)){
 	                $date_week[] = $week[$da];
 	                if(!empty($arr_all)){
-	                    $da = $da==0?7:$da;
+	                    $da = $da==0?6:$da;
 	                    $date_num[] = isset($arr_all[$da])?$arr_all[$da]:'';
 	                }
 	                $date_c[] = $date;

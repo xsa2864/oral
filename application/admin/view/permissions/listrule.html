@@ -31,6 +31,7 @@
                             <tr>
                                 <th width="5%"> ID </th>        
                                 <th width="30%" align="left"> 规则名称</th>
+                                <th width="15%" align="left"> 图标</th>
                                 <th width="25%" align="left"> 规则唯一标识</th>
                                 <th width="8%">状态</th>
                                 <th width="8%">是否是菜单</th>
@@ -43,6 +44,7 @@
                                 	{$li.id}
                                 </td>                                            
                                 <td><h4>{$li.title}</h4></td>
+                                <td>{$li.ico}</td>
                                 <td>{$li.name}</td>
                                 <td align="center">{if condition="$li.status==1"}开启{else /}关闭{/if}</td>
                                 <td align="center">{if condition="$li.ismenu==1"}开启{else /}关闭{/if}</td>
@@ -58,6 +60,7 @@
                                        {$ch.id}
                                     </td>                                            
                                     <td> &nbsp; |━&nbsp;{$ch.title}</td>
+                                    <td>{$ch.ico}</td>
                                     <td>{$ch.name}</td>
                                     <td align="center">{if condition="$ch.status==1"}开启{else /}关闭{/if}</td>
                                     <td align="center">{if condition="$ch.ismenu==1"}开启{else /}关闭{/if}</td>
@@ -71,6 +74,7 @@
                                     <tr>
                                         <td align="center">{$chs.id}</td>        
                                         <td> &nbsp; | &nbsp; |━&nbsp;{$chs.title}</td>
+                                        <td>{$chs.ico}</td>
                                         <td>{$chs.name}</td>
                                         <td align="center">{if condition="$chs.status==1"}开启{else /}关闭{/if}</td>
                                         <td align="center">{if condition="$chs.ismenu==1"}开启{else /}关闭{/if}</td>

@@ -111,6 +111,11 @@
         ,methods:{
             getBase:function(){
                 var vm = this
+                let unitid = this.getUrlKey("unitid");
+                if(unitid){
+                    unitid = unitid==-1?'':unitid;
+                    localStorage.setItem("unitid", unitid);
+                }
                 axios
                     .get('{:url("/api/a1/index/getBase")}')
                     .then(function(res){
@@ -127,6 +132,16 @@
             ,reLoop:function(){
                 ins.reload()
                 lins.reload()
+            }
+            ,getUrlKey: function (name) {
+                var reg = new RegExp("(^|&|/)"+ name +"[=|/]([^&|^/|^(.html)]*)(/|&|$|(.html))");
+                if(window.location.search){
+                    var r = window.location.search.substr(1).match(reg);
+                    if(r!=null) return decodeURI(r[2]); return null;                
+                }else{
+                    var r = window.location.pathname.substr(1).match(reg);
+                    if(r!=null) return decodeURI(r[2]); return null;   
+                }
             }
         }
         ,created:function(){ 

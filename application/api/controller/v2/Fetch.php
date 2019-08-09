@@ -41,6 +41,8 @@ class Fetch extends Controller
         $data['hall']   = $hall;
         $data['list']   = $list;
         $data['hall_id']   = $hall_id;
+        $data['select_unit_id'] = $unit_id;
+        $data['select_hall_id'] = $hall_id;
 
         return json($data);
     }
@@ -111,7 +113,7 @@ class Fetch extends Controller
         $unit_id = input("unit_id",0);
         $hall_id = input("hall_id",0);
         if(is_array($hall_id)){
-            $halls = implode('|', $hall_id);
+            $halls = implode(',', $hall_id);
         }
         if(!empty($unit_id)){
             Cookie::forever('hall_ids',$halls);
@@ -123,14 +125,9 @@ class Fetch extends Controller
     // 修改区域编号
     public function setHall()
     {
-        $unit_id = input("unit_id",0);
         $hall_id = input("hall_id",0);
-        if(!empty($unit_id)){
-            Cookie::forever('unit_id',$unit_id);
-            Cookie::forever('hall_id',$hall_id);
-            return json("设置成功",200);
-        }
-        return json("请选择单位",201);
+        Cookie::forever('hall_id',$hall_id);
+        return json("设置成功",200);
     }
 
     // 生成票号
@@ -309,4 +306,79 @@ class Fetch extends Controller
         }
         return json($re_msg);
     }
+
+    /*
+     * 取号
+     *
+     */
+    public function hisTicket($value='')
+    {
+        $re_msg['success']  = 0;
+        $re_msg['msg']      = '没获取到有效信息';
+        $re_msg['data']     = [];
+        $xml    = '';
+        $arr    = json_decode($xml,1);
+        $type   = 'json';
+        if(empty($arr)){
+            $xjson = new \app\api\model\UserInfo;
+            $arr    = $xjson->xmlToArray($xml);
+            $type   = 'xml';
+        }
+        if($arr){
+            $meta = $arr['BODY']['META'];
+            if(trim($meta['STATUS'])=='1'){
+                if(!isset($arr['BODY']['ROWS']['ROW'][0])){             
+                    $result[] = $arr['BODY']['ROWS']['ROW'];  
+                    $re_msg['msg'] = '一次只能取一个号';
+                }else{
+                    $result = $arr['BODY']['ROWS']['ROW'];  
+                    $rs = $this->hisMkTicket($result);
+                    if($rs['success']==1){
+                        $re_msg['success']  = 1;
+                        $re_msg['msg']      = '执行成功';
+                        $re_msg['data']     = $rs['data'];
+                    }
+                }       
+            }         
+
+            $log_data['type']     = 3;
+            $log_data['note']     = json_encode($result);
+            $log_data['msg']      = $re_msg['msg'];
+            $log_data['status']   = $re_msg['success'];
+            $log = new \app\admin\model\OperationLog;
+            $log->writeHisLog($log_data);
+        }
+       
+        return $re_msg;
+    }
+
+    // his接口票号
+    public function hisMkTicket($item=[])
+    {
+        $re_msg['success'] = 0;
+
+        $arrs['idcard']         = $item['IDCARD'];
+        $arrs['name']           = $item['NAME'];
+        $arrs['platform']       = 'his';
+        $arrs['tips1']          = '';
+        $arrs['tips2']          = "his接口";
+        $arrs['sex']            = $item['SEX_CODE'];
+        $arrs['original_id']    = $item['HOSPITAL_ID'];       
+        $wh[] = ['SerInterface','=',$item['HALL_CODE']];
+        $hall_id = Db::name("hall")->where($wh)->value("HallNo");        
+        $rel = new \app\admin\model\Relations;
+        $result = $rel->makeTicket($arrs);
+        if($result['success']==1){           
+            $re_msg['success'] = 1;
+            $re_msg['msg']  = $result['msg'];
+            $prt = new \app\admin\model\PrintOut;
+            $text = $prt->makeText($result['data'],$hall_id);   
+            $re_msg['data'] = $text;
+        }else{
+            $re_msg['msg']  = $result['msg'];
+        }
+        
+        return $re_msg;
+    }
+
 }

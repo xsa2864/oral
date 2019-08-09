@@ -5,6 +5,7 @@
   	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   	<title>排班</title>
   	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/formSelects-v4.css" media="all">
   	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
 	<script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
 	<script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
@@ -68,6 +69,32 @@ html,body{
 .layui-btn-none{
 	background-color: #f9cf63;
 	cursor:default;
+}
+#changeHall{
+		position: absolute;
+	    top: 100px;
+	    width: 100%;
+	    background-color: #9ac832;
+	}
+.overBack{
+		background-color: #c9c9c9;
+	    width: 100%;
+	    height: 100%;
+	    display: block;
+	    position: absolute;
+	    top: 0px;
+	    opacity: 0.7;
+	}
+.layui-layer-content .layui-btn-container button{
+		margin-left: 5px !important;
+		margin-right: 5px !important;
+		width: 67px;
+		height: 35px;
+		font-size: 1.2rem;
+		background-color: #015486;
+	}
+.layui-anim-upbit,.layui-layer-dialog,.layui-form-label{
+	color: #000 !important;
 }
 </style>
 <body> 
@@ -166,15 +193,99 @@ html,body{
     	<span v-if="config.tip!=''">友情提示：{{ config.tip }}</span>
     </div>
   </div>
+
+  <!-- 区域配置 -->
+	<div style="display: block;width: 50px;height: 50px;position: fixed;top: 0px;" v-on:dblclick="changeHalls"></div>
+	<!-- 验证码 -->
+	<div id="line_pwd" style="display: none;">
+		<form class="layui-form layui-form-pane" style="padding: 10px 20px 0 20px;" v-on:submit.prevent="testing">
+			<div class="layui-form-item">
+			    <label class="layui-form-label" id="line_tilte">验证码</label>
+			    <div class="layui-input-block">
+			      <input type="text" name="pwd" id="number" v-model="number" v-bind:value="number" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+			    </div>
+
+			</div>	 	
+				<div class="layui-input-block" style="margin: 1px;">
+					<div class="layui-btn-container is_card" style="text-align: center;">
+					  <button type="button" class="layui-btn" @click="insertAtCursor('1','number')">1</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('2','number')">2</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('3','number')">3</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('4','number')">4</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('5','number')">5</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('6','number')">6</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('7','number')">7</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('8','number')">8</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('9','number')">9</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('0','number')">0</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('X','number')">X</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('','number')" style="font-size: 1rem;">删除</button>
+					</div>
+				</div>
+			<div class="layui-form-item" style="text-align: center;">
+			    <button class="layui-btn" style="font-size: 1rem;background-color: #015486;"> 确 认 </button>
+			    <button class="layui-btn" type="button" @click="pageClose" style="font-size: 1rem;background-color: #015486;"> 关 闭 </button>
+			</div>
+		</form>
+	</div>
+	<!-- 区域配置 -->
+	<div v-show="showChange">		
+		<div class="overBack" @click="setHallClose"></div>
+		<form id="changeHall" class="layui-form" style="height: 360px;">
+			<fieldset style="border: none;padding: 0;border-top: 1px solid #eee;">
+		    	<legend style="margin-left: 20px;padding: 0 10px;font-size: 4vw;font-weight: 300;text-align: center;">
+		    		<a name="switch">区域配置</a>
+		    	</legend>
+		    </fieldset>
+		    <div style="text-align: center;padding: 10px;">
+			    <div class="layui-input-inline">
+			      <select name="unit_id" lay-verify="required" lay-filter="selectUnit" v-model="select_unit_id">
+			        <option disabled="true" value="">选择单位</option>		       
+			        <option v-for="nts in units" v-bind:value="nts.UnitId" >{{ nts.unitname }}</option>
+			      </select>
+			    </div>
+		  	</div>
+			<div style="text-align: center;padding: 10px;" class="layui-form">
+    			<label class="layui-form-label">请选择区域</label>
+			    <div class="layui-input-block">
+			      <select name="hall_id" xm-select="selectHall">
+			      </select>
+			    </div>
+		  	</div>
+		  	<div class="" style="text-align: center;padding: 10px;">
+			    <div class="layui-input-inline">
+			      <button class="layui-btn" lay-submit @click.stop.prevent="setHall">保存</button>
+			    </div>
+			</div>
+		</form>
+	</div>
 </div>
 
+<script type="text/javascript" src="__HUI__/lib/layui/formSelects-v4.js"></script> 
 <script>
 //一般直接写在一个js文件中
 layui.use(['jquery','layer', 'form'], function(){
   var layer = layui.layer
   ,$=layui.$
   ,form = layui.form;
-
+  form.on('select(selectUnit)', function(data){
+    	vm.unit_id = data.value
+    	$.post("{:url('/api/v2/fetch/getHall')}",{"unit_id":data.value},
+    		function(res){
+    			vm.options = res;
+    			var arrs = []
+    			if(res){
+    				for(rs in res){
+    					var op = {}	
+	    				op.name = res[rs].HallName
+	    				op.value = res[rs].HallNo    
+	    				arrs[rs] = op					
+    				}
+    			} 
+				layui.formSelects.data("selectHall",'local',{arr:arrs})
+    	})
+	}); 
+        
 });
 // 关闭弹窗
 function pageClose(){
@@ -184,10 +295,16 @@ var vm = new Vue({
 	el:'#app',
 	data:{
 		config:{}
+		,units:{}
 		,list:{}
+		,select_unit_id:0
+		,select_hall_id:0
 		,time:''
+		,hall_id:''
 		,move:''
 		,run:''
+		,showChange:false	//是否显示区域配置
+		,number:''
 		,baseStyles: {
 		}
 		,area:{
@@ -202,13 +319,43 @@ var vm = new Vue({
 				.get('{:url("/api/v2/index/getClassTime")}',{'params':vm.area})
 				.then(
 					res => {
-						this.list = res.data.list;
+						this.list 	= res.data.list;
 						this.config = res.data.config	
+						this.units 	= res.data.units
+						this.select_unit_id = res.data.select_unit_id		
+						if(this.select_unit_id){
+							this.getHall(this.select_unit_id)
+						}				
+						this.select_hall_id = res.data.select_hall_id
 						if(this.config.img){
 						    this.baseStyles.backgroundSize = '100% 100%'
 						    this.baseStyles.backgroundRepeat = 'no-repeat'
 							this.baseStyles.backgroundImage = "url(__IMG__"+this.config.img+")"
 						}
+					}
+				)
+		}
+		,getHall:function (unit_id) {
+			var vm = this
+			axios
+				.get('{:url("/api/v2/fetch/getHall")}',{'params':{'unit_id':unit_id}})
+				.then(
+					res => {
+		    			var arrs = []
+		    			let li = res.data
+		    			if(li){
+		    				for(rs in li){
+		    					var op = {}	
+			    				op.name = li[rs].HallName
+			    				op.value = li[rs].HallNo    
+			    				arrs[rs] = op					
+		    				}
+		    			} 
+						var formSelects = layui.formSelects;
+						layui.formSelects.data("selectHall",'local',{arr:arrs})
+						setTimeout(function () {
+							layui.formSelects.value("selectHall",vm.select_hall_id.split(","))
+						},200)
 					}
 				)
 		}
@@ -286,6 +433,105 @@ var vm = new Vue({
 				str +=  ' '+ h + ':' + i + ':' + s;				
 				this.time = str;
 			},1000)	
+		}		
+		,changeHalls:function(){
+			layer.open({
+			 	title:'验证码验证',
+				type: 1,
+				content: layui.$('#line_pwd')
+			});  	
+		}
+		,setHall:function(){
+			var vm = this
+			var formSelects = layui.formSelects;
+			this.hall_id = formSelects.value('selectHall', 'val'); 
+			axios
+				.post('{:url("/api/v2/fetch/setHalls")}',{'unit_id':vm.unit_id,'hall_id':vm.hall_id})
+				.then(
+					function(res){
+						if(res.status==200){
+							vm.showChange = false
+							vm.get()
+						}
+						layer.msg(res.data, {
+					      offset: '15px'
+					      ,icon: 1
+					      ,time: 1000
+					    });
+					}
+				)
+		}
+		,setHallClose:function(){
+			if(this.hall_id){
+				vm.showChange = false
+			}
+		}
+		,changeHalls:function(){
+			layer.open({
+			 	title:'验证码验证',
+				type: 1,
+				content: layui.$('#line_pwd')
+			});  	
+		}
+		,verifyHall:function(){
+			this.showChange = this.showChange?false:true
+		}
+		,testing:function(){
+			if(this.number=='9999'){
+				layui.form.render()
+				this.showChange = true				
+				layer.closeAll('page');
+				this.number = 0
+		  	}else{
+		  		layer.msg("验证码错误")
+		  	}
+		}
+		,pageClose:function(){
+			this.number = ''
+			this.search = ''
+			this.tickets_id 	= ''
+			this.ticket_list 	= []
+		  	layer.closeAll('page')
+		}
+		,insertAtCursor:function (myValue,id) { // 数字键盘
+		    var myField = document.getElementById(id);
+		    //IE 浏览器
+		    if (document.selection) {
+		         myField.focus();
+		         sel = document.selection.createRange();
+		         sel.text = myValue;
+		         sel.select();
+		    }else if (myField.selectionStart || myField.selectionStart == '0') {		    	
+		     	//FireFox、Chrome等
+		         var startPos = myField.selectionStart;
+		         var endPos = myField.selectionEnd; 
+		         // 保存滚动条
+		         var restoreTop = myField.scrollTop;
+		         if(myValue==""){
+		         	myField.value = myField.value.substring(0, startPos-1) + myField.value.substring(endPos, myField.value.length);     
+		         }else{         	
+		         	myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);       
+		         }
+		         if(id=='search'){
+		         	vm.search = myField.value;
+		         }else if(id=='number'){
+		         	vm.number = myField.value;
+		         }
+		         if (restoreTop > 0) {
+		            myField.scrollTop = restoreTop;
+		         }         
+		        myField.focus();
+		        if(myValue==""){
+		        	myField.selectionStart = startPos -1;
+			        myField.selectionEnd = startPos -1;
+		        }else{     
+			        myField.selectionStart = startPos + myValue.length;
+			        myField.selectionEnd = startPos + myValue.length;
+		        }
+		    } else {
+		        myField.value += myValue;
+		        myField.focus();
+		    }
 		}
 	}
 	,created:function(){	

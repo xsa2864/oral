@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <title>开始取号</title>
+  <title>区域选择</title>
   <meta http-equiv="refresh" content="1800">
   <link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">  
   <link rel="stylesheet" href="__HUI__/lib/layui/css/formSelects-v4.css" media="all">
@@ -27,7 +27,7 @@
 		border:2px solid #FFF !important;
 		height: 80px !important;
 		width: 300px;
-		font-size: 2rem !important;
+		font-size: 1.6rem !important;
 		margin: 10px;
 	}
 	.vbut{
@@ -90,7 +90,7 @@
 		<div class="layui-row que-btn" style="text-align: center;">
 		 	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">	
 		 		<template v-for="que in queue">
-				<button class="layui-btn layui-btn-radius" v-bind:class="[btn_show?'vbut':'layui-btn-disabled']" v-on:click="checkBtn(que.QueId,que.QueName)">
+				<button class="layui-btn layui-btn-radius" v-bind:class="[btn_show?'vbut':'layui-btn-disabled']" v-on:click="checkBtn(que.HallNo,que.HallName)">
 					<i class="layui-icon layui-icon-add-circle"></i>{{ que.HallName }}
 				</button>		
 				</template>	
@@ -143,7 +143,7 @@
 		    </fieldset>
 		    <div style="text-align: center;padding: 10px;">
 			    <div class="layui-input-inline">
-			      <select name="unit_id" lay-verify="required" lay-filter="selectUnit" >
+			      <select name="unit_id" lay-verify="required" lay-filter="selectUnit" v-model="select_unit_id">
 			        <option disabled="true" value="">选择单位</option>		       
 			        <option v-for="nts in units" v-bind:value="nts.UnitId">{{ nts.unitname }}</option>
 			      </select>
@@ -216,6 +216,8 @@ var vm = new Vue({
 		,units:{}
 		,options:{}
 		,doctor_list:{}
+		,select_unit_id:0
+		,select_hall_id:0
 		,unit_id:''
 		,hall_id:[]
 		,idcard:''
@@ -240,12 +242,12 @@ var vm = new Vue({
 				.get('{:url("/api/v2/fetch/halls")}')
 				.then(
 					function(res){
-						if(res.data.hall){
+						if(res.data.hall.length>0){
 							vm.queue = res.data.hall
 							vm.hall = res.data.hall[0]
 						}
 						vm.units = res.data.list
-						if(!res.data.list){							
+						if(!res.data.hall_id){							
 							setTimeout(function(){
 								layui.form.render()
 							},200)
@@ -253,6 +255,11 @@ var vm = new Vue({
 						}else{
 							vm.hall_id = res.data.hall_id						
 						}
+						vm.select_unit_id = res.data.select_unit_id	
+						if(vm.select_unit_id){
+							vm.getHall(vm.select_unit_id)
+						}	
+						vm.select_hall_id = res.data.select_hall_id
 						if(res.data.hall.pic){
 						    vm.baseStyle.backgroundSize = '100% 100%';
 						    vm.baseStyle.backgroundRepeat = 'no-repeat';
@@ -261,6 +268,30 @@ var vm = new Vue({
 					}
 				)
 
+		}
+		,getHall:function (unit_id) {
+			var vm = this
+			axios
+				.get('{:url("/api/v2/fetch/getHall")}',{'params':{'unit_id':unit_id}})
+				.then(
+					res => {
+		    			var arrs = []
+		    			let li = res.data
+		    			if(li){
+		    				for(rs in li){
+		    					var op = {}	
+			    				op.name = li[rs].HallName
+			    				op.value = li[rs].HallNo    
+			    				arrs[rs] = op					
+		    				}
+		    			} 
+						var formSelects = layui.formSelects;
+						layui.formSelects.data("selectHall",'local',{arr:arrs})
+						setTimeout(function () {
+							layui.formSelects.value("selectHall",vm.select_hall_id.split(","))
+						},200)
+					}
+				)
 		}
 		,getDoctor:function(que_id,str){	
 			var vm = this
@@ -375,7 +406,16 @@ var vm = new Vue({
 				)
 		}
 		,checkBtn:function(id,name){
-
+			var vm = this
+			axios
+				.post('{:url("/api/v2/fetch/setHall")}',{'hall_id':id})
+				.then(
+					function(res){
+						if(res.status==200){
+							location.href = "{:url('pavilion/fetch/vueCard')}";
+						}						
+					}
+				)
 		}
 		,setHallClose:function(){
 			if(this.hall_id){

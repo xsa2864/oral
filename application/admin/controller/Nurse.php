@@ -153,6 +153,9 @@ class Nurse extends Base
 	// 刷卡取号
 	public function payCard()
 	{
+		$soc = new \app\admin\model\Socket;
+		$iprs = $soc->terminalSocke('ac-e0-10-2a-25-dd',['reload'=>1]);
+		print_r($iprs);
 		$where = array();
 		if($this->userid!=1){
 			$where['UnitId'] = $this->unitid;
@@ -172,8 +175,8 @@ class Nurse extends Base
 	{
 		$where = array();
 		if($this->userid!=1){
-			if($this->user['hallid']){
-				$where['HallNo'] = $this->hallid;
+			if($this->hallid){
+				$where[] = ['HallNo','=',$this->hallid];
 			}
 			$where[] = ['UnitId','=',$this->unitid];
 		}
@@ -273,6 +276,7 @@ class Nurse extends Base
 	    $data['tips1']  = input("role","");
 	    $data['sex'] 	= input("sex","男"); 
 	    $data['birth'] 	= strtotime($birth); 
+	    $data['unit_id']= $this->unitid; 
 	    $is_info 		= input("is_info",0);
 	    $data['tips2'] 	= "护士站";
 

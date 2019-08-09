@@ -16,10 +16,12 @@ class Message extends Base
 			if($this->hallid){
 				$where[] = ['m.hall_id','=',$this->hallid];
 			}
+			$where[] = ['m.unit_id','=',$this->unitid];
 		}
 		$list = db("z_message")->alias("m")
-				->field("m.*,h.HallName,d.QueName")
+				->field("m.*,h.HallName,d.QueName,u.unitname")
 				->leftJoin("hall h","h.HallNo=m.hall_id")
+				->leftJoin("unit u","u.UnitId=h.UnitId")
 				->leftJoin("z_doctor d","d.id=m.doctor_id")
 				->where($where)->order("m.status asc,m.add_time desc")
 				->paginate(20);
@@ -54,6 +56,7 @@ class Message extends Base
 		$data['doctor_id'] 		= input("doctor_id",0);
 		$data['title'] 			= input("title","");
 		$data['content'] 		= input("content","");
+		$data['unit_id'] 		= $this->unitid;
 		$data['hall_id'] 		= $this->hallid;
 		$data['add_time'] 		= time();
 		$res['devices_type']	= 'message';

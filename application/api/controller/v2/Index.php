@@ -185,13 +185,16 @@ class Index extends Controller
     // 获取排班表信息
     public function getClassTime()
     {
-        $unitid = input('unitid',0);
-        $hallid = input('hallid',0);
+        // $unitid = input('unitid',0);
+        // $hallid = input('hallid',0);
+        $unitid = cookie("unit_id");
+        $hallid = cookie("hall_ids");
         if($unitid){
-            $where[] = ['UnitId','=',$unitid];
+            $where[] = ['s.UnitId','=',$unitid];
         }
         if($hallid){
-            $where[] = ['HallNo','=',$hallid];
+            $arr = explode(',', $hallid);
+            $where[] = ['s.HallNo','in',$arr];
         }
         $where[] = ['class','<>',0];
         $result = db("z_doctor_class")->alias("dc")->field("dc.*,s.QueName,dr.QueName as name,dr.type")
@@ -212,6 +215,18 @@ class Index extends Controller
         
         $config = db("z_temp_config")->where("id","1")->find();
         $data["list"] = array_values($list);
+
+        $units = Db::name("unit")->field("UnitId,unitname")->where('EnableFlag',"1")->select();
+        $uarr = [];
+        if($units){            
+            foreach ($units as $key => $value) {
+                $value['checked'] = $value['UnitId']==$unitid?1:0;
+                $uarr[] = $value;
+            }
+        }
+        $data['select_unit_id'] = $unitid;
+        $data['select_hall_id'] = $hallid;
+        $data['units']   = $uarr;
         $data["config"] = $config;
         return json($data);
     }

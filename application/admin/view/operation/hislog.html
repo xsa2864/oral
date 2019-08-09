@@ -22,18 +22,17 @@
                           {/volist}
                         </select>
                     </td>
-                    <td>
-                 <input type="button" value="搜索" onclick="search()" class="ext_btn ext_btn_submit"></td>
-                    <!-- <td>时间范围:</td>
-                    <td>
-                        <input type="date" name="date1" id="date1" class="input-text lh30" size="20" value="">
-                        ~
-                        <input type="date" name="date2" id="date2" class="input-text lh30" size="20" value="">
-                    </td> -->
+                    <td>                      
+                    <input type="button" value="搜索" onclick="search()" class="ext_btn ext_btn_submit">
+                    </td>
                 </tr>
               </table>
             </div>
-           
+            <!-- <div class="box_bottom pb5 pt5 pr10" style="border-top:1px solid #dadada;">
+              <div class="search_bar_btn" style="text-align:right;">
+                 
+              </div>
+            </div> -->
         	</form>
         </div>
     </div>
@@ -43,27 +42,23 @@
     <div class="box span10 oh">
         <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table">
         	<tr>
-	        	<th width="3%">序号</th>
-                <th width="6%">操作账号</th>
-	        	<th width="6%">操作人</th>
-	        	<th width="8%">操作名称</th>    
-                <th width="8%">操作路径</th>      
-                <th width="6%">操作参数(点击复制)</th>              
-	        	<th width="10%">操作时间</th>
+	        	<th width="80">序号</th>
+	        	<th width="80">类型</th>
+            <th width="120">操作参数(点击复制)</th>              
+	        	<th width="50%">状态说明</th>    
+	        	<th width="18%">操作时间</th>
         	</tr>  
         	{volist name="list" id="vo"}          
             <tr class="tr">
                 <td class="td_center">{$vo.id}</td>
-                <td class="td_center">{$vo.UserName}</td>
-                <td class="td_center">{$vo.FullName}</td>
-                <td class="td_center">{$vo.op_name}</td>
-                <td>{$vo.url}</td>
+                <td class="td_center">{$vo.type==1?'医生':($vo.type==2?'排班':'患者')}</td>
                 <td class="td_center">
-                    <label title="{$vo.param}"> 
-                        <a href="javascript:copy_btn('{$vo.param}');">查看参数</a> 
-                    </label>
+                  <label title="{$vo.note}">
+                  <a href="javascript:copy_btn('{$vo.note}');">查看参数</a>
+                  </label>
                 </td>
-                <td class="td_center">{$vo.add_time|date="Y-m-d H:i"}</td>
+                <td class="td_center">{$vo.msg}</td>
+                <td class="td_center">{$vo.dis_time}</td>
             </tr>
             {/volist}            
         </table>
@@ -85,7 +80,7 @@ function search(){
 function del() {
   var date = $("#date").val();
   if(confirm("确定删除"+date+"操作日志？")){    
-    $.post('{:url("admin/operation/delLog")}',
+    $.post('{:url("admin/operation/delHisLog")}',
       {'date':date},
       function (data) {
         if(data.success==1){
@@ -113,6 +108,5 @@ function copy_btn(str) {
         alert('复制成功')
     })
 }
-
 </script>
 {/block}

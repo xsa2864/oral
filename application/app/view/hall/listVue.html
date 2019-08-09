@@ -105,6 +105,9 @@ var vm = new Vue({
         selectList:function(page,next){
             var vm = this
             let unitid = this.getUrlKey("unitid")
+            if(!unitid){
+                unitid = localStorage.getItem("unitid");
+            }
             axios
                 .get('{:url("/api/a1/Hall/selectList")}',{params:{'page':page,'unitid':unitid}})
                 .then(function(res){
