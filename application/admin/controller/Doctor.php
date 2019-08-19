@@ -152,7 +152,7 @@ class Doctor extends Base
             $sser = Db::name("serque")->where($ssw)->find();           
             if($sser){                
                 if($sser['QueId']!=$queid){                
-                    $re_msg['msg'] = '接口编码已经存在';
+                    $re_msg['msg'] = '接口标识已经存在';
                     return json($re_msg);
                 }
             }

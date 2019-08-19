@@ -46,6 +46,7 @@ class Fetch extends Base
         $data['ge_time']        = input("ge_time",0);
         $data['as_time']        = input("as_time",0);
         $data['ae_time']        = input("ae_time",0);
+        $data['api_ip']         = input("api_ip","");
         $data['warning']        = input("warning","");
         $unitid                 = $this->unitid;
         $id                     = input("id",0);

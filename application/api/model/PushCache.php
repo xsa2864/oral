@@ -17,25 +17,26 @@ class PushCache extends Model
 	{	
 		$num = 0;
 		if($ip){
-			$terminal = DB::name("z_terminal")->where("ip",$ip)->find();
+			$terminal = Db::name("z_terminal")->where("ip",$ip)->find();
 		}
 		$doctor_id	= $ticket['doctor_id'];
 		$que_id		= $ticket['que_id'];
-		$hall_id	= $ticket['hall_id'];
-		$doctor_info = DB::name("z_doctor")->field("QueName,type,pic,AlternateField1")->where("id",$doctor_id)->find();
+		$hall_id	= $terminal['hall_id']; //$terminal['hall_id'] || $ticket['hall_id'];
+		$doctor_info = Db::name("z_doctor")->field("QueName,type,pic,AlternateField1")->where("id",$doctor_id)->find();
 		$wait = array();
+	    // $wait[] = ['hall_id','=',$hall_id];
 	    $wait[] = ['que_id','=',$que_id];
 	    $wait[] = ['doctor_id','in',[0,$doctor_id]];
 	    $wait[] = ['status','>=',0];
 	    $wait[] = ['status','<=',2];
 	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
-	    $wait_list = DB::name("z_ticket")->field("prefix,code,name,status,order,title")->order("status desc,sort desc,pid asc")->where($wait)->select();
+	    $wait_list = Db::name("z_ticket")->field("prefix,code,name,status,order,title")->order("status desc,sort desc,pid asc")->where($wait)->select();
         if(!empty($terminal['devices_ip'])){            
             $arr = $this->setRoomScreenInfo($hall_id,$doctor_info,$terminal,$wait_list);
             $num = $arr['queue_wait_list'];
         }
 
-        $this->setHallScreenInfo($hall_id,$doctor_info,$terminal,$wait_list);
+        $this->setHallScreenInfo($hall_id,$doctor_info,$terminal,$wait_list,$ticket['que_id']);
         return $num;
 	}
 
@@ -46,7 +47,7 @@ class PushCache extends Model
 	public function setCacheInfos($code=0,$terminal=[],$wait_list=[])
 	{
 		$hall_id = $terminal['hall_id'];
-		$doctor_info = DB::name("z_doctor")->field("QueName,type,pic,AlternateField1")->where("InterfaceID",$code)->find();		
+		$doctor_info = Db::name("z_doctor")->field("QueName,type,pic,AlternateField1")->where("InterfaceID",$code)->find();		
 	    if(!empty($terminal['devices_ip'])){            
 	        $arr = $this->setRoomScreenInfo($hall_id,$doctor_info,$terminal,$wait_list);
 	    }
@@ -67,7 +68,7 @@ class PushCache extends Model
 	    $wait[] = ['status','>=',1];
 	    $wait[] = ['status','<=',2];
 	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];	 
-	    $wait_list = DB::name("z_ticket")->field("count(*) as num")->order("status desc,sort desc,pid asc")->where($wait)->find();	
+	    $wait_list = Db::name("z_ticket")->field("count(*) as num")->order("status desc,sort desc,pid asc")->where($wait)->find();	
 
 	    return $wait_list['num'];
 	}
@@ -122,11 +123,10 @@ class PushCache extends Model
 	}
 
 	// 缓存综合屏信息
-	public function setHallScreenInfo($hall_id=0,$doctor_info=[],$terminal=[],$wait_list=[])
+	public function setHallScreenInfo($hall_id=0,$doctor_info=[],$terminal=[],$wait_list=[],$que_id=0)
 	{
 		$cache = Cache::get("hallScreen");
 		$arr   = json_decode($cache,1);
-
 		// 队列信息
 		if($wait_list){
             $sent = new \app\api\model\Sentence;
@@ -151,7 +151,7 @@ class PushCache extends Model
                     // 语音推送
                     $v_str = $sent->houseString($value,$hall_id,1,1);                
                     if($v_str){                            
-                        $Voice->broadcast($v_str['str'],$v_str['addr_id']);        
+                        $Voice->broadcast($v_str['str'],$terminal['hall_id'],1,0,$que_id);        
                     }
                
                     $list['user_name']  = $sent->pregName($value['name']);
@@ -212,7 +212,7 @@ class PushCache extends Model
 		$queue = array();
 		if(cache($screen)){
 			if($ip){
-				$terminal = DB::name("z_terminal")->where("ip",$ip)->find();
+				$terminal = Db::name("z_terminal")->where("ip",$ip)->find();
 			}
 			$json = cache($screen);
             $queue = json_decode($json,1);

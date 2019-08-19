@@ -82,23 +82,32 @@ class Fetch extends Controller
     // 获取呼叫信息
     public function getUserInfo(){
     	$idcard = input("idcard",0);
-        $item = array();
-        preg_match_all('/\{(.*?)\}/i',$idcard,$matches);
-        if(!empty($matches[1])){
-            if($matches[1][0]!='T'){
-                $item['CardId'] = $matches[1][0];
-                $item['Name']   = $matches[1][1];
-                $item['Sex']    = $matches[1][2];
-            }else{
-                $where[] = ['CardId','=',$matches[1][1]];
-            }
-        }else{
-            $where[] = ['CardId','=',$idcard];    
-        }
-        if(!empty($where)){
-            $item = Db::name("interface_waitman")->where($where)->find();                
-        }
-    	return json($item);
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>
+                <MESSAGE>
+                    <BODY>
+                        <META>
+                          <TOPIC_ID>A204</TOPIC_ID>                        
+                          <APP_ID>JQ_HIS</APP_ID>                        
+                        </META>
+                        <ROWS>
+                            <ROW>
+                                <HOSPITAL_ID>1</HOSPITAL_ID>
+                                <CARD_NO>='.$idcard.'</CARD_NO>
+                            </ROW>
+                        </ROWS>
+                    </BODY>
+                </MESSAGE>';
+        return $xml;
+        $unitid = '';
+        $api_ip = Db::name("config_fetch")->where("unitid",$unitid)->value("api_ip");
+        $url = 'http://'.$_SERVER['SERVER_NAME'];
+        $url = $url.'/UserInfo.wsdl';
+        $soap = new \SoapClient($url);
+        // $soap = new \app\api\model\UserInfo;
+        // 调用函数     
+        $result = $soap->doctorInfo($xml);
+        $re_msg = $this->hisTicket($result);
+    	return json($re_msg);
     }
     // 获取区域iD
     public function getHall()
@@ -311,12 +320,12 @@ class Fetch extends Controller
      * 取号
      *
      */
-    public function hisTicket($value='')
+    public function hisTicket($xml='')
     {
         $re_msg['success']  = 0;
         $re_msg['msg']      = '没获取到有效信息';
         $re_msg['data']     = [];
-        $xml    = '';
+        
         $arr    = json_decode($xml,1);
         $type   = 'json';
         if(empty($arr)){
@@ -332,7 +341,14 @@ class Fetch extends Controller
                     $re_msg['msg'] = '一次只能取一个号';
                 }else{
                     $result = $arr['BODY']['ROWS']['ROW'];  
-                    $rs = $this->hisMkTicket($result);
+
+                    $item['IDCARD']         = '350124198912282891';
+                    $item['NAME']           = '小明';
+                    $item['SEX_CODE']       = '1';
+                    $item['PATIENT_ID']     = '123456';
+                    $item['HALL_CODE']      = '1999';
+                    $item['QUE_CODE']       = '2328';
+                    $rs = $this->hisMkTicket($item);
                     if($rs['success']==1){
                         $re_msg['success']  = 1;
                         $re_msg['msg']      = '执行成功';
@@ -341,7 +357,7 @@ class Fetch extends Controller
                 }       
             }         
 
-            $log_data['type']     = 3;
+            $log_data['type']     = 4;
             $log_data['note']     = json_encode($result);
             $log_data['msg']      = $re_msg['msg'];
             $log_data['status']   = $re_msg['success'];
@@ -363,9 +379,18 @@ class Fetch extends Controller
         $arrs['tips1']          = '';
         $arrs['tips2']          = "his接口";
         $arrs['sex']            = $item['SEX_CODE'];
-        $arrs['original_id']    = $item['HOSPITAL_ID'];       
+        $arrs['original_id']    = $item['PATIENT_ID'];       
         $wh[] = ['SerInterface','=',$item['HALL_CODE']];
         $hall_id = Db::name("hall")->where($wh)->value("HallNo");        
+        $qw[] = ['InterfaceID','=',$item['QUE_CODE']];
+        $que_id = Db::name("serque")->where($qw)->value("QueId");
+        $arrs['QueId']          = $que_id;
+        // 判断是否去过号
+        // $has = Db::name("z_ticket")->where("original_id",$item['PATIENT_ID'])->find();
+        // if($has){
+        //     $re_msg['msg']  = '已经取过号';
+        //     return json($re_msg);
+        // }
         $rel = new \app\admin\model\Relations;
         $result = $rel->makeTicket($arrs);
         if($result['success']==1){           
@@ -378,7 +403,7 @@ class Fetch extends Controller
             $re_msg['msg']  = $result['msg'];
         }
         
-        return $re_msg;
+        return json($re_msg);
     }
 
 }

@@ -104,9 +104,9 @@ class Hall extends Base
         }
 
         if($data['SerInterface']){         
-            $awh[] = ["SerInterface",'=',$data['SerInterface']];            
-            $awh[] = ["UnitId",'=',$data['UnitId']];
-            $w_rs = db("hall")->where($awh)->find();
+            $iwh[] = ["SerInterface",'=',$data['SerInterface']];            
+            $iwh[] = ["UnitId",'=',$data['UnitId']];
+            $w_rs = db("hall")->where($iwh)->find();
             if($w_rs){
                 if($w_rs['HallNo']!=$hallno){                    
                     $re_msg['msg'] = '接口编码已经存在，请更换';
@@ -126,7 +126,7 @@ class Hall extends Base
                 }
             }
         }
-
+        
 	    $flag = 0;
 	    if($hallno > 0){
 	    	$flag = db("hall")->where("HallNo",$hallno)->update($data);

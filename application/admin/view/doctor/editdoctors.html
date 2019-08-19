@@ -81,6 +81,7 @@
         <td class="">   
             <div class="select_containers"> 
                 <select name="type" class="select"  style="width: 200px;"> 
+                    <option value="{$list.type}">{$list.type}</option>
                     {volist name="type_list" id="li"}
                     <option value="{$li}" {if condition="$li==$list.type"}selected="selected"{/if}>{$li}</option> 
                     {/volist}

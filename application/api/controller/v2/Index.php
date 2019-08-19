@@ -179,6 +179,7 @@ class Index extends Controller
     	}
         $data['item'] = $item;
         $data['num']  = $num;
+        $data['data']  = $hall_id;
     	return json($data);
     }
     

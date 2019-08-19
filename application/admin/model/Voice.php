@@ -13,7 +13,7 @@ class Voice extends Model
 	public function broadcast($str,$addr_id=1)
 	{
 		$data['CreateTime'] = date("Y-m-d H:i:s",time());
-		// $data['AreaCode']	= $addr_id;
+		$data['AreaCode']	= $addr_id;
 		$data['S_Text']		= $str;
 		$data['D_Address']	= 1;
 		$data['S_SendMark']	= 1;

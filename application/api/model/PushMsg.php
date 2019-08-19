@@ -94,7 +94,7 @@ class PushMsg extends Model
     }
 
     // 呼叫保安
-    public function warningM($terminal=[])
+    public function warningM($terminal=[],$doctor_id=0)
     {
         // 获取推送目标        
         $re_msg['success'] = 0;
@@ -102,8 +102,9 @@ class PushMsg extends Model
 
         $org = new \app\api\model\Organize;
         $hall_ip = $org->getLargeIp($terminal['hall_id']);
-        $str = DB::name("config_fetch")->where("unitid",$terminal['unit_id'])->value("warning");
-        $data['warning'] = $str.$terminal['room_name'];
+        $str = Db::name("config_fetch")->where("unitid",$terminal['unit_id'])->value("warning");
+        $name = Db::name("z_doctor")->where("id",$doctor_id)->value("QueName");
+        $data['warning'] = $str.' '.$terminal['room_name'].' '.($name?$name."医生处":'');
         if(!empty($hall_ip)){            
             $soc = new \app\api\model\Socket;
             foreach ($hall_ip as $key => $value) {
@@ -114,7 +115,7 @@ class PushMsg extends Model
                 }
             }        
             $Voice = new \app\api\model\Voice;
-            $Voice->broadcast($data['warning']);    
+            $Voice->broadcast($data['warning'],$terminal['hall_id']);    
         }else{
             $re_msg['msg']  = "设备不在线"; 
         }

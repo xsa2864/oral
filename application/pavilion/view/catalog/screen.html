@@ -57,7 +57,7 @@ layui.use(['form','jquery'], function(){
 var vm = new Vue({
 	el:'#app',
 	data:{
-		url:'http://192.168.0.239/oral/public/index.php/api/v2/call/operCall',
+		url:'http://'+document.domain+'/oral/public/index.php/api/v2/call/operCall',
 		result:'',
 		checkedKey: '',
 		checkedValue: [],
@@ -67,7 +67,7 @@ var vm = new Vue({
 		params:[
 			{'key':'staff_code','cvalue':'1002'},
 			{'key':'interface_code','cvalue':'100'},
-			{'key':'ip','cvalue':'192.168.0.239'},
+			{'key':'ip','cvalue':document.domain},
 			{'key':'list','cvalue':'[{"prefix":"w","code":"1002","name":"\u6797\u5c0f\u5170","status":"2","order":"0","title":"\u5916\u79d1"},{"prefix":"w","code":"1003","name":"\u9648\u519b","status":"1","order":"0","title":"\u5916\u79d1"},{"prefix":"w","code":"1004","name":"\u674e\u56db","status":"1","order":"0","title":"\u5916\u79d1"}]'},
 		],
 		but_arr:[],
@@ -116,7 +116,7 @@ var vm = new Vue({
 			layui.$("table tbody").append(html);
 		}
 		,change_url:function(url,str){
-			this.post_url = 'http://192.168.0.239'+url
+			this.post_url = 'http://'+document.domain+url
 			this.post_data = this.but_arr[str].data
 		}
 		,make:function(){

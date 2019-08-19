@@ -36,6 +36,7 @@ class Login extends Controller
         // $info['password'] = Cookie::has('password')?Cookie::get("password"):'';
         $this->assign("info",$info);
         $this->assign("ter",$ter);
+        $this->assign("mac",$ip);
         return $this->fetch('login');
     }
 

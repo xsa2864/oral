@@ -59,6 +59,7 @@ class Wsdl
 		$xml = input("str",'');
 		$url = 'http://'.$_SERVER['SERVER_NAME'];	
 		$url = $url.'/UserInfo.wsdl';
+		
 		$soap = new \SoapClient($url);
 		// $soap = new \app\api\model\UserInfo;
 		// 调用函数 	

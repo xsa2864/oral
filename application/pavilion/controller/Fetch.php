@@ -12,6 +12,25 @@ use think\facade\Config;
 
 class Fetch extends Controller
 {
+	public function showCard()
+	{
+		return $this->fetch('hall'); //vueCard
+	}
+	public function vueCard()
+	{
+		return $this->fetch('vueCard'); //vueCard
+	}
+	public function hisCard()
+	{
+		return $this->fetch("hisCard");
+	}
+	// 保存区域
+	public function setHall()
+	{
+		$hall_id = input("hall_id",0);
+		Cookie::forever('hall_id',$hall_id);
+		echo 1;
+	}
 	public function index()
 	{		
 		$hall_id = cookie("hall_id")?cookie("hall_id"):0;
@@ -54,23 +73,7 @@ class Fetch extends Controller
         $devices_ip = $ccd->getCode();  
 		$this->assign("ip",$devices_ip);
 		return $this->fetch("card");
-	}
-
-	public function showCard()
-	{
-		return $this->fetch('hall'); //vueCard
-	}
-	public function vueCard()
-	{
-		return $this->fetch('vueCard'); //vueCard
-	}
-	// 保存区域
-	public function setHall()
-	{
-		$hall_id = input("hall_id",0);
-		Cookie::forever('hall_id',$hall_id);
-		echo 1;
-	}
+	}	
 
 	// 获取用户信息
 	public function getInfo()

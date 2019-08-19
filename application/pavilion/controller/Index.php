@@ -175,12 +175,13 @@ class Index extends Controller
         $doctor_id  = $this->doctor_id;
         $hall_id    = $this->ter['hall_id'];
         $room_name  = $this->ter['room_name'];
+        $ip         = $this->ter['ip'];
         $que_id     = explode(',', cookie('queue_id'));
         $flag       = input("flag",0);  //1=呼叫  2=重呼
 
         $terminal = [];
-        $ccd = new \app\api\model\CacheCode;
-        $ip = $ccd->getCode();  
+        // $ccd = new \app\api\model\CacheCode;
+        // $ip = $ccd->getCode();  
 
         $where = array();
         $where[] = ['que_id','in',$que_id];
@@ -407,7 +408,7 @@ class Index extends Controller
         $re_msg['msg']  = "呼叫失败"; 
 
         $pus = new \app\api\model\PushMsg;
-        $result = $pus->warningM($this->ter);
+        $result = $pus->warningM($this->ter,$this->doctor_id);
         if($result['success']==1){
             $re_msg['code'] = 200;
             $re_msg['msg']  = $result['msg']; 

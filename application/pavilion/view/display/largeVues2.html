@@ -50,7 +50,7 @@ html,body{
 }
 
 /*====文字滚动 css======*/
-.marquee{
+.marquee,.pmarquee{
 	white-space: nowrap;
     overflow: hidden;
 }
@@ -139,7 +139,7 @@ html,body{
 	  			<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 10%;font-size: 2.4vw;line-height: 4vw;">
 	  	  			<div class="layui-col-xs2 layui-col-sm2 layui-col-md2">过号人员
 	  	  			</div>
-	  	  			<div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height: 100%;color: #53b708;">
+	  	  			<div class="layui-col-xs10 layui-col-sm10 layui-col-md10 pmarquee" style="height: 100%;color: #53b708;">
 	  	  				<div v-html="info.pass"></div>
 	  	  			</div>
 	  	  		</div>
@@ -226,7 +226,7 @@ var vm = new Vue({
 	,methods:{
 		classObject:function(str){
 			let arr = str.split("、")
-			if(arr.length>2){
+			if(str.length>24){
 				return false
 			}else{
 				return true
@@ -451,9 +451,9 @@ var vm = new Vue({
 			},1000)	
 		}
 		,scroll:function(){
-			var run = '',num = 0,speed = 50,vm=this;
+			let run = '',num = 0,speed = 50,vm=this;
 			clearInterval(run);
-			var rolling = function(){		
+			let rolling = function(){		
 				num += 1;
 				ch = layui.$(".marquee").scrollLeft()
 				layui.$(".marquee").scrollLeft(num)
@@ -470,12 +470,35 @@ var vm = new Vue({
 			}
 			run = setInterval(rolling, speed)			
 		}	
+		,pscroll:function(){
+			let run = '',num = 0,speed = 50,vm=this;
+			clearInterval(run);
+			let rolling = function(){		
+				num += 1;
+				ch = layui.$(".pmarquee").scrollLeft()
+				layui.$(".pmarquee").scrollLeft(num)
+				if(ch == layui.$(".pmarquee").scrollLeft()){
+					num = 0;
+					clearInterval(run)
+					setTimeout(function(){
+						layui.$(".pmarquee").scrollLeft(0)
+					},2000)
+					setTimeout(function(){
+						vm.pscroll();
+					},4000)
+				}		
+			}
+			run = setInterval(rolling, speed)			
+		}	
 	}
 	,created:function(){	
 		this.getBase(1);
 		this.get();			
 		this.showTitle(0)		
 		this.scroll()
+		setTimeout(()=> {			
+			this.pscroll()
+		},300)
 	}	
 	,mounted:function(){
 		this.op_date()	//日期

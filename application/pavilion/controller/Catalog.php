@@ -47,6 +47,7 @@ class Catalog extends Controller
             ];
             $fetch = [
                 ['op'=>url('pavilion/fetch/showCard'),'title'=>'取票端'],
+                ['op'=>url('pavilion/fetch/hisCard'),'title'=>'放射科取票端']
             ];
             $class = [
                 ['op'=>url('pavilion/schedule/showClass'),'title'=>'排班情况'],
@@ -142,11 +143,11 @@ class Catalog extends Controller
         },
         "ROWS": {
             "ROW": {
-                "HOSPITAL_ID": "单位接口编码",
-                "HOSPITAL_NAME": "单位名称",
-                "HALL_CODE": "诊区代码",
-                "HALL_NAME": "诊区名称",
-                "DOCTOR_CODE": "医生代码",
+                "HOSPITAL_ID": "086591000",
+                "HOSPITAL_NAME": "福州医科大学附属口腔医院",
+                "HALL_CODE": "1",
+                "HALL_NAME": "1",
+                "DOCTOR_CODE": "086591000A1000000001",
                 "DOCTOR_NAME": "医生名称 ",
                 "SOLELY_ID": "医生工号",
                 "QUE_CODE": "就诊队列代码",
@@ -307,38 +308,39 @@ class Catalog extends Controller
                     </META>
                     <ROWS>
                         <ROW>
-                            <HOSPITAL_ID>单位接口编码</HOSPITAL_ID>
-                            <HOSPITAL_NAME>单位名称</HOSPITAL_NAME>
-                            <HALL_CODE>诊区代码</HALL_CODE>
-                            <HALL_NAME>诊区名称</HALL_NAME>
-                            <QUE_CODE>队列代码 </QUE_CODE>
-                            <QUE_NAME>队列名称</QUE_NAME>
-                            <DOCTOR_CODE>医生代码</DOCTOR_CODE>
-                            <DOCTOR_NAME>医生名称</DOCTOR_NAME>
-                            <ORIGINAL_ID>唯一值</ORIGINAL_ID>
-                            <CARD_NO>卡号</CARD_NO>
-                            <IDCARD>身份证号 350124198912282892</IDCARD>
-                            <PREFIX>票号前缀</PREFIX>
-                            <QUE_NUM>排队号码</QUE_NUM>
-                            <PATIENT_ID>患者流水号</PATIENT_ID>
-                            <LOCAL_ID>患者标识号</LOCAL_ID>
-                            <NAME>姓名</NAME>
-                            <TEL>手机号码 15355895580</TEL>
-                            <SEX_CODE>性别代码（1-男，2-女，0-未知的性别，9-未说明的性别） </SEX_CODE>
-                            <SEX_NAME>性别名称</SEX_NAME>
-                            <BIRTHDAY>生日日期</BIRTHDAY>
-                            <OPERATION_STATUS>操作状态（0=删除 1=增加或者更新）</OPERATION_STATUS>
-                            <ORDERS>是否预约 （0=否1=是） </ORDERS>
-                            <SIGN_IN>签到状态（ 0=未签到1=已签到）</SIGN_IN>
-                            <FETCH_STATUS>叫号队列状态 （0=否 1=是，如果是，要就诊日期时间要填写当下日期时间） </FETCH_STATUS>
-                            <SD_DATE>就诊日期 2019-06-16</SD_DATE>
-                            <QH_DATE>取号时间 2019-06-169 09:30:11</QH_DATE>
-                            <START_DATE>就诊开始时间 09:30:11</START_DATE>
-                            <END_DATE>就诊结束时间 09:30:11</END_DATE>
+                            <HOSPITAL_ID>086591000</HOSPITAL_ID>
+                            <HOSPITAL_NAME>福建医科大学附属口腔医院</HOSPITAL_NAME>
+                            <HALL_CODE>086591000A1980000017</HALL_CODE>
+                            <HALL_NAME>正畸科</HALL_NAME>
+                            <QUE_CODE>086591000A1980000017</QUE_CODE>
+                            <QUE_NAME>正畸科</QUE_NAME>
+                            <DOCTOR_CODE>086591000A1000000036</DOCTOR_CODE>
+                            <DOCTOR_NAME>张端强</DOCTOR_NAME>
+                            <ORIGINAL_ID>086591000A2019080206463500373</ORIGINAL_ID>
+                            <CARD_NO>20130952</CARD_NO>
+                            <IDCARD>350181199812281886</IDCARD>
+                            <PREFIX></PREFIX>
+                            <QUE_NUM>1</QUE_NUM>
+                            <PATIENT_ID>086591000A2018062207513500360</PATIENT_ID>
+                            <LOCAL_ID></LOCAL_ID>
+                            <NAME>刘侨凤</NAME>
+                            <TEL>18150013218</TEL>
+                            <SEX_CODE>02</SEX_CODE>
+                            <SEX_NAME>女</SEX_NAME>
+                            <BIRTHDAY>1998-12-28 00:00:00</BIRTHDAY>
+                            <OPERATION_STATUS>1</OPERATION_STATUS>
+                            <ORDERS>1</ORDERS>
+                            <SIGN_IN>1</SIGN_IN>
+                            <FETCH_STATUS>0</FETCH_STATUS>
+                            <SD_DATE>2019-08-02</SD_DATE>
+                            <QH_DATE>2019-08-02 06:46:35</QH_DATE>
+                            <START_DATE>08:00:00</START_DATE>
+                            <END_DATE>08:15:00</END_DATE>
                         </ROW>
                     </ROWS>
                   </BODY>
                 </MESSAGE>'],
+            
             ['type'=>1,'url'=>'/uploads/video/2019-06-25排队叫号接口文档2.doc','title'=>'下载接口入参说明文档'],            
         ];
         return json($list);

@@ -42,9 +42,9 @@ class Ads extends Base
             $whu[]      = ['UnitId','=',$this->unitid];
             if($this->hallid){
                 $wh[] = ['HallNo','=',$this->hallid];
+                $where['hall_id'] = $this->hallid;
             }
             $wh[] = ['UnitId','=',$this->unitid];
-            $where['hall_id'] = $this->hallid;
         }
         $hall = db("hall")->where($wh)->select();
         $where['id'] = $id;

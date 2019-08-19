@@ -123,21 +123,6 @@ class UserInfo
 		$re_msg['status']	= 0;
 		$re_msg['msg']		= '';
 
-		// $validate = new \app\api\validate\Patient;
-  //       if (!$validate->check($value)) {
-  //           $re_msg['msg'] = $validate->getError();
-		// 	return $re_msg;
-  //       }
-
-        if(!empty($value['IDCARD']) && !preg_match('/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/', $value['IDCARD']))
-		{
-			$re_msg['msg']		.= 'IDCARD 身份证号错误,';
-		}
-		if(!empty($value['TEL']) && !preg_match('/^1[3-9][0-9]\d{8}$/', $value['TEL']))
-		{
-			$re_msg['msg']		.= 'TEL 手机号错误,';
-		}
-
 		if(empty($value['DOCTOR_NAME'])){
 			$re_msg['msg']		.= 'DOCTOR_NAME 医生姓名不能为空,';
 		}
@@ -148,25 +133,27 @@ class UserInfo
 		if(!empty($value['SD_DATE']) && !preg_match('/^[\d]{4}-[\d]{1,2}-[\d]{1,2}$/', $value['SD_DATE'])){
 			$re_msg['msg']		.= 'SD_DATE 日期格式错误,';
 		}
-		if(!empty($value['START_DATE']) && !preg_match('/^\d{2}:\d{2}:\d{2}$/', $value['START_DATE'])){
-			$re_msg['msg']		.= 'START_DATE 时间格式错误,';
+		// && !preg_match('/^\d{2}:\d{2}:\d{2}$/', $value['START_DATE'])
+		if(empty($value['START_DATE'])){
+			$re_msg['msg']		.= 'START_DATE 时间不能为空,';
 		}		
-		if(!empty($value['END_DATE']) && !preg_match('/^\d{2}:\d{2}:\d{2}$/', $value['END_DATE'])){
-			$re_msg['msg']		.= 'END_DATE 时间格式错误,';
+		// && !preg_match('/^\d{2}:\d{2}:\d{2}$/', $value['END_DATE'])
+		if(empty($value['END_DATE'])){
+			$re_msg['msg']		.= 'END_DATE 时间不能为空,';
 		}
 
-		$id = DB::name("despeak")->where('original_id',$value['PATIENT_ID'])->value("despeak_id");
+		$id = DB::name("despeak")->where('original_id',$value['ORIGINAL_ID'])->value("despeak_id");
 		if($id){
 			$re_msg['msg'] .= '该患者信息已经存在,';
 		}
 		// $data['unitId'] 	  	 = $value['HOSPITAL_ID'];
 		// $data['hallNo'] 	  	 = $value['HALL_CODE'];
-		// $data['queId'] 	  	 	 = $value['QUE_CODE'];
+		// $data['queId'] 	  	 = $value['QUE_CODE'];
 		$data['unitName']  	 	 = $value['HOSPITAL_NAME'];
 		$data['hallName']  	 	 = $value['HALL_NAME'];				
 		$data['queName']   	 	 = $value['QUE_NAME'];
 		$data['data_status'] 	 = 0;
-		$rs = DB::name("serque")->field("QueId,HallNo,UnitId,QueName")->where("InterfaceID",$value['QUE_CODE'])->find();
+		$rs = DB::name("serque")->field("QueId,HallNo,UnitId,QueName")->where("InterfaceID",$value['DOCTOR_CODE'])->find();
 		if($rs){
 			$data['data_status'] = 1;
 			$data['unitId'] 	 = $rs['UnitId'];
@@ -181,8 +168,8 @@ class UserInfo
 			$re_msg['msg'] .= '该医生不存在,';
 		}
 
-		if(empty($value['ORIGINAL_ID']) || !is_numeric($value['ORIGINAL_ID'])){
-			$re_msg['msg'] .= 'ORIGINAL_ID 只能为整数值,';
+		if(empty($value['ORIGINAL_ID'])){
+			$re_msg['msg'] .= 'ORIGINAL_ID 不能为空,';
 		}
 
 		if(!empty($re_msg['msg'])){
@@ -201,11 +188,12 @@ class UserInfo
 		$data['birth'] 			= $value['BIRTHDAY'];		
 		$data['fetch_status'] 	= $value['FETCH_STATUS'];				
 		$data['despeakDate'] 	= $value['SD_DATE'];				
-		$data['despeakTime'] 	= strtotime($value['SD_DATE'].' '.$value['START_DATE']);
-		$data['time_Part_S'] 	= $value['START_DATE'];
-		$data['time_Part_O'] 	= $value['END_DATE'];
+		$data['despeakTime'] 	= strtotime($value['START_DATE']);
+		$data['time_Part_S'] 	= date("H:i:s",strtotime($value['START_DATE']));
+		$data['time_Part_O'] 	= date("H:i:s",strtotime($value['END_DATE']));
 		$data['inTime'] 	 	= date("Y-m-d H:i:s",time());
 		$data['addtime'] 	 	= time();
+		$data['platform'] 		= 'his接口';
 
 		$id = DB::name("despeak")->where('original_id',$value['ORIGINAL_ID'])->value("despeak_id");
 		if(empty($id)){
@@ -304,7 +292,7 @@ class UserInfo
 		$re_msg['data'] 	= '';
 		if(is_array($arr)){
 			foreach ($arr as $key => $value) {
-				if($value['OPERATION_STATUS']==0){
+				if($value['STATUS']==0){
 					$re_arr['status'] 	= 0;
 					$re_arr['msg'] 		= '删除失败';
 					if(intval($value['ORIGINAL_ID'])>0){						
@@ -326,7 +314,7 @@ class UserInfo
 					$re_msg['data']  .= ',';
 				}			
 				$re_msg['msg'] 	.= $re_arr['msg'];
-				$re_msg['data'] .= $value['ORIGINAL_ID'];
+				$re_msg['data'] .= !empty($value['ORIGINAL_ID'])?$value['ORIGINAL_ID']:0;
 			}			
 		}else{			
 			$re_msg['success'] = 0;
@@ -339,20 +327,22 @@ class UserInfo
 	{
 		$re_msg['status'] = 0;
 		$re_msg['msg'] = '';
-		$doctor_id = DB::name("z_doctor")->where('InterfaceID',$value['DOCTOR_CODE'])->value("id");
-		if(empty($doctor_id)){
-			$re_msg['msg'] .= 'DOCTOR_CODE 医生数据不存在,';
+		if(empty($value['DOCTOR_CODE'])){
+			$re_msg['msg'] .= 'DOCTOR_CODE 不能为空,';
+		}else{			
+			$doctor_id = DB::name("z_doctor")->where('InterfaceID',$value['DOCTOR_CODE'])->value("id");
+			if(empty($doctor_id)){
+				$re_msg['msg'] .= 'DOCTOR_CODE 医生数据不存在,';
+			}
 		}
-		$que_id = DB::name("serque")->where("InterfaceID",$value['QUE_CODE'])->value("QueId");	
-		if(empty($que_id)){
-			$re_msg['msg'] .= 'QUE_CODE 队列数据不存在,';
-		}	
-		// $where[] = ['que_id','=',$que_id];
-		// $where[] = ['doctor_id','=',$doctor_id];	
-		// $ser = DB::name("z_doctor_class")->where($where)->find();	
-		// if($ser){
-		// 	$re_msg['msg'] .= '排班已经存在,';
-		// }
+		if(empty($value['QUE_CODE'])){
+			$re_msg['msg'] .= 'QUE_CODE 不能为空,';
+		}else{			
+			$que_id = $this->addSerque($value);
+			if(!$que_id){
+				$re_msg['msg'] .= 'QUE_CODE 队列数据不存在,';
+			}
+		}
 
 		if(!empty($re_msg['msg'])){
 			return $re_msg;
@@ -389,9 +379,50 @@ class UserInfo
 				$re_msg['msg'] = '添加失败';
 			}
 		}
+		if($re_msg['status']==1){
+			$this->upDataClass($doctor_id);
+		}
 		return $re_msg;
 	}	
+	// 添加区域队列
+	public function addSerque($value='')
+	{
+		$unit_id = Db::name("unit")->where("api_code",$value['HOSPITAL_ID'])->value("UnitId");
+		// 区域
+		$hata['UnitId']			= $unit_id;
+		$hata['SerInterface']	= $value['QUE_CODE'];		
+		$hata['h_code']			= $value['QUE_CODE'];
+		$hata['hall_num']		= $value['QUE_CODE'];
+		$hata['HallName']		= $value['HALL_NAME'];
+		$hata['EnableFlag'] 	= $value['STATUS'];
+		$hall_id = Db::name("hall")->where("SerInterface",$value['QUE_CODE'])->value("HallNo");
+		$hid = 0;
+		if($hall_id){
+			$hid = $hall_id;
+			Db::name("hall")->where("HallNo",$hall_id)->update($hata);
+		}else{			
+			$hata['InTime'] 		= date("Y-m-d H:i:s",time());
+			// $hid = Db::name("hall")->insertGetId($hata);
+		}
+		// 医生当队列
+		$data['UnitId'] 		= $unit_id;
+		$data['HallNo'] 		= $hid;
+		$data['InterfaceID'] 	= $value['DOCTOR_CODE'];
+		$data['ser_num'] 		= $value['DOCTOR_CODE'];
+		$data['code'] 			= $value['DOCTOR_CODE'];
+		$data['QueName'] 		= $value['DOCTOR_NAME'];
+		$data['EnableFlag'] 	= $value['STATUS'];
+		$que_id = Db::name("serque")->where("InterfaceID",$value['DOCTOR_CODE'])->value("QueId");
+		if($que_id){
+			$id = $que_id;
+			Db::name("serque")->where("QueId",$que_id)->update($data);
+		}else{			
+			$data['InTime'] 		= date("Y-m-d H:i:s",time());
+			$id = Db::name("serque")->insertGetId($data);
+		}
+		return $id;
 
+	}
 	// 医生信息
 	public function doctorInfo($xml='')
 	{
@@ -485,20 +516,15 @@ class UserInfo
 		$re_msg['status']	= 0;
 		$re_msg['msg']		= '';
 
-		// $validate = new \app\api\validate\Doctor;
-  //       if (!$validate->check($value)) {
-  //           $re_msg['msg'] = $validate->getError();
-		// 	return $re_msg;
-  //       }
-
 		$unit_id = DB::name("unit")->where("api_code",$value['HOSPITAL_ID'])->value("UnitId");
 		if(!$unit_id){
 			$re_msg['msg']		.= '单位不存在,';
 		}
-
-		if(!preg_match('/^1[3-9][0-9]\d{8}$/', $value['TEL']))
-		{
-			$re_msg['msg']		.= 'TEL 手机号错误,';
+		if(!empty($value['TEL'])){			
+			if(!preg_match('/^1[3-9][0-9]\d{8}$/',$value['TEL']))
+			{
+				$re_msg['msg']		.= 'TEL 手机号错误,';
+			}
 		}
 
 		if(empty($value['DOCTOR_NAME'])){
@@ -508,66 +534,56 @@ class UserInfo
 			$re_msg['msg']		.= 'SEX_CODE 性别代码在0,1,2之间,';
 		}
 
-		if(empty($value['APPELLATION'])){
-			$re_msg['msg']		.= 'APPELLATION 职务不能为空,';
-		}
-
-		if(!empty($value['WORKER_GS_TIME']) && !preg_match('/^\d{2}:\d{2}:\d{2}$/', $value['WORKER_GS_TIME'])){
-			$re_msg['msg']		.= 'WORKER_GS_TIME 时间格式错误,';
-		}
-		if(!empty($value['WORKER_GE_TIME']) && !preg_match('/^\d{2}:\d{2}:\d{2}$/', $value['WORKER_GE_TIME'])){
-			$re_msg['msg']		.= 'WORKER_GE_TIME 时间格式错误,';
-		}		
-		if(!empty($value['WORKER_AS_TIME']) && !preg_match('/^\d{2}:\d{2}:\d{2}$/', $value['WORKER_AS_TIME'])){
-			$re_msg['msg']		.= 'WORKER_AS_TIME 时间格式错误,';
-		}
-		if(!empty($value['WORKER_AE_TIME']) && !preg_match('/^\d{2}:\d{2}:\d{2}$/', $value['WORKER_AE_TIME'])){
-			$re_msg['msg']		.= 'WORKER_AE_TIME 时间格式错误,';
-		}
-		if(mb_strlen($value['INTRO'])>240){
-			$re_msg['msg']		.= 'INTRO 介绍说明最多不能超过240个字符,';
+		if(!empty($value['INTRO'])){			
+			if(mb_strlen($value['INTRO'])>240){
+				$re_msg['msg']		.= 'INTRO 介绍说明最多不能超过240个字符,';
+			}
 		}
 		if(!in_array($value['STATUS'],[0,1]) || !is_numeric($value['SEX_CODE'])){
 			$re_msg['msg']		.= 'STATUS 状态在0,1之间,';
 		}
-
+		if(empty($value['DOCTOR_CODE'])){
+			$re_msg['msg'] .= '医生唯一值代码不能为空,';
+		}
 
 		if(!empty($re_msg['msg'])){
 			return $re_msg;
 		}
-		$photo = $this->base64_image_content($value['PHOTO']);
+		$photo = '';
+		if(!empty($value['PHOTO'])){
+			$photo = $this->base64_image_content($value['PHOTO']);
+			$data['pic'] 			= $photo;
+		}
 		$data['unit_id']		= $unit_id;
 		$data['hall_id'] 	  	= 0;
 		$data['que_id'] 	  	= '|';
-		$data['staff_code'] 	= $value['SOLELY_ID'];
+		$data['staff_code'] 	= $value['DOCTOR_CODE'];
 		$data['type'] 			= $value['APPELLATION'];
 		$data['doctor_name'] 	= $value['DOCTOR_NAME'];
 		$data['QueName'] 		= $value['DOCTOR_NAME'];
 		$data['mobile'] 		= $value['TEL'];
-		$data['AlternateField1']= $value['INTRO'];
-		$data['pic'] 			= $photo;
+		if(!empty($value['INTRO'])){
+			$data['AlternateField1']= $value['INTRO'];
+		}
 		$data['sex'] 			= $value['SEX_CODE'];				
 		$data['HourSum'] 		= $value['HOUR_SUM'];
 		$data['NoChar'] 		= $value['NO_CHAR'];
 		$data['StarNo'] 		= $value['START_NO'];
 		$data['step'] 			= $value['STEP'];
 		$data['status'] 		= $value['STATUS'];
-		$data['WorkTime1'] 		= $value['WORKER_GS_TIME'];
-		$data['WorkTime2'] 		= $value['WORKER_GE_TIME'];
-		$data['WorkTime3'] 		= $value['WORKER_AS_TIME'];
-		$data['WorkTime4'] 		= $value['WORKER_AE_TIME'];
-		$data['password'] 		= md5('123456');
-		$data['add_time'] 		= time();
+		$data['InterfaceID']    = $value['DOCTOR_CODE'];
 
-		$result = DB::name("z_doctor")->where("original_id",$value['ORIGINAL_ID'])->find();
+		$result = DB::name("z_doctor")->where("original_id",$value['DOCTOR_CODE'])->find();
 		if(empty($result)){
-			$zd[] = ["staff_code",'=',$value['SOLELY_ID']];
+			$data['password'] 		= md5('123456');
+			$data['add_time'] 		= time();
+			$zd[] = ["original_id",'=',$value['DOCTOR_CODE']];
 			$oid = DB::name("z_doctor")->where($zd)->value("original_id");
 			if($oid){
 				$re_msg['msg']		= '医生工号已经存在';
 				return $re_msg;
 			}
-			$data['original_id'] 	= $value['ORIGINAL_ID'];
+			$data['original_id'] 	= $value['DOCTOR_CODE'];
 			$rs = DB::name("z_doctor")->data($data)->insert();
 			if($rs){
 				$re_msg['status']	= 1;
@@ -576,7 +592,7 @@ class UserInfo
 				$re_msg['msg']		= '添加失败';
 			}
 		}else{			
-			$zd[] = ["staff_code",'=',$value['SOLELY_ID']];
+			$zd[] = ["original_id",'=',$value['DOCTOR_CODE']];
 			$oid = DB::name("z_doctor")->where($zd)->value("original_id");
 			if($oid){
 				if($oid!=$value['ORIGINAL_ID']){
@@ -628,7 +644,16 @@ class UserInfo
 
         return $xml;
     }
-
+    public function upDataClass($doctor_id=0)
+    {
+    	$rs = Db::name("z_doctor_class")->where("doctor_id",$doctor_id)->column('que_id');
+    	if($rs){
+    		$data['que_id'] = '|'.implode("|", $rs).'|';
+    	}else{
+    		$data['que_id'] = '|';
+    	}
+    	$rss = Db::name("z_doctor")->where("doctor_id",$doctor_id)->column('que_id');
+    }
     //将XML转为array
     public function xmlToArray($xml='')
     {

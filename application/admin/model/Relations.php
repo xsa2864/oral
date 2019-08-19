@@ -223,24 +223,25 @@ class Relations extends Model
 		$re_msg['success'] = 0;
 		$re_msg['msg'] 	   = "票号生成失败";
 
-		$QueId 			= $arrs['QueId'];
-		$quick 			= $arrs['quick'];
-		$doctor_id 		= isset($arrs['doctor_id'])?$arrs['doctor_id']:0;
-		$data['doctor_id'] = $doctor_id;
-		$data['order'] 	= isset($arrs['order'])?$arrs['order']:0;
-		$data['idcard'] = $arrs['idcard'];
-		$data['name'] 	= $arrs['name'];
-		$data['stime'] 	= isset($arrs['stime'])?$arrs['stime']:0;
-		$data['etime']  = isset($arrs['etime'])?$arrs['etime']:0;
-		$data['tips1'] 	= isset($arrs['tips1'])?$arrs['tips1']:'';
-		$data['tips2']  = isset($arrs['tips2'])?$arrs['tips2']:'';
-		$data['sex'] 	= isset($arrs['sex'])?$arrs['sex']:0;
-		$data['birth'] 	= isset($arrs['birth'])?strtotime($arrs['birth']):0;
-		$data['pid'] 	= $data['code'] = isset($arrs['code'])?$arrs['code']:'';
+		$QueId 				= isset($arrs['QueId'])?$arrs['QueId']:0;
+		$quick 				= isset($arrs['quick'])?$arrs['quick']:'';
+		$doctor_id 			= isset($arrs['doctor_id'])?$arrs['doctor_id']:0;
+		$data['doctor_id'] 	= $doctor_id;
+		$data['order'] 		= isset($arrs['order'])?$arrs['order']:0;
+		$data['idcard'] 	= isset($arrs['idcard'])?$arrs['idcard']:'';
+		$data['name'] 		= isset($arrs['name'])?$arrs['name']:'';
+		$data['stime'] 		= isset($arrs['stime'])?$arrs['stime']:0;
+		$data['etime']  	= isset($arrs['etime'])?$arrs['etime']:0;
+		$data['tips1'] 		= isset($arrs['tips1'])?$arrs['tips1']:'';
+		$data['tips2']  	= isset($arrs['tips2'])?$arrs['tips2']:'';
+		$data['sex'] 		= isset($arrs['sex'])?$arrs['sex']:0;
+		$data['birth'] 		= isset($arrs['birth'])?strtotime($arrs['birth']):0;
+		$data['pid'] 		= $data['code'] = isset($arrs['code'])?$arrs['code']:'';
 		$data['original_id'] = isset($arrs['original_id'])?$arrs['original_id']:0;
 
-	    $result = db("serque")->where("QueId",$QueId)->find();
-	    if($result){
+	    $result = Db::name("serque")->where("QueId",$QueId)->find();
+	    
+	    if(!empty($result)){
 	    	if($flag){	    		
 		    	$fw[] = ['que_id','=',$result['QueId']];
 		    	$fw[] = ['idcard','=',$data['idcard']];		    	
@@ -383,9 +384,10 @@ class Relations extends Model
 				$stime = strtotime($item['despeakDate'].$item['time_Part_S'])-$config['fetchTime']*60;
 				$etime = strtotime($item['despeakDate'].$item['time_Part_O']);
 
-				if(strtotime(date("Y-m-d")."23:59:59") < $etime){
-					$re_msg['msg'] 	= $item['despeakDate'].'前来取号';
-				}else if(time()<$stime){
+				// if(strtotime(date("Y-m-d")."23:59:59") < $etime){
+				// 	$re_msg['msg'] 	= $item['despeakDate'].'前来取号';
+				// }else 
+				if(time()<$stime){
 					if($item['fetchTime'] != 0){
 						$re_msg['msg'] 	= '预约时间前'.$item['fetchTime']."分钟才能取号";
 					}else{
@@ -437,8 +439,11 @@ class Relations extends Model
 				$arrs['stime']	= $data['despeakTime'];
 				$arrs['etime']	= strtotime($data['despeakDate'].' '.$data['time_Part_O']);
 				$arrs['sex']	= $data['sex'];
+				$arrs['tips2']	= $data['platform'];
+				$arrs['platform']	= $data['platform'];
 				$arrs['birth']	= $data['birth'];
 				$arrs['code']	= $data['queNo'];
+				$arrs['original_id'] = $data['original_id'];
 				$result = $this->makeTicket($arrs);
 				if($result['success']==1){
 					$re_msg['success'] = 1;

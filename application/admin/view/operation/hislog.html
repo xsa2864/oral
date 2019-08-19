@@ -22,7 +22,18 @@
                           {/volist}
                         </select>
                     </td>
-                    <td>                      
+                    <td>       
+                    <td>接口类型:</td>
+                    <td>
+                        <select name="type" id="type" class="select">
+                          <option value="0" {if 0==$type}selected{/if}>请选择</option>
+                          <option value="1" {if 1==$type}selected{/if}>医生</option>
+                          <option value="2" {if 2==$type}selected{/if}>排班</option>
+                          <option value="3" {if 3==$type}selected{/if}>患者</option>
+                          <option value="4" {if 4==$type}selected{/if}>放射科</option>
+                        </select>
+                    </td>
+                    <td>                    
                     <input type="button" value="搜索" onclick="search()" class="ext_btn ext_btn_submit">
                     </td>
                 </tr>

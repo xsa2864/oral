@@ -29,6 +29,10 @@
 <input message="tns:upClassRequest" />
 <output message="tns:upClassResponse" />
 </operation>
+<operation name="addSerque">
+<input message="tns:addSerqueRequest" />
+<output message="tns:addSerqueResponse" />
+</operation>
 <operation name="doctorInfo">
 <input message="tns:doctorInfoRequest" />
 <output message="tns:doctorInfoResponse" />
@@ -112,6 +116,14 @@
 <soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
+<operation name="addSerque">
+<soap:operation soapAction="urn:HB#UserInfo#addSerque" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
 <operation name="doctorInfo">
 <soap:operation soapAction="urn:HB#UserInfo#doctorInfo" />
 <input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
@@ -163,7 +175,7 @@
 </binding>
 <service name="HB">
 <documentation />
-<port name="HBPort" binding="tns:HBBinding"><soap:address location="http://192.168.0.239:80/api/v2.wsdl/server.html" />
+<port name="HBPort" binding="tns:HBBinding"><soap:address location="http://192.168.81.166:80/api/v2.wsdl/server" />
 </port>
 </service>
 <message name="getNameRequest">
@@ -206,6 +218,12 @@
 </message>
 <message name="upClassResponse">
 <part name="upClass" type="xsd:string" />
+</message>
+<message name="addSerqueRequest">
+<part name="value" type="xsd:string" />
+</message>
+<message name="addSerqueResponse">
+<part name="addSerque" type="xsd:string" />
 </message>
 <message name="doctorInfoRequest">
 <part name="xml" type="xsd:string" />

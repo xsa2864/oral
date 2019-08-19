@@ -477,15 +477,15 @@ class Appointment extends Base
                 echo json_encode($re_msg);exit;
             }
             if($arr['api_code']){                
-                if(strlen($arr['api_code'])!=6){
-                    $re_msg['msg'] = '请填写6个字符接口编码';
+                if(strlen($arr['api_code'])>10){
+                    $re_msg['msg'] = '接口标识请填写不超过10个字符';
                     echo json_encode($re_msg);exit;
                 }   
                 $awh[] = ["api_code",'=',$arr['api_code']];
                 $awh[] = ["UnitId",'<>',$arr['UnitId']];
                 $a_rs = db("unit")->where($awh)->select();
                 if($a_rs){
-                    $re_msg['msg'] = '接口编码已经存在，请更换';
+                    $re_msg['msg'] = '接口标识已经存在，请更换';
                     echo json_encode($re_msg);exit;
                 }
             }

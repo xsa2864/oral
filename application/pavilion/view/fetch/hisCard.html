@@ -85,18 +85,20 @@
 	    <span class="sign">{{ hall.HallNames }}</span>
 	</div>
 
-
-	<div class="layui-fluid">
-		<div class="layui-row que-btn" style="text-align: center;">
-		 	<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">	
-		 		<template v-for="que in queue">
-				<button class="layui-btn layui-btn-radius" v-bind:class="[btn_show?'vbut':'layui-btn-disabled']" v-on:click="checkBtn(que.HallNo,que.HallName)">
-					<i class="layui-icon layui-icon-add-circle"></i>{{ que.HallName }}
-				</button>		
-				</template>	
-		    </div>    
-		</div>	
-	</div>   
+	<div class="layui-form-item" v-if="hall.card">
+	    <label class="layui-form-label" style="font-size: 1.5rem;width: 100px; margin-left: 75px;
+	    color: #ef1b14;">请刷卡：</label>
+	    <div class="layui-input-inline">
+	      	<input type="text" name="idcard" id="idcard" placeholder="请输入卡号" autocomplete="off" class="layui-input" @change="getUserInfo" style="background-color: #015486;" v-model="idcard">
+	    </div>
+	    <div class="layui-input-inline" style="display: none;">
+	      	<a href="javascript:;" class="layui-btn layui-btn-normal" @click="pointCard" style="background-color: #ea3232;">重复取号请点击</a>
+	    </div>
+	    <div class="layui-form-mid layui-word-aux" id="result">
+	      	<input type="text" id="results" style="width: 0px;opacity: 0.1;">
+	      	{{ userInfo }}
+	    </div>
+	</div>
 
 	<!-- 区域配置 -->
 	<div style="display: block;width: 50px;height: 50px;position: fixed;top: 0px;" v-on:dblclick="changeHalls"></div>
@@ -333,15 +335,10 @@ var vm = new Vue({
 				.then(
 					function(res){
 						if(res.data!=null && res.data!=''){
-							vm.userInfo = res.data.CardId +' '+ res.data.Name +' '+ res.data.Sex
-							if(vm.hall.card){
-								vm.btn_show = 1
-							}
 							layui.$("#results").focus()
 						}else{
 							layui.$("#idcard").val('')
 							vm.userInfo = ''
-							vm.btn_show = 0
 						}
 					}
 				)

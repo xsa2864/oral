@@ -71,12 +71,18 @@ class Operation extends Base
 	public function hisLog()
 	{
 		$wh['date'] = $date = input("date",date("Y-m",time()));
+		$type = input("type",0);
+		$where = array();
+		if($type){
+			$wh['type'] = $type;
+			$where[] = ['o.type','=',$type];
+		}
+
 		$table_name = "his_log_".$date;		
 		$result = Db::query("SHOW TABLES LIKE '%$table_name%'");
 		$list = array();
 		$page = '';
 		if($result){
-			$where = array();
 			$stime = strtotime($date.'-01');
 			$etime = strtotime("+1 month",$stime);
 			$where[] = ['o.add_time','>=',$stime];
@@ -96,6 +102,7 @@ class Operation extends Base
 		}
 		$this->assign("dates",$dates);
 		$this->assign("date",$date);
+		$this->assign("type",$type);
 		$this->assign("page",$page);
 		$this->assign("list",$list);
 		return $this->fetch("hislog");
