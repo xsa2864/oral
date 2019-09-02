@@ -29,7 +29,14 @@ class PushCache extends Model
 	    $wait[] = ['doctor_id','in',[0,$doctor_id]];
 	    $wait[] = ['status','>=',0];
 	    $wait[] = ['status','<=',2];
-	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+	    // $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+	    $is_split = Db::name("config_fetch")->where("unitid",$terminal['unit_id'])->value("is_split");
+	    $atime = strtotime(date("Y-m-d",time())." 13:30:00");
+        if(time()>$atime && $is_split){
+            $wait[] = ['add_time','>',$atime];
+        }else{
+            $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+        }
 	    $wait_list = Db::name("z_ticket")->field("prefix,code,name,status,order,title")->order("status desc,sort desc,pid asc")->where($wait)->select();
         if(!empty($terminal['devices_ip'])){            
             $arr = $this->setRoomScreenInfo($hall_id,$doctor_info,$terminal,$wait_list);
@@ -67,7 +74,18 @@ class PushCache extends Model
 	    $wait[] = ['doctor_id','in',[0,$doctor_id]];
 	    $wait[] = ['status','>=',1];
 	    $wait[] = ['status','<=',2];
-	    $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];	 
+	    // $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];	
+	    $is_split = Db::name("config_fetch")->alias("f")
+	    			->field("f.is_split")
+	    			-leftJoin("serque s","s.UnitId=f.unit_id")
+	    			->where("s.QueId",$que_id)
+	    			->find();
+	    $atime = strtotime(date("Y-m-d",time())." 13:30:00");
+        if(time()>$atime && $is_split['is_split']){
+            $wait[] = ['add_time','>',$atime];
+        }else{
+            $wait[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+        }
 	    $wait_list = Db::name("z_ticket")->field("count(*) as num")->order("status desc,sort desc,pid asc")->where($wait)->find();	
 
 	    return $wait_list['num'];

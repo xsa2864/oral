@@ -38,6 +38,11 @@ class Quick extends Controller
         $doctor_id  = 0;        
         // 呼叫器
         $ter = DB::name("z_terminal")->where("ip",$ip)->find();
+        if(empty($ter)){
+            $re_msg['msg']  = "还未绑定呼叫器"; 
+            return json($re_msg);
+        }
+
         //获取在线医生
         if($is_login){
             $json       = cache("terminal");
@@ -54,16 +59,23 @@ class Quick extends Controller
                     }
                 }
             }
+            if(empty($doctor_id)){
+                $re_msg['msg']  = "医生不在线";  
+                return json($re_msg);
+            }
         }else{
             $zw[] = ["staff_code",'=',$staff_code];
             $zw[] = ["unit_id",'=',$ter['unit_id']];
             $rs = DB::name("z_doctor")->field("id,que_id")->where($zw)->find();
-            
             $doctor_id  = $rs['id'];
             $que_id     = explode("|", $rs['que_id']);
             if(empty($que_id)){
                 $re_msg['msg']  = "请先设置医生查看队列";  
                 return $re_msg;
+            }
+            if(empty($doctor_id)){
+                $re_msg['msg']  = "医生不存在";  
+                return json($re_msg);
             }
         }
         $result = array();
@@ -85,6 +97,9 @@ class Quick extends Controller
 	        	case 6:
 	        		$result = $push->warningM($ter);
 	        		break;
+                case 7:
+                    $result = $push->getQueueInfoM($doctor_id,$que_id,$ter,1);
+                    break;
 	        	default:
 	        		$re_msg['msg']  = '缺少参数type';
 	        		break;
@@ -92,11 +107,13 @@ class Quick extends Controller
 	        if($result){
 	        	if($result['success']==1){
 		        	$re_msg['code'] = 200;
+                    if($type==7){
+                        $rs = $push->executeQueueM($doctor_id,5);
+                    }
 		        }
-	        	$re_msg['msg']  = $result['msg'];
+	        	$re_msg['msg']   = $result['msg'];
+                $re_msg['data']  = isset($result['data'])?$result['data']:[];
 	        }
-        }else{
-        	$re_msg['msg']  = "医生不在线";  
         }
         return json($re_msg);
     }    

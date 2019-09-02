@@ -188,7 +188,14 @@ class Index extends Controller
         $where[] = ['status','>=',1];
         $where[] = ['status','<=',2];
         $where[] = ['doctor_id','in',[0,$doctor_id]];
-        $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+        // $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];        
+        $is_split = Db::name("config_fetch")->where("unitid",$this->ter['unit_id'])->value("is_split");
+        $atime = strtotime(date("Y-m-d",time())." 13:30:00");
+        if(time()>$atime && $is_split){
+            $where[] = ['add_time','>',$atime];
+        }else{
+            $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+        }
         $ticket = DB::name("z_ticket")->where($where)->order("status desc,sort desc,pid asc")->find();
         if($ticket){
             if($flag==2){         
@@ -390,7 +397,14 @@ class Index extends Controller
         }else{
             $where[] = ['doctor_id','=',$doctor_id];
         }
-        $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+        // $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];        
+        $is_split = Db::name("config_fetch")->where("unitid",$this->ter['unit_id'])->value("is_split");
+        $atime = strtotime(date("Y-m-d",time())." 13:30:00");
+        if(time()>$atime && $is_split){
+            $where[] = ['add_time','>',$atime];
+        }else{
+            $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+        }
         $result = db("z_ticket")->field("id,prefix,code,name")->where($where)->order(["over_time"=>"desc","pid"=>"asc"])->select();
         if($result){
             $re_msg['code'] = 200;

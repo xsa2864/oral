@@ -20,7 +20,13 @@ class Nurse extends Base
 		}
 		// $where[] = ['t.status','>=',1];
 		// $where[] = ['t.status','<=',2];
-		$where[] = ['t.add_time','>',strtotime(date("Y-m-d",time()))];
+		$is_split = Db::name("config_fetch")->where("unitid",$this->unitid)->value("is_split");
+		$atime = strtotime(date("Y-m-d",time())." 13:30:00");
+		if(time()>$atime && $is_split){
+			$where[] = ['t.add_time','>',$atime];
+		}else{
+			$where[] = ['t.add_time','>',strtotime(date("Y-m-d",time()))];
+		}
 		$list = db("z_ticket")->alias("t")
 				->field("t.*")
 				->where($where)
@@ -47,7 +53,15 @@ class Nurse extends Base
 		}else{
 			$where[] = ['status','=',$status];
 		}
-		$where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+		$is_split = Db::name("config_fetch")->where("unitid",$this->unitid)->value("is_split");
+		$atime = strtotime(date("Y-m-d",time())." 13:30:00");
+		if(time()>$atime && $is_split){
+			$where[] = ['add_time','>',$atime];
+		}else{
+			$where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+		}
+
+		// $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
 		if($this->userid!=1){
 			$where[] = ['unit_id','=',$this->unitid];
 		}

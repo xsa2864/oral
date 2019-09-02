@@ -96,7 +96,7 @@
 	    </div>
 	    <div class="layui-form-mid layui-word-aux" id="result">
 	      	<input type="text" id="results" style="width: 0px;opacity: 0.1;">
-	      	{{ userInfo }}
+	      	<label v-html="userInfo"></label>
 	    </div>
 	</div>
 
@@ -336,6 +336,7 @@ var vm = new Vue({
 					function(res){
 						if(res.data!=null && res.data!=''){
 							layui.$("#results").focus()
+							vm.userInfo = res.data.data
 						}else{
 							layui.$("#idcard").val('')
 							vm.userInfo = ''

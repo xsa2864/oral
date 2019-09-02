@@ -29,6 +29,10 @@ class UserInfo
 	    return "口腔医院 webservice !";
 	}	
 
+	// ==========================================================================================
+	// ======================================患 者 信 息==========================================
+	// ==========================================================================================
+
 	/*
 	 * 患者信息
 	 *
@@ -142,10 +146,10 @@ class UserInfo
 			$re_msg['msg']		.= 'END_DATE 时间不能为空,';
 		}
 
-		$id = DB::name("despeak")->where('original_id',$value['ORIGINAL_ID'])->value("despeak_id");
-		if($id){
-			$re_msg['msg'] .= '该患者信息已经存在,';
-		}
+		// $id = DB::name("despeak")->where('original_id',$value['ORIGINAL_ID'])->value("despeak_id");
+		// if($id){
+		// 	$re_msg['msg'] .= '该患者信息已经存在,';
+		// }
 		// $data['unitId'] 	  	 = $value['HOSPITAL_ID'];
 		// $data['hallNo'] 	  	 = $value['HALL_CODE'];
 		// $data['queId'] 	  	 = $value['QUE_CODE'];
@@ -153,7 +157,10 @@ class UserInfo
 		$data['hallName']  	 	 = $value['HALL_NAME'];				
 		$data['queName']   	 	 = $value['QUE_NAME'];
 		$data['data_status'] 	 = 0;
-		$rs = DB::name("serque")->field("QueId,HallNo,UnitId,QueName")->where("InterfaceID",$value['DOCTOR_CODE'])->find();
+		$hall_id = Db::name("hall")->where('SerInterface',$value['HALL_CODE'])->value("HallNo");
+		$sw[] = ["InterfaceID",'=',$value['DOCTOR_CODE']];
+		$sw[] = ["HallNo",'=',$hall_id];
+		$rs = Db::name("serque")->field("QueId,HallNo,UnitId,QueName")->where($sw)->find();
 		if($rs){
 			$data['data_status'] = 1;
 			$data['unitId'] 	 = $rs['UnitId'];
@@ -163,7 +170,7 @@ class UserInfo
 		}else{
 			$re_msg['msg'] .= 'QUE_CODE 队列信息不存在,';
 		}
-		$doctor_id = DB::name("z_doctor")->where("InterfaceID",$value['DOCTOR_CODE'])->value("id");
+		$doctor_id = DB::name("z_doctor")->where("staff_code",$value['DOCTOR_CODE'])->value("id");
 		if(empty($doctor_id)){
 			$re_msg['msg'] .= '该医生不存在,';
 		}
@@ -233,7 +240,10 @@ class UserInfo
 		return $re_msg;
 	}
 
-	
+	// ==========================================================================================
+	// ======================================医 生 排 班==========================================
+	// ==========================================================================================
+
 	// 医生排班
 	public function doctorClass($xml='')
 	{
@@ -330,17 +340,19 @@ class UserInfo
 		if(empty($value['DOCTOR_CODE'])){
 			$re_msg['msg'] .= 'DOCTOR_CODE 不能为空,';
 		}else{			
-			$doctor_id = DB::name("z_doctor")->where('InterfaceID',$value['DOCTOR_CODE'])->value("id");
+			$doctor_id = DB::name("z_doctor")->where('staff_code',$value['DOCTOR_CODE'])->value("id");
 			if(empty($doctor_id)){
 				$re_msg['msg'] .= 'DOCTOR_CODE 医生数据不存在,';
 			}
 		}
-		if(empty($value['QUE_CODE'])){
-			$re_msg['msg'] .= 'QUE_CODE 不能为空,';
-		}else{			
-			$que_id = $this->addSerque($value);
-			if(!$que_id){
-				$re_msg['msg'] .= 'QUE_CODE 队列数据不存在,';
+		if(empty($value['DOCTOR_CODE'])){
+			$re_msg['msg'] .= 'DOCTOR_CODE 不能为空,';
+		}else{		
+			if(!empty($value['SECHEDUAL_DATE'])){		
+				$que_id = $this->addSerque($value);
+				if(!$que_id){
+					$re_msg['msg'] .= 'DOCTOR_CODE 队列数据不存在,';
+				}
 			}
 		}
 
@@ -348,13 +360,13 @@ class UserInfo
 			return $re_msg;
 		}
 		$class = new \app\admin\model\ClassTime;
-		$data['doctor_id'] = $doctor_id;
-		$data['que_id']    = $que_id;
+		$data['doctor_id'] = $where["doctor_id"] = $doctor_id;
+		$data['que_id']    = $where["que_id"] 	 = $que_id;
 		$calss 			   = explode(',', $value['SECHEDUAL_DATE']);
 		$data['class'] 	   = $class->binDecClass($calss);
-		$id = DB::name("z_doctor_class")->where('original_id',$value['ORIGINAL_ID'])->find(); 
-		if(!$data['class']){
-			$rs = Db::name("z_doctor_class")->where('original_id',$value['ORIGINAL_ID'])->delete();
+		$id = DB::name("z_doctor_class")->where($where)->value("id"); 
+		if(!$data['class'] && $id){
+			$rs = Db::name("z_doctor_class")->where('id',$id)->delete();
 			if($rs){
 				$re_msg['status'] = 1;
 				$re_msg['msg'] = '删除成功';
@@ -362,7 +374,7 @@ class UserInfo
 			return $re_msg;
 		}
 		if($id){
-			$rs = DB::name("z_doctor_class")->where('original_id',$value['ORIGINAL_ID'])->update($data); 
+			$rs = DB::name("z_doctor_class")->where('id',$id)->update($data); 
 			if($rs!==false){
 				$re_msg['status'] = 1;
 				$re_msg['msg'] = '更新成功';
@@ -390,32 +402,36 @@ class UserInfo
 		$unit_id = Db::name("unit")->where("api_code",$value['HOSPITAL_ID'])->value("UnitId");
 		// 区域
 		$hata['UnitId']			= $unit_id;
-		$hata['SerInterface']	= $value['QUE_CODE'];		
-		$hata['h_code']			= $value['QUE_CODE'];
-		$hata['hall_num']		= $value['QUE_CODE'];
+		$hata['SerInterface']	= $value['HALL_CODE'];		
+		$hata['h_code']			= $value['HALL_CODE'];
+		$hata['hall_num']		= $value['HALL_CODE'];
 		$hata['HallName']		= $value['HALL_NAME'];
 		$hata['EnableFlag'] 	= $value['STATUS'];
-		$hall_id = Db::name("hall")->where("SerInterface",$value['QUE_CODE'])->value("HallNo");
+		$hall_id = Db::name("hall")->where("SerInterface",$value['HALL_CODE'])->value("HallNo");
 		$hid = 0;
 		if($hall_id){
 			$hid = $hall_id;
-			Db::name("hall")->where("HallNo",$hall_id)->update($hata);
+			$rs = Db::name("hall")->where("HallNo",$hall_id)->update($hata);
 		}else{			
 			$hata['InTime'] 		= date("Y-m-d H:i:s",time());
-			// $hid = Db::name("hall")->insertGetId($hata);
+			$hid = Db::name("hall")->insertGetId($hata);
 		}
 		// 医生当队列
 		$data['UnitId'] 		= $unit_id;
 		$data['HallNo'] 		= $hid;
+		$data['NoChar'] 		= '';		
+		$data['quick_char'] 	= '';
 		$data['InterfaceID'] 	= $value['DOCTOR_CODE'];
 		$data['ser_num'] 		= $value['DOCTOR_CODE'];
 		$data['code'] 			= $value['DOCTOR_CODE'];
-		$data['QueName'] 		= $value['DOCTOR_NAME'];
+		$data['QueName'] 		= $value['HALL_NAME'].'-'.$value['DOCTOR_NAME'];
 		$data['EnableFlag'] 	= $value['STATUS'];
-		$que_id = Db::name("serque")->where("InterfaceID",$value['DOCTOR_CODE'])->value("QueId");
+		$sw[] = ["InterfaceID",'=',$value['DOCTOR_CODE']];
+		$sw[] = ["HallNo",'=',$hid];
+		$que_id = Db::name("serque")->where($sw)->value("QueId");
 		if($que_id){
 			$id = $que_id;
-			Db::name("serque")->where("QueId",$que_id)->update($data);
+			$rs = Db::name("serque")->where("QueId",$que_id)->update($data);
 		}else{			
 			$data['InTime'] 		= date("Y-m-d H:i:s",time());
 			$id = Db::name("serque")->insertGetId($data);
@@ -423,6 +439,11 @@ class UserInfo
 		return $id;
 
 	}
+
+	// ==========================================================================================
+	// ======================================医 生===============================================
+	// ==========================================================================================
+
 	// 医生信息
 	public function doctorInfo($xml='')
 	{
@@ -542,8 +563,8 @@ class UserInfo
 		if(!in_array($value['STATUS'],[0,1]) || !is_numeric($value['SEX_CODE'])){
 			$re_msg['msg']		.= 'STATUS 状态在0,1之间,';
 		}
-		if(empty($value['DOCTOR_CODE'])){
-			$re_msg['msg'] .= '医生唯一值代码不能为空,';
+		if(empty($value['ORIGINAL_ID'])){
+			$re_msg['msg'] .= '医生信息唯一值代码不能为空,';
 		}
 
 		if(!empty($re_msg['msg'])){
@@ -557,7 +578,7 @@ class UserInfo
 		$data['unit_id']		= $unit_id;
 		$data['hall_id'] 	  	= 0;
 		$data['que_id'] 	  	= '|';
-		$data['staff_code'] 	= $value['DOCTOR_CODE'];
+		$data['staff_code'] 	= $value['SOLELY_ID'];
 		$data['type'] 			= $value['APPELLATION'];
 		$data['doctor_name'] 	= $value['DOCTOR_NAME'];
 		$data['QueName'] 		= $value['DOCTOR_NAME'];
@@ -573,17 +594,17 @@ class UserInfo
 		$data['status'] 		= $value['STATUS'];
 		$data['InterfaceID']    = $value['DOCTOR_CODE'];
 
-		$result = DB::name("z_doctor")->where("original_id",$value['DOCTOR_CODE'])->find();
+		$result = DB::name("z_doctor")->where("original_id",$value['ORIGINAL_ID'])->find();
 		if(empty($result)){
 			$data['password'] 		= md5('123456');
 			$data['add_time'] 		= time();
-			$zd[] = ["original_id",'=',$value['DOCTOR_CODE']];
-			$oid = DB::name("z_doctor")->where($zd)->value("original_id");
-			if($oid){
-				$re_msg['msg']		= '医生工号已经存在';
-				return $re_msg;
-			}
-			$data['original_id'] 	= $value['DOCTOR_CODE'];
+			// $zd[] = ["original_id",'=',$value['ORIGINAL_ID']];
+			// $oid = DB::name("z_doctor")->where($zd)->value("original_id");
+			// if($oid){
+			// 	$re_msg['msg']		= '医生工号已经存在';
+			// 	return $re_msg;
+			// }
+			$data['original_id'] 	= $value['ORIGINAL_ID'];
 			$rs = DB::name("z_doctor")->data($data)->insert();
 			if($rs){
 				$re_msg['status']	= 1;
@@ -592,14 +613,14 @@ class UserInfo
 				$re_msg['msg']		= '添加失败';
 			}
 		}else{			
-			$zd[] = ["original_id",'=',$value['DOCTOR_CODE']];
-			$oid = DB::name("z_doctor")->where($zd)->value("original_id");
-			if($oid){
-				if($oid!=$value['ORIGINAL_ID']){
-					$re_msg['msg']		= '医生工号已经存在!';
-					return $re_msg;
-				}
-			}
+			// $zd[] = ["original_id",'=',$value['ORIGINAL_ID']];
+			// $oid = DB::name("z_doctor")->where($zd)->value("original_id");
+			// if($oid){
+			// 	if($oid!=$value['ORIGINAL_ID']){
+			// 		$re_msg['msg']		= '医生工号已经存在!';
+			// 		return $re_msg;
+			// 	}
+			// }
 			$rs = DB::name("z_doctor")->where("id",$result['id'])->update($data);
 			if($rs!==false){
 				$re_msg['status']	= 1;
@@ -652,7 +673,7 @@ class UserInfo
     	}else{
     		$data['que_id'] = '|';
     	}
-    	$rss = Db::name("z_doctor")->where("doctor_id",$doctor_id)->column('que_id');
+    	$rss = Db::name("z_doctor")->where("id",$doctor_id)->update($data);
     }
     //将XML转为array
     public function xmlToArray($xml='')

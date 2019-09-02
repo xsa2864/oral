@@ -17,7 +17,7 @@ class Voice extends Model
 		if($type){
 			$data['D_Text']		= $str;
 		}else{			
-			$data['S_Text']		= $str;			
+			$data['S_Text']		= $str.','.$str;			
 		}
 		$data['CreateTime'] = date("Y-m-d H:i:s",time());
 		$data['D_Address']	= $screen_code;

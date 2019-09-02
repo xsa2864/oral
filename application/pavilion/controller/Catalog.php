@@ -34,6 +34,9 @@ class Catalog extends Controller
                 ['op'=>'/uploads/video/app.apk','title'=>'浏览窗口apk'],
                 ['op'=>'/uploads/video/ChromeCore_1249_1.0.4.2.exe','title'=>'谷歌浏览器'],
                 ['op'=>'/uploads/video/TTS.apk','title'=>'TTS语音apk'],
+                ['op'=>'/uploads/video/TTS(2).apk','title'=>'TTS语音2apk'],
+                ['op'=>'/uploads/video/xunfeiyuji_317.apk','title'=>'讯飞语记apk'],
+                ['op'=>'/uploads/video/kdxfyyyq3.0.apk','title'=>'科大讯飞2apk'],
                 ['op'=>'/uploads/video/iflytechvoiceengine_2013112101.apk','title'=>'语音引擎apk'],
                 ['op'=>'/uploads/video/MIPS_DS_Basic_FREE_V4.0.0.apk','title'=>'信息发布apk'],
                 ['op'=>'/uploads/video/webclient.rar','title'=>'PC客户端'],
@@ -51,6 +54,7 @@ class Catalog extends Controller
             ];
             $class = [
                 ['op'=>url('pavilion/schedule/showClass'),'title'=>'排班情况'],
+                ['op'=>url('pavilion/schedule/showOralClass'),'title'=>'口腔医院排班'],
             ];
             $code = [
                 ['op'=>url('tool/token/getToken'),'title'=>'生成激活码'],
@@ -191,7 +195,7 @@ class Catalog extends Controller
                 "QUE_CODE": "队列代码",
                 "QUE_NAME": "队列名称",
                 "SECHEDUAL_DATE": "1,2,3,4,5",
-                "OPERATION_STATUS": "操作状态（0=删除 1=增加或者更新）"
+                "STATUS": "操作状态（0=删除 1=增加或者更新）"
             }
         }
     }
@@ -294,7 +298,7 @@ class Catalog extends Controller
                                 <QUE_CODE>队列代码</QUE_CODE>
                                 <QUE_NAME>队列名称</QUE_NAME>
                                 <SECHEDUAL_DATE>1,2,3,4,5</SECHEDUAL_DATE>
-                                <OPERATION_STATUS>操作状态 (0=删除 1=增加或者更新)</OPERATION_STATUS>
+                                <STATUS>操作状态 (0=删除 1=增加或者更新)</STATUS>
                             </ROW>
                         </ROWS>
                     </BODY>

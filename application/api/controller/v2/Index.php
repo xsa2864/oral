@@ -231,4 +231,54 @@ class Index extends Controller
         $data["config"] = $config;
         return json($data);
     }
+
+    // 获取排班表信息
+    public function getOralClassTime()
+    {
+        // $unitid = input('unitid',0);
+        // $hallid = input('hallid',0);
+        $unitid = cookie("unit_id");
+        $hallid = cookie("hall_ids");
+        if($unitid){
+            $where[] = ['s.UnitId','=',$unitid];
+        }
+        if($hallid){
+            $arr = explode(',', $hallid);
+            $where[] = ['s.HallNo','in',$arr];
+        }
+        $where[] = ['class','<>',0];
+        $result = db("z_doctor_class")->alias("dc")->field("dc.*,s.QueName,dr.QueName as name,dr.type,h.HallNo,h.HallName")
+            ->rightJoin("z_doctor dr","dr.id=dc.doctor_id")
+            ->leftJoin("serque s","s.QueId=dc.que_id")
+            ->leftJoin("hall h","h.HallNo=s.HallNo")
+            ->order("dc.que_id asc")
+            ->where($where)->select();
+        $list = array();
+        if($result){            
+            $cla = new \app\admin\model\ClassTime;
+            foreach ($result as $key => $value) {
+                $arr = $cla->arrangeClass($value['class']);
+                $value['detail'] = $arr;
+                $list[$value['HallNo']]['title'] = $value['HallName'];
+                $list[$value['HallNo']]['data'][] = $value;
+            }
+        }
+        
+        $config = db("z_temp_config")->where("id","1")->find();
+        $data["list"] = array_values($list);
+
+        $units = Db::name("unit")->field("UnitId,unitname")->where('EnableFlag',"1")->select();
+        $uarr = [];
+        if($units){            
+            foreach ($units as $key => $value) {
+                $value['checked'] = $value['UnitId']==$unitid?1:0;
+                $uarr[] = $value;
+            }
+        }
+        $data['select_unit_id'] = $unitid;
+        $data['select_hall_id'] = $hallid;
+        $data['units']   = $uarr;
+        $data["config"] = $config;
+        return json($data);
+    }
 }

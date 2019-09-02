@@ -35,7 +35,10 @@
 	    		</div>
 	    		<div class="layui-col-xs12 layui-col-sm12 layui-col-md12 center-l-b">
 	    			<div class="layui-col-xs4 layui-col-sm4 layui-col-md4 center-l-b-l">
-	    				<template v-if="info.item != ''">
+	    				<template v-if="info.item.indexOf('http')!=-1">	    					
+					      	<img v-bind:src="info.item.user_pic">
+	    				</template>
+	    				<template v-ekse-if="info.item != ' '">
 					      	<img v-bind:src="'__IMG__/' + info.item.user_pic">
 					    </template>
 					    <template v-else>

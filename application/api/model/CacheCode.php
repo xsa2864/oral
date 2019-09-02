@@ -79,6 +79,7 @@ class CacheCode
                 break;
             }
         }
+        $mac = Request()->ip();
         return $mac;
     }
 

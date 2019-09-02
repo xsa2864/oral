@@ -43,7 +43,18 @@ class Relations extends Model
 		}else{
 			$where[] = ['status','=',1];
 		}		
-		$where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+		$is_split = Db::name("config_fetch")->alias("f")
+	    			->field("f.is_split")
+	    			-leftJoin("serque s","s.UnitId=f.unit_id")
+	    			->where("s.QueId",$que_id)
+	    			->find();
+		$atime = strtotime(date("Y-m-d",time())." 13:30:00");
+		if(time()>$atime && $is_split['is_split']){
+			$where[] = ['add_time','>',$atime];
+		}else{
+			$where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
+		}
+		// $where[] = ['add_time','>',strtotime(date("Y-m-d",time()))];
 		if($quick){
 			$where[] = ["sort",'=',$quick];
 		}
@@ -73,6 +84,8 @@ class Relations extends Model
 				$data[$value['que_id']]['all_num'] = $this->getWaitNum($value['que_id'],0,0,'all');
 			}
 			$data[$value['que_id']]['title'] = $value['title'];
+			$o_sort = $value['add_time']>strtotime(date("Y-m-d",time()).' 12:00:00')?-1:0;
+			$value['sort'] = $o_sort;//$value['sort']>0?$value['sort']:$o_sort;
 			$pid = $this->sortsArr($sort,$value['que_id'],$value['pid'],$value['sort']);
 			$sort[$value['que_id']][$pid] = $value;
 			ksort($sort[$value['que_id']]);
@@ -84,13 +97,18 @@ class Relations extends Model
 
 	public function sortsArr($sort=[],$que_id='',$pid='',$st=0)
 	{
-		if(isset($sort[$que_id][$pid])){
-			$pid ++;
-			self::sortsArr($sort,$que_id,$pid,$st);
+		if($st==0){
+			$pid = $pid+800;
+		}else if($st==-1){
+			$pid = $pid+400;
 		}
-		if($st>0){
-			$pid = $pid/10000/$st;
-		}
+		// if(isset($sort[$que_id][$pid])){
+		// 	$pid ++;
+		// 	self::sortsArr($sort,$que_id,$pid,$st);
+		// }
+		// if($st>0){
+		// 	$pid = $pid/10000/$st;
+		// }
 		return $pid;
 	}
 
@@ -122,7 +140,7 @@ class Relations extends Model
 				if($rs_count <= abs($number)){		//实际数据少于查询数据		
 					if($number>0){
 						$pids = $rs[$rs_count-1]['pid']/2;
-						if($pids>1){
+						if($pids>0.0001){
 							$da['pid'] = $pids;
 						}else{
 							$re_msg['msg'] 	   = "该位置不能插队,请更换位置";
@@ -131,7 +149,7 @@ class Relations extends Model
 						$da['pid'] = $rs[$rs_count-1]['pid']+10000;
 					}					
 				}else{
-					if(abs($rs[$rs_count -1]['pid']-$rs[$rs_count-2]['pid'])>1){
+					if(abs($rs[$rs_count -1]['pid']-$rs[$rs_count-2]['pid'])>0.0001){
 						$da['pid'] = ($rs[$rs_count -1]['pid']+$rs[$rs_count-2]['pid'])/2;
 					}else{
 						$re_msg['msg'] 	   = "该位置不能插队,请更换位置";
@@ -442,6 +460,7 @@ class Relations extends Model
 				$arrs['tips2']	= $data['platform'];
 				$arrs['platform']	= $data['platform'];
 				$arrs['birth']	= $data['birth'];
+				$arrs['noChar']	= $data['noChar'];
 				$arrs['code']	= $data['queNo'];
 				$arrs['original_id'] = $data['original_id'];
 				$result = $this->makeTicket($arrs);

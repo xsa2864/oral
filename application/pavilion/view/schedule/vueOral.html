@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  	<title>排班</title>
+  	<link rel="stylesheet" href="__HUI__/lib/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="__HUI__/lib/layui/css/formSelects-v4.css" media="all">
+  	<script type="text/javascript" src="__HUI__/lib/layui/layui.js"></script> 
+	<script type="text/javascript" src="__HUI__/lib/vue/vue.min.js"></script> 
+	<script type="text/javascript" src="__HUI__/lib/vue/axios.min.js"></script> 
+</head>
+<style type="text/css">
+html,body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #235695;
+    color:#ffffff;
+}/*这里是关键*/
+.layui-fluid,.layui-row{
+	height: 100%;
+	padding:0;
+}	
+#app .header{
+	display: block;
+	height: 6.2%;
+}
+#app .header .header-l{
+	line-height: 11vw;
+	font-size: 4vw;
+}
+#app .header .header-r{
+	font-size: 1.5vw;
+	line-height: 4vw;
+	padding-top: 2.2vw;
+	text-align: center;
+	padding-left: 3vw;
+}
+.grid-demo{
+	color:#FFFFFF;
+}
+.layui-table td{
+	padding: 2vw 1vw;
+}
+.layui-btn-container .layui-btn{
+	margin-right:0.6vw;
+	padding: 0;		
+	width: 9.99vw;
+	height: 7vw;
+	font-size: 3vw;
+}
+.layui-btn-disabled{
+	border:none;
+	/*background-color: #aaa0;*/
+	visibility: hidden;
+}
+.layui-btn-warm{
+	border-bottom: 1px solid #c59347;
+	border-right: 2px solid #c59347;
+}
+#app .footer{
+	display: block;
+	line-height: 10vw;    
+	font-size: 3vw;   
+	padding-left: 3vw;
+}
+.layui-btn-none{
+	background-color: #f9cf63;
+	cursor:default;
+}
+#changeHall{
+		position: absolute;
+	    top: 100px;
+	    width: 100%;
+	    background-color: #9ac832;
+	}
+.overBack{
+		background-color: #c9c9c9;
+	    width: 100%;
+	    height: 100%;
+	    display: block;
+	    position: absolute;
+	    top: 0px;
+	    opacity: 0.7;
+	}
+.layui-layer-content .layui-btn-container button{
+		margin-left: 5px !important;
+		margin-right: 5px !important;
+		width: 67px;
+		height: 35px;
+		font-size: 1.2rem;
+		background-color: #015486;
+	}
+.layui-anim-upbit,.layui-layer-dialog,.layui-form-label{
+	color: #000 !important;
+}
+</style>
+<body> 
+<div class="layui-fluid" id="app" v-bind:style="baseStyles" v-on:mousemove="mousemoves">  
+  <div class="layui-row">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 header">
+    	<div class="layui-col-xs8 layui-col-sm8 layui-col-md8 header-l">
+    		<span v-if="config.title!=''">{{ config.title }}</span>    		
+    	</div>
+    	<div class="layui-col-xs4 layui-col-sm4 layui-col-md4 header-r">
+    		<div id="date">医生出诊一览表</div>
+	  		<div id="time">{{ time }}</div>
+    	</div>
+    </div>
+
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="display: block;height: 6.5%;">
+    	<div class="layui-col-xs4 layui-col-sm4 layui-col-md4" style="text-align: center;height: 100%;    line-height: 12vw;font-size: 4.5vw;">
+    		<div class="layui-col-xs6 layui-col-sm6 layui-col-md6" style="color:#fe7f18;">
+    			 	科 室
+    		</div>
+    		<div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+    				医 生
+    		</div>
+    	</div>
+    	<div class="layui-col-xs8 layui-col-sm8 layui-col-md8" style="text-align: center;">
+    		<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="font-size: 2vw;    padding: 1vw;color:#fe7f18;">
+    			出 诊 时 间 安 排
+    		</div>
+    		<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="font-size: 1vw;padding: 0 1.5vw;">
+    			<div class="layui-row layui-col-space2">
+	    			<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="background-color: #fe7f18;padding: 0.5vw 0;padding: 3px 3px 3px 0">星期一</div>
+			    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="background-color: #3ac2ea;padding: 0.5vw 0;padding: 3px 3px 3px 0">星期二</div>
+			    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="background-color: #fe7f18;padding: 0.5vw 0;padding: 3px 3px 3px 0">星期三</div>
+			    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="background-color: #3ac2ea;padding: 0.5vw 0;padding: 3px 3px 3px 0">星期四</div>
+			    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="background-color: #fe7f18;padding: 0.5vw 0;padding: 3px 3px 3px 0">星期五</div>
+			    	<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" style="background-color: #3ac2ea;padding: 0.5vw 0;padding: 3px 3px 3px 0">星期六</div>
+		    	</div>
+    		</div>
+    	</div>
+    </div>
+
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="display: block;height: 81.3%;padding: 0.3vw 1.2vw 0 1.2vw;">
+    	<div style="height: 100%;overflow: hidden;">
+    	<div class="scroll" style="height: 100%;overflow: auto;width: 105%;">    		
+    	<table class="layui-table" style="color:#FFFFFF;margin: 0px;">
+		  <colgroup>
+		    <col width="12%">
+		    <col width="20%">
+		    <col>
+		  </colgroup>
+		  <tbody>
+		  	<template v-for="item in list">		  		
+		  		<template v-for="(items,index) in item.data">
+		        <tr>		        	
+		        	<td v-bind:rowspan="item.data.length*3" style="font-size: 5vw;line-height: 5.5vw;background-color: #fe7f18;padding:4vw;" v-if="index==0"> {{ item.title }}</td>		        	
+			        <td rowspan="3" style="background-color: #3ac2ea;line-height: 3.5vw;">
+			        	<div style="font-size: 4vw;padding-bottom: 5px;">{{ items.name }}</div>
+			        	<div style="font-size: 2.5vw;">{{ items.type }}</div>
+			    	</td>		    
+		        </tr>
+		        <tr style="color: #fe7f18;">
+		        	<td style="padding: 5px 1px 0 3px;">
+		        		<div class="layui-btn-container">	
+			        		<button class="layui-btn layui-btn-sm layui-btn-warm"
+				        		v-on:click="showOpen"
+			        			v-bind:value="items.id + ',' + item.title + ' > '+ items.name "
+			        			v-for="(de,index) in items.detail"
+			        			v-if="de==1 && index%2==0 && index<12"
+			        			>上午</button>			 
+			        		<button class="layui-btn layui-btn-sm layui-btn-none" v-else-if="de==0 && index%2==0 && index<12"></button>  
+		        		</div>
+		        	</td>
+		        </tr>
+		        <tr style="background-color: #f3d0b47d;color: #fe7f18;">
+		        	<td style="padding: 5px 1px 0 3px;">
+		        		<div class="layui-btn-container">	
+				        	<button class="layui-btn layui-btn-sm layui-btn-warm" 
+				        		v-on:click="showOpen"
+			        			v-bind:value="items.id + ',' + item.title + ' > '+ items.name "
+				        		v-for="(de,index) in items.detail"
+			        			v-if="de==1 && index%2==1 && index<12"
+			        			>下午</button>
+				        	<button class="layui-btn layui-btn-sm layui-btn-none" v-else-if="de==0 && index%2==1 && index<12"></button>   
+		        		</div>
+		        	</td>
+		        </tr>
+		  		</template>
+		  	</template>
+		  </tbody>
+		</table>
+    	</div>
+    	</div>
+    </div>
+
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12 footer">
+    	<span v-if="config.tip!=''">友情提示：{{ config.tip }}</span>
+    </div>
+  </div>
+
+  <!-- 区域配置 -->
+	<div style="display: block;width: 50px;height: 50px;position: fixed;top: 0px;" v-on:dblclick="changeHalls"></div>
+	<!-- 验证码 -->
+	<div id="line_pwd" style="display: none;">
+		<form class="layui-form layui-form-pane" style="padding: 10px 20px 0 20px;" v-on:submit.prevent="testing">
+			<div class="layui-form-item">
+			    <label class="layui-form-label" id="line_tilte">验证码</label>
+			    <div class="layui-input-block">
+			      <input type="text" name="pwd" id="number" v-model="number" v-bind:value="number" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+			    </div>
+
+			</div>	 	
+				<div class="layui-input-block" style="margin: 1px;">
+					<div class="layui-btn-container is_card" style="text-align: center;">
+					  <button type="button" class="layui-btn" @click="insertAtCursor('1','number')">1</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('2','number')">2</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('3','number')">3</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('4','number')">4</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('5','number')">5</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('6','number')">6</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('7','number')">7</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('8','number')">8</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('9','number')">9</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('0','number')">0</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('X','number')">X</button>
+					  <button type="button" class="layui-btn" @click="insertAtCursor('','number')" style="font-size: 1rem;">删除</button>
+					</div>
+				</div>
+			<div class="layui-form-item" style="text-align: center;">
+			    <button class="layui-btn" style="font-size: 1rem;background-color: #015486;"> 确 认 </button>
+			    <button class="layui-btn" type="button" @click="pageClose" style="font-size: 1rem;background-color: #015486;"> 关 闭 </button>
+			</div>
+		</form>
+	</div>
+	<!-- 区域配置 -->
+	<div v-show="showChange">		
+		<div class="overBack" @click="setHallClose"></div>
+		<form id="changeHall" class="layui-form" style="height: 360px;">
+			<fieldset style="border: none;padding: 0;border-top: 1px solid #eee;">
+		    	<legend style="margin-left: 20px;padding: 0 10px;font-size: 4vw;font-weight: 300;text-align: center;">
+		    		<a name="switch">区域配置</a>
+		    	</legend>
+		    </fieldset>
+		    <div style="text-align: center;padding: 10px;">
+			    <div class="layui-input-inline">
+			      <select name="unit_id" lay-verify="required" lay-filter="selectUnit" v-model="select_unit_id">
+			        <option disabled="true" value="">选择单位</option>		       
+			        <option v-for="nts in units" v-bind:value="nts.UnitId" >{{ nts.unitname }}</option>
+			      </select>
+			    </div>
+		  	</div>
+			<div style="text-align: center;padding: 10px;" class="layui-form">
+    			<label class="layui-form-label">请选择区域</label>
+			    <div class="layui-input-block">
+			      <select name="hall_id" xm-select="selectHall">
+			      </select>
+			    </div>
+		  	</div>
+		  	<div class="" style="text-align: center;padding: 10px;">
+			    <div class="layui-input-inline">
+			      <button class="layui-btn" lay-submit @click.stop.prevent="setHall">保存</button>
+			    </div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript" src="__HUI__/lib/layui/formSelects-v4.js"></script> 
+<script>
+//一般直接写在一个js文件中
+layui.use(['jquery','layer', 'form'], function(){
+  var layer = layui.layer
+  ,$=layui.$
+  ,form = layui.form;
+  form.on('select(selectUnit)', function(data){
+    	vm.unit_id = data.value
+    	$.post("{:url('/api/v2/fetch/getHall')}",{"unit_id":data.value},
+    		function(res){
+    			vm.options = res;
+    			var arrs = []
+    			if(res){
+    				for(rs in res){
+    					var op = {}	
+	    				op.name = res[rs].HallName
+	    				op.value = res[rs].HallNo    
+	    				arrs[rs] = op					
+    				}
+    			} 
+				layui.formSelects.data("selectHall",'local',{arr:arrs})
+    	})
+	}); 
+        
+});
+// 关闭弹窗
+function pageClose(){
+  	layer.closeAll();
+}
+var vm = new Vue({
+	el:'#app',
+	data:{
+		config:{}
+		,units:{}
+		,list:{}
+		,select_unit_id:0
+		,select_hall_id:0
+		,time:''
+		,hall_id:''
+		,move:''
+		,run:''
+		,showChange:false	//是否显示区域配置
+		,number:''
+		,baseStyles: {
+		}
+		,area:{
+			unitid:0,
+			hallid:0,
+		}
+	}
+	,methods:{
+		get:function () {
+			var vm = this
+			axios
+				.get('{:url("/api/v2/index/getOralClassTime")}',{'params':vm.area})
+				.then(
+					res => {
+						this.list 	= res.data.list;
+						this.config = res.data.config	
+						this.units 	= res.data.units
+						this.select_unit_id = res.data.select_unit_id		
+						if(this.select_unit_id){
+							this.getHall(this.select_unit_id)
+						}				
+						this.select_hall_id = res.data.select_hall_id
+						if(this.config.img){
+						    this.baseStyles.backgroundSize = '100% 100%'
+						    this.baseStyles.backgroundRepeat = 'no-repeat'
+							this.baseStyles.backgroundImage = "url(__IMG__"+this.config.img+")"
+						}
+					}
+				)
+		}
+		,getHall:function (unit_id) {
+			var vm = this
+			axios
+				.get('{:url("/api/v2/fetch/getHall")}',{'params':{'unit_id':unit_id}})
+				.then(
+					res => {
+		    			var arrs = []
+		    			let li = res.data
+		    			if(li){
+		    				for(rs in li){
+		    					var op = {}	
+			    				op.name = li[rs].HallName
+			    				op.value = li[rs].HallNo    
+			    				arrs[rs] = op					
+		    				}
+		    			} 
+						var formSelects = layui.formSelects;
+						layui.formSelects.data("selectHall",'local',{arr:arrs})
+						setTimeout(function () {
+							layui.formSelects.value("selectHall",vm.select_hall_id.split(","))
+						},200)
+					}
+				)
+		}
+		,showOpen:function(event){
+			var arr = event.target.value;
+			arrs = arr.split(",");
+			var url = '';
+			if(this.config.status==1){
+				url = '{:url("pavilion/schedule/showQr")}?id='+arrs[0];
+			}else{
+				url = '{:url("pavilion/schedule/getMark")}?id='+arrs[0];
+			}
+			layer.open({
+				title:'我要预约',
+				area: ['350px', '470px'],
+			  	type: 2, 
+			  	time:180000,
+			  	content: url //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+			}); 
+		}
+		,mousemoves:function(){		
+			clearInterval(this.move)
+			clearInterval(this.run)
+			this.op_scroll()
+		}
+		,op_scroll:function(){
+			var vm = this
+			this.move = setTimeout(res => {
+				this.run = setInterval(function(){
+					vm.scorll()
+				},100)
+			},180000);
+		}
+		,scorll:function(){	
+			var num = n = layui.$(".scroll").scrollTop()
+			var vm = this
+			num += 1
+			layui.$(".scroll").scrollTop(num)
+			if(n >= layui.$(".scroll").scrollTop()){
+				clearInterval(this.move)
+				clearInterval(this.run)
+				setTimeout(function(){
+					layui.$(".scroll").scrollTop(0)		
+					vm.op_scroll()
+				},60000)
+			}
+		}
+		,op_time:function(){
+			setInterval(
+			res => {
+				var dt = new Date(); // 得到当前时间
+				var week = dt.getDay();  
+				if (week == 0) {  
+				        str = "星期日";  
+				} else if (week == 1) {  
+				        str = "星期一";  
+				} else if (week == 2) {  
+				        str = "星期二";  
+				} else if (week == 3) {  
+				        str = "星期三";  
+				} else if (week == 4) {  
+				        str = "星期四";  
+				} else if (week == 5) {  
+				        str = "星期五";  
+				} else if (week == 6) {  
+				        str = "星期六";  
+				}  
+
+				var h = dt.getHours();
+				if(h<10) h='0' + h;
+				var i = dt.getMinutes();
+				if(i<10) i='0' + i;
+				var s = dt.getSeconds();
+				if(s<10) s='0' + s;
+				str +=  ' '+ h + ':' + i + ':' + s;				
+				this.time = str;
+			},1000)	
+		}		
+		,changeHalls:function(){
+			layer.open({
+			 	title:'验证码验证',
+				type: 1,
+				content: layui.$('#line_pwd')
+			});  	
+		}
+		,setHall:function(){
+			var vm = this
+			var formSelects = layui.formSelects;
+			this.hall_id = formSelects.value('selectHall', 'val'); 
+			axios
+				.post('{:url("/api/v2/fetch/setHalls")}',{'unit_id':vm.unit_id,'hall_id':vm.hall_id})
+				.then(
+					function(res){
+						if(res.status==200){
+							vm.showChange = false
+							vm.get()
+						}
+						layer.msg(res.data, {
+					      offset: '15px'
+					      ,icon: 1
+					      ,time: 1000
+					    });
+					}
+				)
+		}
+		,setHallClose:function(){
+			if(this.hall_id){
+				vm.showChange = false
+			}
+		}
+		,changeHalls:function(){
+			layer.open({
+			 	title:'验证码验证',
+				type: 1,
+				content: layui.$('#line_pwd')
+			});  	
+		}
+		,verifyHall:function(){
+			this.showChange = this.showChange?false:true
+		}
+		,testing:function(){
+			if(this.number=='9999'){
+				layui.form.render()
+				this.showChange = true				
+				layer.closeAll('page');
+				this.number = 0
+		  	}else{
+		  		layer.msg("验证码错误")
+		  	}
+		}
+		,pageClose:function(){
+			this.number = ''
+			this.search = ''
+			this.tickets_id 	= ''
+			this.ticket_list 	= []
+		  	layer.closeAll('page')
+		}
+		,insertAtCursor:function (myValue,id) { // 数字键盘
+		    var myField = document.getElementById(id);
+		    //IE 浏览器
+		    if (document.selection) {
+		         myField.focus();
+		         sel = document.selection.createRange();
+		         sel.text = myValue;
+		         sel.select();
+		    }else if (myField.selectionStart || myField.selectionStart == '0') {		    	
+		     	//FireFox、Chrome等
+		         var startPos = myField.selectionStart;
+		         var endPos = myField.selectionEnd; 
+		         // 保存滚动条
+		         var restoreTop = myField.scrollTop;
+		         if(myValue==""){
+		         	myField.value = myField.value.substring(0, startPos-1) + myField.value.substring(endPos, myField.value.length);     
+		         }else{         	
+		         	myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);       
+		         }
+		         if(id=='search'){
+		         	vm.search = myField.value;
+		         }else if(id=='number'){
+		         	vm.number = myField.value;
+		         }
+		         if (restoreTop > 0) {
+		            myField.scrollTop = restoreTop;
+		         }         
+		        myField.focus();
+		        if(myValue==""){
+		        	myField.selectionStart = startPos -1;
+			        myField.selectionEnd = startPos -1;
+		        }else{     
+			        myField.selectionStart = startPos + myValue.length;
+			        myField.selectionEnd = startPos + myValue.length;
+		        }
+		    } else {
+		        myField.value += myValue;
+		        myField.focus();
+		    }
+		}
+	}
+	,created:function(){	
+		this.get();			
+	}	
+	,mounted:function(){
+		this.op_time()	//时间
+	}	
+})
+</script> 
+</body>
+</html>

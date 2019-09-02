@@ -13,7 +13,8 @@ class PushMsg extends Model
     public function executeQueueM($doctor_id=0,$status=2)
     {
         $re_msg['success'] = 0;
-        $re_msg['msg']  = "请先呼叫患者";  
+        $re_msg['msg']   = "请先呼叫患者";  
+        $re_msg['data']  = [];  
 
         $where = array();
         $where[] = ['status','=',2];
@@ -24,7 +25,13 @@ class PushMsg extends Model
             $rs = $this->updateStatusM($doctor_id,$result['id'],$status);
             if($rs){
                 $re_msg['success'] = 1;
-                $re_msg['msg']  = '操作完成'; 
+                $re_msg['msg']   = '操作完成'; 
+                $data['id']      = $result['id'];
+                $data['que_id']  = $result['que_id'];
+                $data['title']   = $result['title'];
+                $data['code']    = $result['prefix'].$result['code'];
+                $data['name']    = $result['name'];
+                $re_msg['data']  = $data;  
             }
         }
         return $re_msg;
@@ -67,6 +74,8 @@ class PushMsg extends Model
         $ticket = DB::name("z_ticket")->where($where)->order("status desc,sort desc,pid asc")->find();
         $data['number'] = $result['num'];
         if($ticket){
+            $data['que_id']= $ticket['que_id'];
+            $data['id']    = $ticket['id'];
             $data['title'] = $ticket['title'];
             $data['code']  = $ticket['prefix'].$ticket['code'];
             $data['name']  = $ticket['name'];

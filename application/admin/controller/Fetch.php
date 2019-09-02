@@ -12,15 +12,12 @@ class Fetch extends Base
 	// 取号配置
     public function index(){
     	$wh = array();        
-        $unit_id = input('unit_id',1);
-        if($this->userid!=1){
-            $wh[] = ['unitid','=',$this->unitid];
-        }        
+        $wh[] = ['unitid','=',$this->unitid];    
         $unit = db("unit")->where($wh)->select();
         $list = db("config_fetch")->where($wh)->find();
         $this->assign("list",$list);
         $this->assign("unit",$unit);
-        $this->assign("unit_id",$unit_id);
+        $this->assign("unit_id",$this->unitid);
     	return $this->fetch('index');
     }
 
@@ -48,6 +45,7 @@ class Fetch extends Base
         $data['ae_time']        = input("ae_time",0);
         $data['api_ip']         = input("api_ip","");
         $data['warning']        = input("warning","");
+        $data['is_split']       = input("is_split",0);
         $unitid                 = $this->unitid;
         $id                     = input("id",0);
         $rs = 0;

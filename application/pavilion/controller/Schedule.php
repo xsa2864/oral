@@ -38,6 +38,11 @@ class Schedule extends Controller
     {
         return $this->fetch("vueIndex");
     }
+    // 口腔医院
+    public function showOralClass()
+    {
+        return $this->fetch("vueOral");
+    }
 	// 预约
     public function getMark()
     {
@@ -211,7 +216,7 @@ class Schedule extends Controller
 		// 自定义二维码配置
         $config = [
             'title'         => true,
-            'title_content' => '手机预约',
+            'title_content' => '请用微信刷以上二维码进行预约！',
             'logo'          => false,
             'logo_url'      => Env::get("ROOT_PATH").'/public/static/admin/images/doctor.jpg',
             'logo_size'     => 80,

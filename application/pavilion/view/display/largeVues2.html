@@ -95,7 +95,7 @@ html,body{
 	  	  		</div>
 	  	  		<template v-for="(ls,index) in info.item" 
 							v-if="index < 8">							
-				<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 8.9%;display: block;color:#fe7f18;text-align: center;line-height: 4.2vw;font-size: 2vw;">	
+				<div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="height: 8.9%;display: block;color:#fe7f18;text-align: center;line-height: 4.7vw;font-size: 2vw;">	
 					<div class="layui-col-xs2 layui-col-sm2 layui-col-md2" 
 							v-if="item.field.f6==1">
 						{{ ls.doctor_name }}
@@ -118,7 +118,7 @@ html,body{
 							{{ ls.user_name }}
 						</div>
 					</div>
-					<div class="layui-col-xs4 layui-col-sm4 layui-col-md4" style="width: 30%;">
+					<div class="layui-col-xs4 layui-col-sm4 layui-col-md4" style="margin-left: -12px;width: 30%;">
 						<template v-if="ls.wait.length == ''">
 							&nbsp;
 						</template>

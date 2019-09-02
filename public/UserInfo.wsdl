@@ -49,6 +49,10 @@
 <input message="tns:arrayToXmlRequest" />
 <output message="tns:arrayToXmlResponse" />
 </operation>
+<operation name="upDataClass">
+<input message="tns:upDataClassRequest" />
+<output message="tns:upDataClassResponse" />
+</operation>
 <operation name="xmlToArray">
 <input message="tns:xmlToArrayRequest" />
 <output message="tns:xmlToArrayResponse" />
@@ -156,6 +160,14 @@
 <soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
 </output>
 </operation>
+<operation name="upDataClass">
+<soap:operation soapAction="urn:HB#UserInfo#upDataClass" />
+<input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+</output>
+</operation>
 <operation name="xmlToArray">
 <soap:operation soapAction="urn:HB#UserInfo#xmlToArray" />
 <input><soap:body use="encoded" namespace="urn:HB" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
@@ -248,6 +260,12 @@
 </message>
 <message name="arrayToXmlResponse">
 <part name="arrayToXml" type="xsd:string" />
+</message>
+<message name="upDataClassRequest">
+<part name="doctor_id" type="xsd:string" />
+</message>
+<message name="upDataClassResponse">
+<part name="upDataClass" type="xsd:string" />
 </message>
 <message name="xmlToArrayRequest">
 <part name="xml" type="xsd:string" />
